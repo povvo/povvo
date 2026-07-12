@@ -139,7 +139,7 @@
     {
       "name": "GIF size: contribution-scan.gif",
       "passed": true,
-      "detail": "89.8 KiB"
+      "detail": "90.1 KiB"
     },
     {
       "name": "GIF loop seam: contribution-scan.gif",
@@ -149,7 +149,7 @@
     {
       "name": "GIF bounded motion: contribution-scan.gif",
       "passed": true,
-      "detail": "median 0.36%, maximum 0.45% pixels changed"
+      "detail": "median 0.35%, maximum 0.45% pixels changed"
     },
     {
       "name": "GIF static-field stability: contribution-scan.gif",
@@ -244,7 +244,7 @@
     {
       "name": "GIF size: event-rail.gif",
       "passed": true,
-      "detail": "95.1 KiB"
+      "detail": "96.9 KiB"
     },
     {
       "name": "GIF loop seam: event-rail.gif",
@@ -254,7 +254,7 @@
     {
       "name": "GIF bounded motion: event-rail.gif",
       "passed": true,
-      "detail": "median 0.57%, maximum 0.97% pixels changed"
+      "detail": "median 0.61%, maximum 0.96% pixels changed"
     },
     {
       "name": "GIF static-field stability: event-rail.gif",
@@ -334,7 +334,7 @@
     {
       "name": "aggregate GIF budget",
       "passed": true,
-      "detail": "589.2 KiB across 6 animations"
+      "detail": "591.4 KiB across 6 animations"
     },
     {
       "name": "preview dimensions: contribution-scan.png",
@@ -344,7 +344,7 @@
     {
       "name": "black/off-white dominance: contribution-scan.png",
       "passed": true,
-      "detail": "88.81%"
+      "detail": "88.80%"
     },
     {
       "name": "cyan subordination: contribution-scan.png",
@@ -389,7 +389,7 @@
     {
       "name": "black/off-white dominance: event-rail.png",
       "passed": true,
-      "detail": "96.06%"
+      "detail": "95.92%"
     },
     {
       "name": "cyan subordination: event-rail.png",
@@ -449,5 +449,5 @@
   ],
   "logo_sha256": "4a519d9bb147ed834ecc7724118337e417c3de60e29e923477e725167f4b6458",
   "identity_sha256": "3dcc64f3a29109f6c5a87b305f12e3f0ac792363f175ef2fe18e1af9c980c857",
-  "validated_at": "2026-07-12T20:35:50.637740+00:00"
+  "validated_at": "2026-07-12T20:45:34.121676+00:00"
 }
