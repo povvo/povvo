@@ -572,6 +572,14 @@ def load_logo_assets() -> dict[str, Any]:
         opacity=112,
         outline_width=5,
     )
+    wordmark_board = wordmark_image(
+        wordmark_mask,
+        980,
+        hex_rgb(TOKENS["scan.edge"]),
+        outline=True,
+        opacity=138,
+        outline_width=5,
+    )
     return {
         "mark": mark,
         "mark_inverse": inverse,
@@ -581,6 +589,7 @@ def load_logo_assets() -> dict[str, Any]:
         "wordmark_ink_uri": image_data_uri(wordmark_ink),
         "wordmark_inverse_uri": image_data_uri(wordmark_inverse),
         "wordmark_ghost_uri": image_data_uri(wordmark_ghost),
+        "wordmark_board_uri": image_data_uri(wordmark_board),
         "wordmark_ratio": wordmark_mask.width / wordmark_mask.height,
     }
 
@@ -1119,7 +1128,7 @@ def focus_svg(data: ProfileData, assets: dict[str, Any]) -> str:
     )
     lines.append('<rect x="0" y="0" width="900" height="220" fill="#050706"/>')
     lines.append('<rect x=".5" y=".5" width="899" height="219" fill="none" stroke="#6E9DB2" stroke-opacity=".82"/>')
-    svg_wordmark(lines, assets["wordmark_ghost_uri"], assets["wordmark_ratio"], x=-92, y=35, width=780, opacity=.94)
+    svg_wordmark(lines, assets["wordmark_board_uri"], assets["wordmark_ratio"], x=-92, y=35, width=780, opacity=.94)
     svg_wordmark(lines, assets["wordmark_inverse_uri"], assets["wordmark_ratio"], x=44, y=78, width=430, opacity=1)
     lines.append('<path d="M548 34V188" stroke="#6E9DB2" stroke-opacity=".82"/>')
     lines.append('<text x="32" y="36" class="micro inverse">POVVO / CURRENT FOCUS</text>')
@@ -1419,7 +1428,7 @@ def _wordmark_layers(assets: dict[str, Any]) -> tuple[Image.Image, Image.Image]:
     outline = wordmark_image(
         assets["wordmark_mask"],
         sx(780),
-        CYAN,
+        EDGE,
         outline=True,
         opacity=138,
         outline_width=sr(2.0),
