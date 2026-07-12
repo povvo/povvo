@@ -3,6 +3,12 @@
 </p>
 
 <p align="center">
+  <a href="https://povvo.github.io/povvo/">
+    <img src="./poker/profile-preview.png" alt="Play Povvo Poker, a one-on-one Kuhn Poker table against the Povvo DCFR policy" width="100%">
+  </a>
+</p>
+
+<p align="center">
   <picture>
     <source media="(prefers-reduced-motion: reduce)" srcset="./widgets/generated/contribution-scan.svg">
     <img src="./widgets/generated/contribution-scan.gif" alt="Contribution scan for the Povvo GitHub profile" width="100%">

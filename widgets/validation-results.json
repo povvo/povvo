@@ -244,7 +244,7 @@
     {
       "name": "GIF size: event-rail.gif",
       "passed": true,
-      "detail": "96.9 KiB"
+      "detail": "96.7 KiB"
     },
     {
       "name": "GIF loop seam: event-rail.gif",
@@ -334,7 +334,7 @@
     {
       "name": "aggregate GIF budget",
       "passed": true,
-      "detail": "591.4 KiB across 6 animations"
+      "detail": "591.2 KiB across 6 animations"
     },
     {
       "name": "preview dimensions: contribution-scan.png",
@@ -389,7 +389,7 @@
     {
       "name": "black/off-white dominance: event-rail.png",
       "passed": true,
-      "detail": "95.92%"
+      "detail": "95.93%"
     },
     {
       "name": "cyan subordination: event-rail.png",
@@ -449,5 +449,5 @@
   ],
   "logo_sha256": "4a519d9bb147ed834ecc7724118337e417c3de60e29e923477e725167f4b6458",
   "identity_sha256": "3dcc64f3a29109f6c5a87b305f12e3f0ac792363f175ef2fe18e1af9c980c857",
-  "validated_at": "2026-07-12T20:45:34.121676+00:00"
+  "validated_at": "2026-07-12T22:46:20.140162+00:00"
 }
