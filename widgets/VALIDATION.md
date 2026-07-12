@@ -29,7 +29,7 @@ Overall: **PASS**
 | GIF dimensions: contribution-scan.gif | PASS | 900 x 220 |
 | GIF cadence: contribution-scan.gif | PASS | 50 encoded frames, 7200ms loop, delays [40, 480, 1640, 3200] |
 | GIF disposal: contribution-scan.gif | PASS | disposal methods [1] |
-| GIF size: contribution-scan.gif | PASS | 73.3 KiB |
+| GIF size: contribution-scan.gif | PASS | 73.2 KiB |
 | GIF loop seam: contribution-scan.gif | PASS | maximum channel RMS 0.000 |
 | GIF bounded motion: contribution-scan.gif | PASS | median 0.32%, maximum 0.44% pixels changed |
 | GIF static-field stability: contribution-scan.gif | PASS | unchanged calibration field |
@@ -68,9 +68,9 @@ Overall: **PASS**
 | GIF loop seam: repository-signal.gif | PASS | maximum channel RMS 0.000 |
 | GIF bounded motion: repository-signal.gif | PASS | median 0.61%, maximum 0.82% pixels changed |
 | GIF static-field stability: repository-signal.gif | PASS | unchanged calibration field |
-| aggregate GIF budget | PASS | 459.3 KiB across 6 animations |
+| aggregate GIF budget | PASS | 459.1 KiB across 6 animations |
 | preview dimensions: contribution-scan.png | PASS | 900 x 220 |
-| black/off-white dominance: contribution-scan.png | PASS | 89.34% |
+| black/off-white dominance: contribution-scan.png | PASS | 89.32% |
 | cyan subordination: contribution-scan.png | PASS | 0.016% |
 | preview dimensions: focus-board.png | PASS | 900 x 220 |
 | black/off-white dominance: focus-board.png | PASS | 94.36% |
