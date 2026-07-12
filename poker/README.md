@@ -27,6 +27,10 @@ pnpm build
 
 The production build fails if the source checksum, policy distributions, known Kuhn game value, or exploitability gates drift.
 
+## Deployment
+
+The profile repository verifies pull requests and deploys `dist/` from `main` through GitHub Actions. The public table is served at [povvo.github.io/povvo](https://povvo.github.io/povvo/).
+
 ## Play
 
 Each player antes one point and receives one card from J, Q, and K. Players may check or bet; after a bet, the response is fold or call. The highest card wins at showdown. Position alternates each hand, and the first side to lead the ledger by seven points wins the match.
