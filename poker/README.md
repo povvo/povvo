@@ -36,6 +36,8 @@ python -m pip install -r ../widgets/requirements.txt
 python scripts/generate-profile-strip.py
 ```
 
+The GIF stops on the ace after 4.65 seconds; it does not loop. The profile serves the matching PNG when reduced motion is requested.
+
 ## Deployment
 
 The profile repository verifies pull requests and deploys `dist/` from `main` through GitHub Actions. The public table is served at [povvo.github.io/povvo](https://povvo.github.io/povvo/).
