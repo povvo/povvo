@@ -1,0 +1,23 @@
+{
+  "name": "povvo-poker",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "solve": "node scripts/export-policy.mjs",
+    "dev": "pnpm solve && vite",
+    "build": "pnpm solve && tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@fontsource-variable/roboto-condensed": "5.2.8",
+    "@fontsource/ibm-plex-mono": "5.2.7",
+    "@types/node": "26.1.1",
+    "playwright": "1.61.1",
+    "typescript": "7.0.2",
+    "vite": "8.1.4",
+    "vitest": "4.1.10",
+    "wasmoon": "1.16.0"
+  }
+}
