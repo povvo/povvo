@@ -52,16 +52,16 @@ Overall: **PASS**
 | GIF dimensions: event-rail.gif | PASS | 900 x 220 |
 | GIF cadence: event-rail.gif | PASS | 50 encoded frames, 7200ms loop, delays [40, 1080, 1460, 2780] |
 | GIF disposal: event-rail.gif | PASS | disposal methods [1] |
-| GIF size: event-rail.gif | PASS | 97.1 KiB |
+| GIF size: event-rail.gif | PASS | 97.5 KiB |
 | GIF loop seam: event-rail.gif | PASS | maximum channel RMS 0.000 |
-| GIF bounded motion: event-rail.gif | PASS | median 0.60%, maximum 0.96% pixels changed |
+| GIF bounded motion: event-rail.gif | PASS | median 0.61%, maximum 0.96% pixels changed |
 | GIF static-field stability: event-rail.gif | PASS | unchanged calibration field |
 | GIF dimensions: code-spectrum.gif | PASS | 900 x 220 |
 | GIF cadence: code-spectrum.gif | PASS | 50 encoded frames, 7200ms loop, delays [40, 1280, 1400, 2640] |
 | GIF disposal: code-spectrum.gif | PASS | disposal methods [1] |
 | GIF size: code-spectrum.gif | PASS | 96.5 KiB |
 | GIF loop seam: code-spectrum.gif | PASS | maximum channel RMS 0.000 |
-| GIF bounded motion: code-spectrum.gif | PASS | median 0.64%, maximum 2.69% pixels changed |
+| GIF bounded motion: code-spectrum.gif | PASS | median 0.64%, maximum 2.77% pixels changed |
 | GIF static-field stability: code-spectrum.gif | PASS | unchanged calibration field |
 | GIF dimensions: repository-signal.gif | PASS | 900 x 220 |
 | GIF cadence: repository-signal.gif | PASS | 50 encoded frames, 7200ms loop, delays [40, 1340, 1480, 2500] |
@@ -70,7 +70,7 @@ Overall: **PASS**
 | GIF loop seam: repository-signal.gif | PASS | maximum channel RMS 0.000 |
 | GIF bounded motion: repository-signal.gif | PASS | median 0.61%, maximum 0.80% pixels changed |
 | GIF static-field stability: repository-signal.gif | PASS | unchanged calibration field |
-| aggregate GIF budget | PASS | 606.6 KiB across 6 animations |
+| aggregate GIF budget | PASS | 606.9 KiB across 6 animations |
 | preview dimensions: contribution-scan.png | PASS | 900 x 220 |
 | black/off-white dominance: contribution-scan.png | PASS | 88.82% |
 | cyan subordination: contribution-scan.png | PASS | 0.018% |
@@ -84,8 +84,8 @@ Overall: **PASS**
 | black/off-white dominance: event-rail.png | PASS | 95.92% |
 | cyan subordination: event-rail.png | PASS | 0.002% |
 | preview dimensions: code-spectrum.png | PASS | 900 x 220 |
-| black/off-white dominance: code-spectrum.png | PASS | 87.61% |
-| cyan subordination: code-spectrum.png | PASS | 0.026% |
+| black/off-white dominance: code-spectrum.png | PASS | 87.62% |
+| cyan subordination: code-spectrum.png | PASS | 0.020% |
 | preview dimensions: repository-signal.png | PASS | 900 x 220 |
 | black/off-white dominance: repository-signal.png | PASS | 97.53% |
 | cyan subordination: repository-signal.png | PASS | 0.002% |
