@@ -38,7 +38,7 @@ package.preload['sci.prng'] = function()
 end
 `;
 
-const source = await readFile(SOLVER_PATH, "utf8");
+const source = (await readFile(SOLVER_PATH, "utf8")).replace(/\r\n?/g, "\n");
 const sourceSha256 = createHash("sha256").update(source).digest("hex");
 
 if (sourceSha256 !== EXPECTED_SOURCE_SHA256) {
@@ -79,7 +79,24 @@ return {
 `);
   const gameValue = Number(result.gameValue);
   const exploitability = Number(result.exploitability);
-  const policy = result.policy;
+  const historyOrder = new Map([
+    ["", 0],
+    ["p", 1],
+    ["b", 2],
+    ["pb", 3],
+  ]);
+  const policy = Object.fromEntries(
+    Object.entries(result.policy)
+      .sort(([left], [right]) => {
+        const [leftCard, leftHistory] = left.split("|");
+        const [rightCard, rightHistory] = right.split("|");
+        return (
+          Number(leftCard) - Number(rightCard) ||
+          (historyOrder.get(leftHistory) ?? 99) - (historyOrder.get(rightHistory) ?? 99)
+        );
+      })
+      .map(([key, strategy]) => [key, { p: Number(strategy.p), b: Number(strategy.b) }]),
+  );
 
   for (const [key, strategy] of Object.entries(policy)) {
     const p = Number(strategy.p);
