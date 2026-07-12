@@ -428,6 +428,146 @@ a:focus-visible {
   background: var(--field);
 }
 
+.hand-result {
+  position: absolute;
+  z-index: 20;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px 32px;
+  width: min(760px, calc(100% - 48px));
+  padding: 24px 28px;
+  border: 1px solid var(--cyan);
+  border-left: 8px solid var(--ink);
+  background: rgba(244, 246, 241, 0.98);
+  color: var(--ink);
+  box-shadow: 14px 16px 0 rgba(5, 7, 6, 0.18);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  animation: result-arrive 360ms cubic-bezier(0.05, 0.7, 0.1, 1) both;
+}
+
+.hand-result::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  left: -1px;
+  height: 2px;
+  background: var(--cyan);
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: result-scan 420ms 80ms cubic-bezier(0.2, 0, 0, 1) both;
+}
+
+.hand-result--loss {
+  border-left-color: var(--cyan);
+  background: rgba(5, 7, 6, 0.98);
+  color: var(--inverse);
+  box-shadow: 14px 16px 0 rgba(110, 157, 178, 0.18);
+}
+
+.hand-result__copy {
+  min-width: 0;
+}
+
+.hand-result__copy span,
+.hand-result__copy small,
+.hand-result__score span {
+  display: block;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.hand-result__copy span,
+.hand-result__copy small {
+  color: var(--micro);
+}
+
+.hand-result--loss .hand-result__copy span,
+.hand-result--loss .hand-result__copy small {
+  color: var(--cyan);
+}
+
+.hand-result__copy strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 52px;
+  font-weight: 850;
+  font-style: italic;
+  line-height: 0.9;
+  animation: result-word 420ms 80ms cubic-bezier(0.05, 0.7, 0.1, 1) both;
+}
+
+.hand-result__copy small {
+  margin-top: 12px;
+}
+
+.hand-result__score {
+  min-width: 92px;
+  padding-left: 20px;
+  border-left: 1px solid currentColor;
+  text-align: right;
+}
+
+.hand-result__score b {
+  display: block;
+  font-size: 54px;
+  font-weight: 850;
+  font-style: italic;
+  line-height: 0.9;
+  animation: result-score 320ms 140ms cubic-bezier(0.05, 0.7, 0.1, 1) both;
+}
+
+.hand-result__slashes {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 7px;
+  height: 16px;
+}
+
+.hand-result__slashes i {
+  display: block;
+  width: 4px;
+  height: 16px;
+  background: currentColor;
+  transform: skewX(-27deg) scaleY(0);
+  animation: result-slash 240ms 180ms cubic-bezier(0.05, 0.7, 0.1, 1) both;
+}
+
+.hand-result__slashes i:nth-child(2) { animation-delay: 216ms; }
+.hand-result__slashes i:nth-child(3) { animation-delay: 252ms; }
+.hand-result__slashes i:nth-child(4) { animation-delay: 288ms; }
+
+@keyframes result-arrive {
+  from { opacity: 0; transform: translate(-50%, calc(-50% + 12px)) scaleY(0.96); }
+  to { opacity: 1; transform: translate(-50%, -50%) scaleY(1); }
+}
+
+@keyframes result-scan {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes result-word {
+  from { opacity: 0; transform: translateX(12px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes result-score {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes result-slash {
+  from { transform: skewX(-27deg) scaleY(0); }
+  to { transform: skewX(-27deg) scaleY(1); }
+}
+
 .identity-underlay {
   position: absolute;
   z-index: -1;
@@ -563,11 +703,11 @@ a:focus-visible {
 .playing-card--thinking::before {
   top: 10%;
   opacity: 0.82;
-  animation: card-inspect 480ms linear 1;
+  animation: card-inspect 480ms linear 2;
 }
 
 .playing-card--thinking img {
-  animation: mark-inspect 480ms cubic-bezier(0.2, 0, 0, 1) 1;
+  animation: mark-inspect 480ms cubic-bezier(0.2, 0, 0, 1) 2;
 }
 
 .playing-card--back,
@@ -1153,6 +1293,19 @@ a:focus-visible {
     grid-template-rows: 1fr 66px 1fr;
   }
 
+  .hand-result {
+    width: min(620px, calc(100% - 32px));
+    padding: 20px 24px;
+  }
+
+  .hand-result__copy strong {
+    font-size: 40px;
+  }
+
+  .hand-result__score b {
+    font-size: 48px;
+  }
+
   .seat {
     grid-template-columns: minmax(96px, 0.7fr) 108px minmax(112px, 1fr);
     gap: 12px;
@@ -1354,6 +1507,49 @@ a:focus-visible {
     height: 112px;
   }
 
+  .hand-result {
+    gap: 12px;
+    width: calc(100% - 24px);
+    padding: 16px;
+    border-left-width: 6px;
+    box-shadow: 8px 9px 0 rgba(5, 7, 6, 0.16);
+  }
+
+  .hand-result--loss {
+    box-shadow: 8px 9px 0 rgba(110, 157, 178, 0.16);
+  }
+
+  .hand-result__copy strong {
+    max-width: 210px;
+    font-size: 30px;
+  }
+
+  .hand-result__copy small {
+    margin-top: 8px;
+    font-size: 8px;
+  }
+
+  .hand-result__score {
+    min-width: 54px;
+    padding-left: 12px;
+  }
+
+  .hand-result__score span {
+    font-size: 8px;
+  }
+
+  .hand-result__score b {
+    font-size: 38px;
+  }
+
+  .hand-result__slashes {
+    height: 12px;
+  }
+
+  .hand-result__slashes i {
+    height: 12px;
+  }
+
   .playing-card--back img {
     width: 52px;
     height: 52px;
@@ -1442,6 +1638,11 @@ a:focus-visible {
   }
 
   .score-ruler__marker,
+  .hand-result,
+  .hand-result::before,
+  .hand-result__copy strong,
+  .hand-result__score b,
+  .hand-result__slashes i,
   .playing-card--dealt,
   .playing-card--thinking::before,
   .playing-card--thinking img,
