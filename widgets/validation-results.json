@@ -1,0 +1,442 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "name": "production logo dimensions",
+      "passed": true,
+      "detail": "160 x 160"
+    },
+    {
+      "name": "production logo checksum",
+      "passed": true,
+      "detail": "4a519d9bb147ed834ecc7724118337e417c3de60e29e923477e725167f4b6458"
+    },
+    {
+      "name": "font custody",
+      "passed": true,
+      "detail": "system-font fallbacks only"
+    },
+    {
+      "name": "SVG parse: contribution-scan.svg",
+      "passed": true,
+      "detail": "valid XML"
+    },
+    {
+      "name": "SVG accessibility: contribution-scan.svg",
+      "passed": true,
+      "detail": "title, description, and ARIA binding present"
+    },
+    {
+      "name": "SVG token palette: contribution-scan.svg",
+      "passed": true,
+      "detail": "semantic palette only"
+    },
+    {
+      "name": "SVG parse: focus-board.svg",
+      "passed": true,
+      "detail": "valid XML"
+    },
+    {
+      "name": "SVG accessibility: focus-board.svg",
+      "passed": true,
+      "detail": "title, description, and ARIA binding present"
+    },
+    {
+      "name": "SVG token palette: focus-board.svg",
+      "passed": true,
+      "detail": "semantic palette only"
+    },
+    {
+      "name": "SVG parse: repository-index.svg",
+      "passed": true,
+      "detail": "valid XML"
+    },
+    {
+      "name": "SVG accessibility: repository-index.svg",
+      "passed": true,
+      "detail": "title, description, and ARIA binding present"
+    },
+    {
+      "name": "SVG token palette: repository-index.svg",
+      "passed": true,
+      "detail": "semantic palette only"
+    },
+    {
+      "name": "SVG parse: event-rail.svg",
+      "passed": true,
+      "detail": "valid XML"
+    },
+    {
+      "name": "SVG accessibility: event-rail.svg",
+      "passed": true,
+      "detail": "title, description, and ARIA binding present"
+    },
+    {
+      "name": "SVG token palette: event-rail.svg",
+      "passed": true,
+      "detail": "semantic palette only"
+    },
+    {
+      "name": "SVG parse: code-spectrum.svg",
+      "passed": true,
+      "detail": "valid XML"
+    },
+    {
+      "name": "SVG accessibility: code-spectrum.svg",
+      "passed": true,
+      "detail": "title, description, and ARIA binding present"
+    },
+    {
+      "name": "SVG token palette: code-spectrum.svg",
+      "passed": true,
+      "detail": "semantic palette only"
+    },
+    {
+      "name": "SVG parse: repository-signal.svg",
+      "passed": true,
+      "detail": "valid XML"
+    },
+    {
+      "name": "SVG accessibility: repository-signal.svg",
+      "passed": true,
+      "detail": "title, description, and ARIA binding present"
+    },
+    {
+      "name": "SVG token palette: repository-signal.svg",
+      "passed": true,
+      "detail": "semantic palette only"
+    },
+    {
+      "name": "logo frequency",
+      "passed": true,
+      "detail": "embedded image counts: {'contribution-scan.svg': 0, 'focus-board.svg': 1, 'repository-index.svg': 0, 'event-rail.svg': 0, 'code-spectrum.svg': 0, 'repository-signal.svg': 0}"
+    },
+    {
+      "name": "GIF dimensions: contribution-scan.gif",
+      "passed": true,
+      "detail": "900 x 220"
+    },
+    {
+      "name": "GIF cadence: contribution-scan.gif",
+      "passed": true,
+      "detail": "50 encoded frames, 7200ms loop, delays [40, 480, 1640, 3200]"
+    },
+    {
+      "name": "GIF disposal: contribution-scan.gif",
+      "passed": true,
+      "detail": "disposal methods [1]"
+    },
+    {
+      "name": "GIF size: contribution-scan.gif",
+      "passed": true,
+      "detail": "73.3 KiB"
+    },
+    {
+      "name": "GIF loop seam: contribution-scan.gif",
+      "passed": true,
+      "detail": "maximum channel RMS 0.000"
+    },
+    {
+      "name": "GIF bounded motion: contribution-scan.gif",
+      "passed": true,
+      "detail": "median 0.32%, maximum 0.44% pixels changed"
+    },
+    {
+      "name": "GIF static-field stability: contribution-scan.gif",
+      "passed": true,
+      "detail": "unchanged calibration field"
+    },
+    {
+      "name": "GIF dimensions: focus-board.gif",
+      "passed": true,
+      "detail": "900 x 220"
+    },
+    {
+      "name": "GIF cadence: focus-board.gif",
+      "passed": true,
+      "detail": "49 encoded frames, 7200ms loop, delays [40, 680, 1570, 3110]"
+    },
+    {
+      "name": "GIF disposal: focus-board.gif",
+      "passed": true,
+      "detail": "disposal methods [1]"
+    },
+    {
+      "name": "GIF size: focus-board.gif",
+      "passed": true,
+      "detail": "112.6 KiB"
+    },
+    {
+      "name": "GIF loop seam: focus-board.gif",
+      "passed": true,
+      "detail": "maximum channel RMS 0.000"
+    },
+    {
+      "name": "GIF bounded motion: focus-board.gif",
+      "passed": true,
+      "detail": "median 1.48%, maximum 3.17% pixels changed"
+    },
+    {
+      "name": "GIF static-field stability: focus-board.gif",
+      "passed": true,
+      "detail": "unchanged calibration field"
+    },
+    {
+      "name": "GIF dimensions: repository-index.gif",
+      "passed": true,
+      "detail": "900 x 220"
+    },
+    {
+      "name": "GIF cadence: repository-index.gif",
+      "passed": true,
+      "detail": "50 encoded frames, 7200ms loop, delays [40, 880, 1520, 2920]"
+    },
+    {
+      "name": "GIF disposal: repository-index.gif",
+      "passed": true,
+      "detail": "disposal methods [1]"
+    },
+    {
+      "name": "GIF size: repository-index.gif",
+      "passed": true,
+      "detail": "74.2 KiB"
+    },
+    {
+      "name": "GIF loop seam: repository-index.gif",
+      "passed": true,
+      "detail": "maximum channel RMS 0.000"
+    },
+    {
+      "name": "GIF bounded motion: repository-index.gif",
+      "passed": true,
+      "detail": "median 0.57%, maximum 1.22% pixels changed"
+    },
+    {
+      "name": "GIF static-field stability: repository-index.gif",
+      "passed": true,
+      "detail": "unchanged calibration field"
+    },
+    {
+      "name": "GIF dimensions: event-rail.gif",
+      "passed": true,
+      "detail": "900 x 220"
+    },
+    {
+      "name": "GIF cadence: event-rail.gif",
+      "passed": true,
+      "detail": "50 encoded frames, 7200ms loop, delays [40, 1080, 1460, 2780]"
+    },
+    {
+      "name": "GIF disposal: event-rail.gif",
+      "passed": true,
+      "detail": "disposal methods [1]"
+    },
+    {
+      "name": "GIF size: event-rail.gif",
+      "passed": true,
+      "detail": "74.3 KiB"
+    },
+    {
+      "name": "GIF loop seam: event-rail.gif",
+      "passed": true,
+      "detail": "maximum channel RMS 0.000"
+    },
+    {
+      "name": "GIF bounded motion: event-rail.gif",
+      "passed": true,
+      "detail": "median 0.58%, maximum 0.95% pixels changed"
+    },
+    {
+      "name": "GIF static-field stability: event-rail.gif",
+      "passed": true,
+      "detail": "unchanged calibration field"
+    },
+    {
+      "name": "GIF dimensions: code-spectrum.gif",
+      "passed": true,
+      "detail": "900 x 220"
+    },
+    {
+      "name": "GIF cadence: code-spectrum.gif",
+      "passed": true,
+      "detail": "48 encoded frames, 7200ms loop, delays [40, 1280, 1400, 2720]"
+    },
+    {
+      "name": "GIF disposal: code-spectrum.gif",
+      "passed": true,
+      "detail": "disposal methods [1]"
+    },
+    {
+      "name": "GIF size: code-spectrum.gif",
+      "passed": true,
+      "detail": "57.4 KiB"
+    },
+    {
+      "name": "GIF loop seam: code-spectrum.gif",
+      "passed": true,
+      "detail": "maximum channel RMS 0.000"
+    },
+    {
+      "name": "GIF bounded motion: code-spectrum.gif",
+      "passed": true,
+      "detail": "median 0.53%, maximum 0.55% pixels changed"
+    },
+    {
+      "name": "GIF static-field stability: code-spectrum.gif",
+      "passed": true,
+      "detail": "unchanged calibration field"
+    },
+    {
+      "name": "GIF dimensions: repository-signal.gif",
+      "passed": true,
+      "detail": "900 x 220"
+    },
+    {
+      "name": "GIF cadence: repository-signal.gif",
+      "passed": true,
+      "detail": "50 encoded frames, 7200ms loop, delays [40, 1340, 1480, 2500]"
+    },
+    {
+      "name": "GIF disposal: repository-signal.gif",
+      "passed": true,
+      "detail": "disposal methods [1]"
+    },
+    {
+      "name": "GIF size: repository-signal.gif",
+      "passed": true,
+      "detail": "67.5 KiB"
+    },
+    {
+      "name": "GIF loop seam: repository-signal.gif",
+      "passed": true,
+      "detail": "maximum channel RMS 0.000"
+    },
+    {
+      "name": "GIF bounded motion: repository-signal.gif",
+      "passed": true,
+      "detail": "median 0.61%, maximum 0.82% pixels changed"
+    },
+    {
+      "name": "GIF static-field stability: repository-signal.gif",
+      "passed": true,
+      "detail": "unchanged calibration field"
+    },
+    {
+      "name": "aggregate GIF budget",
+      "passed": true,
+      "detail": "459.3 KiB across 6 animations"
+    },
+    {
+      "name": "preview dimensions: contribution-scan.png",
+      "passed": true,
+      "detail": "900 x 220"
+    },
+    {
+      "name": "black/off-white dominance: contribution-scan.png",
+      "passed": true,
+      "detail": "89.34%"
+    },
+    {
+      "name": "cyan subordination: contribution-scan.png",
+      "passed": true,
+      "detail": "0.016%"
+    },
+    {
+      "name": "preview dimensions: focus-board.png",
+      "passed": true,
+      "detail": "900 x 220"
+    },
+    {
+      "name": "black/off-white dominance: focus-board.png",
+      "passed": true,
+      "detail": "94.36%"
+    },
+    {
+      "name": "cyan subordination: focus-board.png",
+      "passed": true,
+      "detail": "0.111%"
+    },
+    {
+      "name": "preview dimensions: repository-index.png",
+      "passed": true,
+      "detail": "900 x 220"
+    },
+    {
+      "name": "black/off-white dominance: repository-index.png",
+      "passed": true,
+      "detail": "96.18%"
+    },
+    {
+      "name": "cyan subordination: repository-index.png",
+      "passed": true,
+      "detail": "0.016%"
+    },
+    {
+      "name": "preview dimensions: event-rail.png",
+      "passed": true,
+      "detail": "900 x 220"
+    },
+    {
+      "name": "black/off-white dominance: event-rail.png",
+      "passed": true,
+      "detail": "96.78%"
+    },
+    {
+      "name": "cyan subordination: event-rail.png",
+      "passed": true,
+      "detail": "0.000%"
+    },
+    {
+      "name": "preview dimensions: code-spectrum.png",
+      "passed": true,
+      "detail": "900 x 220"
+    },
+    {
+      "name": "black/off-white dominance: code-spectrum.png",
+      "passed": true,
+      "detail": "97.66%"
+    },
+    {
+      "name": "cyan subordination: code-spectrum.png",
+      "passed": true,
+      "detail": "0.000%"
+    },
+    {
+      "name": "preview dimensions: repository-signal.png",
+      "passed": true,
+      "detail": "900 x 220"
+    },
+    {
+      "name": "black/off-white dominance: repository-signal.png",
+      "passed": true,
+      "detail": "97.95%"
+    },
+    {
+      "name": "cyan subordination: repository-signal.png",
+      "passed": true,
+      "detail": "0.000%"
+    },
+    {
+      "name": "primary text contrast",
+      "passed": true,
+      "detail": "18.57:1"
+    },
+    {
+      "name": "micro text contrast",
+      "passed": true,
+      "detail": "11.83:1"
+    },
+    {
+      "name": "inverse text contrast",
+      "passed": true,
+      "detail": "16.62:1"
+    },
+    {
+      "name": "metadata contract",
+      "passed": true,
+      "detail": "6 static, 6 animated, 7200ms"
+    }
+  ],
+  "logo_sha256": "4a519d9bb147ed834ecc7724118337e417c3de60e29e923477e725167f4b6458",
+  "validated_at": "2026-07-12T19:12:15.306994+00:00"
+}

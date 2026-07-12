@@ -1,0 +1,76 @@
+{
+  "generated_at": "2026-07-12T19:12:14.555790+00:00",
+  "username": "povvo",
+  "demo": false,
+  "static_widget_count": 6,
+  "animated_widget_count": 6,
+  "animation_loop_ms": 7200,
+  "motion_step_ms": 40,
+  "render_scale": 3,
+  "gif_palette_colours": 192,
+  "gif_disposal": 1,
+  "logo_widget": "focus-board",
+  "source_logo": "assets/logo.png",
+  "animations": {
+    "contribution-scan": {
+      "encoded_source_frames": 51,
+      "loop_duration_ms": 7200,
+      "start_ms": 480,
+      "reveal_end_ms": 1900,
+      "lock_end_ms": 2040,
+      "hold_end_ms": 5200,
+      "exit_end_ms": 5620,
+      "frame_step_ms": 40
+    },
+    "focus-board": {
+      "encoded_source_frames": 50,
+      "loop_duration_ms": 7200,
+      "start_ms": 680,
+      "reveal_end_ms": 2050,
+      "lock_end_ms": 2190,
+      "hold_end_ms": 5260,
+      "exit_end_ms": 5680,
+      "frame_step_ms": 40
+    },
+    "repository-index": {
+      "encoded_source_frames": 51,
+      "loop_duration_ms": 7200,
+      "start_ms": 880,
+      "reveal_end_ms": 2300,
+      "lock_end_ms": 2440,
+      "hold_end_ms": 5320,
+      "exit_end_ms": 5740,
+      "frame_step_ms": 40
+    },
+    "event-rail": {
+      "encoded_source_frames": 51,
+      "loop_duration_ms": 7200,
+      "start_ms": 1080,
+      "reveal_end_ms": 2500,
+      "lock_end_ms": 2640,
+      "hold_end_ms": 5380,
+      "exit_end_ms": 5800,
+      "frame_step_ms": 40
+    },
+    "code-spectrum": {
+      "encoded_source_frames": 51,
+      "loop_duration_ms": 7200,
+      "start_ms": 1280,
+      "reveal_end_ms": 2700,
+      "lock_end_ms": 2840,
+      "hold_end_ms": 5440,
+      "exit_end_ms": 5860,
+      "frame_step_ms": 40
+    },
+    "repository-signal": {
+      "encoded_source_frames": 51,
+      "loop_duration_ms": 7200,
+      "start_ms": 1480,
+      "reveal_end_ms": 2900,
+      "lock_end_ms": 3040,
+      "hold_end_ms": 5500,
+      "exit_end_ms": 5920,
+      "frame_step_ms": 40
+    }
+  }
+}

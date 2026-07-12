@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="220" viewBox="0 0 900 220" role="img" aria-labelledby="title desc">
+<title id="title">Povvo repository signal</title>
+<desc id="desc">Last-push ages for 2 indexed public repositories belonging to @povvo.</desc>
+<defs>
+<linearGradient id="edge" x1="0" x2="1"><stop offset="0" stop-color="#0B2B34" stop-opacity="0"/><stop offset="1" stop-color="#0B2B34" stop-opacity="0.085"/></linearGradient>
+<pattern id="grain" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="2" cy="4" r=".45" fill="#DCE4DF"/><circle cx="13" cy="8" r=".35" fill="#DCE4DF"/><circle cx="7" cy="17" r=".3" fill="#DCE4DF"/></pattern>
+<style>
+.micro{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10px;font-weight:700;letter-spacing:1.1px;fill:#25343A}
+.micro9{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:9px;font-weight:700;letter-spacing:1px;fill:#25343A}
+.body{font-family:Inter,Arial,Helvetica,sans-serif;font-size:14px;font-weight:600;fill:#050706}
+.bodybold{font-family:Inter,Arial,Helvetica,sans-serif;font-size:14px;font-weight:700;fill:#050706}
+.display{font-family:Inter,Arial Narrow,Helvetica,sans-serif;font-size:27px;font-weight:900;font-style:italic;fill:#050706;font-variant-numeric:tabular-nums}
+.utility{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;font-weight:700;fill:#050706;font-variant-numeric:tabular-nums}
+.inverse{fill:#D8ECF8}
+</style>
+</defs>
+<rect width="900" height="220" fill="#F4F6F1"/>
+<rect width="900" height="220" fill="url(#grain)" opacity=".18"/>
+<rect x=".5" y=".5" width="899" height="219" fill="none" stroke="#6E9DB2" stroke-opacity=".72"/>
+<rect x="872" width="28" height="220" fill="url(#edge)"/>
+<text x="40" y="42" class="micro">REPOSITORY SIGNAL / 06</text>
+<path d="M40 53H70" stroke="#050706" stroke-width="1.25"/>
+<path d="M70 53H106" stroke="#6E9DB2" stroke-width=".8"/>
+<path d="M254 60H824" stroke="#6E9DB2" stroke-width=".8"/>
+<path d="M254.0 56.0V64.0" stroke="#6E9DB2" stroke-width=".7"/>
+<path d="M301.5 58.0V62.0" stroke="#6E9DB2" stroke-width=".7"/>
+<path d="M349.0 58.0V62.0" stroke="#6E9DB2" stroke-width=".7"/>
+<path d="M396.5 56.0V64.0" stroke="#6E9DB2" stroke-width=".7"/>
+<path d="M444.0 58.0V62.0" stroke="#6E9DB2" stroke-width=".7"/>
+<path d="M491.5 58.0V62.0" stroke="#6E9DB2" stroke-width=".7"/>
+<path d="M539.0 56.0V64.0" stroke="#6E9DB2" stroke-width=".7"/>
+<path d="M586.5 58.0V62.0" stroke="#6E9DB2" stroke-width=".7"/>
+<path d="M634.0 58.0V62.0" stroke="#6E9DB2" stroke-width=".7"/>
+<path d="M681.5 56.0V64.0" stroke="#6E9DB2" stroke-width=".7"/>
+<path d="M729.0 58.0V62.0" stroke="#6E9DB2" stroke-width=".7"/>
+<path d="M776.5 58.0V62.0" stroke="#6E9DB2" stroke-width=".7"/>
+<path d="M824.0 56.0V64.0" stroke="#6E9DB2" stroke-width=".7"/>
+<text x="254" y="50" class="micro9">120D</text>
+<text x="730" y="50" text-anchor="end" class="micro9">NOW / 0D</text>
+<text x="40" y="86" class="micro9">POVVO</text>
+<path d="M254 82H824" stroke="#DCE4DF" stroke-width="2"/>
+<path d="M824.00 82H824" stroke="#050706" stroke-width="2"/>
+<circle cx="824.00" cy="82" r="4" fill="#F4F6F1" stroke="#050706" stroke-width="2"/>
+<text x="846" y="86" text-anchor="end" class="micro9">00D</text>
+<text x="40" y="116" class="micro9">.GITHUB</text>
+<path d="M254 112H824" stroke="#DCE4DF" stroke-width="2"/>
+<path d="M824.00 112H824" stroke="#050706" stroke-width="2"/>
+<circle cx="824.00" cy="112" r="4" fill="#F4F6F1" stroke="#050706" stroke-width="2"/>
+<text x="846" y="116" text-anchor="end" class="micro9">00D</text>
+<path d="M814.0 70h5M814.0 70v5 M829.0 70h5M834.0 70v5 M814.0 89v5M814.0 94h5 M834.0 89v5M829.0 94h5" fill="none" stroke="#6E9DB2" stroke-width="1.1"/>
+<text x="40" y="209" class="micro9">LAST PUSH / AGE SPAN FROM NOW</text>
+</svg>
