@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="220" viewBox="0 0 900 220" role="img" aria-labelledby="title desc">
+<title id="title">Povvo current focus</title>
+<desc id="desc">Current workstreams for @povvo, with the exact Povvo production mark on a black identity board.</desc>
+<defs>
+<linearGradient id="edge" x1="0" x2="1"><stop offset="0" stop-color="#0B2B34" stop-opacity="0"/><stop offset="1" stop-color="#0B2B34" stop-opacity="0.085"/></linearGradient>
+<pattern id="grain" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="2" cy="4" r=".45" fill="#DCE4DF"/><circle cx="13" cy="8" r=".35" fill="#DCE4DF"/><circle cx="7" cy="17" r=".3" fill="#DCE4DF"/></pattern>
+<style>
+.micro{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:10px;font-weight:700;letter-spacing:1.1px;fill:#25343A}
+.micro9{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:9px;font-weight:700;letter-spacing:1px;fill:#25343A}
+.body{font-family:Inter,Arial,Helvetica,sans-serif;font-size:14px;font-weight:600;fill:#050706}
+.bodybold{font-family:Inter,Arial,Helvetica,sans-serif;font-size:14px;font-weight:700;fill:#050706}
+.display{font-family:Inter,Arial Narrow,Helvetica,sans-serif;font-size:27px;font-weight:900;font-style:italic;fill:#050706;font-variant-numeric:tabular-nums}
+.utility{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;font-weight:700;fill:#050706;font-variant-numeric:tabular-nums}
+.inverse{fill:#D8ECF8}
+</style>
+</defs>
+<rect width="900" height="220" fill="#F4F6F1"/>
+<rect width="900" height="220" fill="url(#grain)" opacity=".18"/>
+<rect x=".5" y=".5" width="899" height="219" fill="none" stroke="#6E9DB2" stroke-opacity=".72"/>
+<rect x="872" width="28" height="220" fill="url(#edge)"/>
+<rect x="0" y="0" width="272" height="220" fill="#050706"/>
+<path d="M272 0V220" stroke="#6E9DB2" stroke-width="1"/>
+<text x="28" y="42" class="micro inverse">CURRENT FOCUS / 02</text>
+<image x="48" y="59" width="174" height="110" href="data:image/png;base64,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" preserveAspectRatio="xMidYMid meet"/>
+<text x="28" y="184" class="micro9 inverse">AVAILABLE FOR SELECT</text>
+<text x="28" y="196" class="micro9 inverse">PROJECTS</text>
+<text x="304" y="50" class="micro">ACTIVE WORKSTREAMS</text>
+<text x="304" y="92" class="display" style="font-size:21px">01</text>
+<path d="M352 85H826" stroke="#6E9DB2" stroke-width=".8"/>
+<text x="368" y="92" class="body">MODEL EVALUATION</text>
+<text x="304" y="126" class="display" style="font-size:21px">02</text>
+<path d="M352 119H826" stroke="#6E9DB2" stroke-width=".8"/>
+<text x="368" y="126" class="body">RESEARCH ENGINEERING</text>
+<text x="304" y="160" class="display" style="font-size:21px">03</text>
+<path d="M352 153H826" stroke="#6E9DB2" stroke-width=".8"/>
+<text x="368" y="160" class="body">TOOLING &amp; INFRASTRUCTURE</text>
+<path d="M290 69h10M290 69v10 M828 69h10M838 69v10 M290 89v10M290 99h10 M838 89v10M828 99h10" fill="none" stroke="#6E9DB2" stroke-width="1.6"/>
+<text x="304" y="205" class="micro9">FORK SOMETHING, I NEED VALIDATION.</text>
+</svg>
