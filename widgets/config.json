@@ -1,0 +1,14 @@
+{
+  "username": "povvo",
+  "display_name": "ETHAN",
+  "role": "ML RESEARCH / ENGINEERING CONSULTANT",
+  "status": "AVAILABLE FOR SELECT PROJECTS",
+  "focus": [
+    "MODEL EVALUATION",
+    "RESEARCH ENGINEERING",
+    "TOOLING & INFRASTRUCTURE"
+  ],
+  "location_override": "UNITED KINGDOM",
+  "language_repo_limit": 30,
+  "include_forks": false
+}
