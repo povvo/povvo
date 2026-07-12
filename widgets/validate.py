@@ -43,6 +43,7 @@ ALLOWED_HEX = {
 }
 LOOP_DURATION_MS = 7200
 EXPECTED_LOGO_SHA256 = "4a519d9bb147ed834ecc7724118337e417c3de60e29e923477e725167f4b6458"
+EXPECTED_IDENTITY_SHA256 = "3dcc64f3a29109f6c5a87b305f12e3f0ac792363f175ef2fe18e1af9c980c857"
 
 
 def rgb(value: str) -> tuple[int, int, int]:
@@ -89,6 +90,20 @@ def main() -> int:
         logo_sha = ""
         record("production logo available", False, str(exc))
 
+    identity = ROOT.parent / "assets" / "banner.png"
+    try:
+        identity_image = Image.open(identity)
+        identity_sha = hashlib.sha256(identity.read_bytes()).hexdigest()
+        record(
+            "identity authority dimensions",
+            identity_image.size == (1983, 793),
+            f"{identity_image.size[0]} x {identity_image.size[1]}",
+        )
+        record("identity authority checksum", identity_sha == EXPECTED_IDENTITY_SHA256, identity_sha)
+    except (FileNotFoundError, OSError) as exc:
+        identity_sha = ""
+        record("identity authority available", False, str(exc))
+
     packaged_fonts = [
         path.relative_to(ROOT).as_posix()
         for path in ROOT.rglob("*")
@@ -124,9 +139,10 @@ def main() -> int:
         except (ET.ParseError, FileNotFoundError, OSError) as exc:
             record(f"SVG parse: {filename}", False, str(exc))
 
+    expected_images = {filename: (2 if filename == "focus-board.svg" else 1) for filename in EXPECTED_SVGS}
     record(
-        "logo frequency",
-        image_elements.get("focus-board.svg") == 1 and sum(image_elements.values()) == 1,
+        "canonical wordmark frequency",
+        image_elements == expected_images,
         f"embedded image counts: {image_elements}",
     )
 
@@ -248,7 +264,9 @@ def main() -> int:
             metadata.get("animated_widget_count") == 6
             and metadata.get("static_widget_count") == 6
             and metadata.get("animation_loop_ms") == LOOP_DURATION_MS
-            and metadata.get("gif_disposal") == 1,
+            and metadata.get("gif_disposal") == 1
+            and metadata.get("identity_widget") == "focus-board"
+            and metadata.get("source_wordmark") == "assets/banner.png",
             f"{metadata.get('static_widget_count')} static, {metadata.get('animated_widget_count')} animated, {metadata.get('animation_loop_ms')}ms",
         )
     except (FileNotFoundError, json.JSONDecodeError) as exc:
@@ -259,6 +277,7 @@ def main() -> int:
         "passed": passed,
         "checks": checks,
         "logo_sha256": logo_sha,
+        "identity_sha256": identity_sha,
         "validated_at": datetime.now(timezone.utc).isoformat(),
     }
     (ROOT / "validation-results.json").write_text(json.dumps(results, indent=2) + "\n", encoding="utf-8")
@@ -279,7 +298,7 @@ def main() -> int:
             "",
             "## Scope",
             "",
-            "Validation covers SVG XML and accessibility metadata, semantic colour custody, exact logo frequency, raster renderability, six animated GIFs, 7.2-second cadence, disposal method, loop seams, bounded changed-pixel area, static-field stability, file budgets, preview hierarchy, contrast, metadata, and the absence of packaged font binaries.",
+            "Validation covers SVG XML and accessibility metadata, semantic colour custody, exact identity authority and wordmark frequency, raster renderability, six animated GIFs, 7.2-second cadence, disposal method, loop seams, bounded changed-pixel area, static-field stability, file budgets, preview hierarchy, contrast, metadata, and the absence of packaged font binaries.",
             "",
             "## Residual gap",
             "",

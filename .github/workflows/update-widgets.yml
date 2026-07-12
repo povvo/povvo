@@ -12,6 +12,7 @@ on:
       - "widgets/config.json"
       - "widgets/requirements.txt"
       - "widgets/PROFILE-README.md"
+      - "assets/banner.png"
       - "assets/logo.png"
 
 permissions:
