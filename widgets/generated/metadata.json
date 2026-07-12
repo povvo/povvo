@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-12T19:13:59.066878+00:00",
+  "generated_at": "2026-07-12T20:35:49.615355+00:00",
   "username": "povvo",
   "demo": false,
   "static_widget_count": 6,
@@ -9,8 +9,9 @@
   "render_scale": 3,
   "gif_palette_colours": 192,
   "gif_disposal": 1,
-  "logo_widget": "focus-board",
+  "identity_widget": "focus-board",
   "source_logo": "assets/logo.png",
+  "source_wordmark": "assets/banner.png",
   "animations": {
     "contribution-scan": {
       "encoded_source_frames": 51,
