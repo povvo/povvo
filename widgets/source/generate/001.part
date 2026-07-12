@@ -1,0 +1,211 @@
+   return [], None
+    query = """
+    query($login: String!) {
+      user(login: $login) {
+        contributionsCollection {
+          contributionCalendar {
+            totalContributions
+            weeks { contributionDays { date contributionCount } }
+          }
+        }
+      }
+    }
+    """
+    payload = json.dumps({"query": query, "variables": {"login": username}}).encode(
+        "utf-8"
+    )
+    response = request_json("https://api.github.com/graphql", token, data=payload)
+    errors = response.get("errors") if isinstance(response, dict) else None
+    if errors:
+        raise RuntimeError(
+            f"GitHub GraphQL error: {errors[0].get('message', 'unknown error')}"
+        )
+    user = response.get("data", {}).get("user")
+    if not user:
+        return [], None
+    calendar = user["contributionsCollection"]["contributionCalendar"]
+    days: list[tuple[str, int]] = []
+    for week in calendar["weeks"]:
+        for day in week["contributionDays"]:
+            days.append((str(day["date"]), int(day["contributionCount"])))
+    return days[-364:], int(calendar["totalContributions"])
+
+
+def fetch_events(username: str, token: str | None) -> list[dict[str, str]]:
+    raw = request_json(
+        f"https://api.github.com/users/{username}/events/public?per_page=100", token
+    )
+    if not isinstance(raw, list):
+        return []
+    events: list[dict[str, str]] = []
+    for item in raw:
+        event_type = str(item.get("type") or "Event")
+        repo = str((item.get("repo") or {}).get("name") or "unknown/repository")
+        created_at = str(item.get("created_at") or "")
+        events.append(
+            {
+                "type": EVENT_LABELS.get(event_type, event_type.removesuffix("Event").upper()),
+                "repo": repo.split("/", 1)[-1],
+                "date": created_at[:10],
+            }
+        )
+        if len(events) >= 8:
+            break
+    return events
+
+
+def streaks(days: list[tuple[str, int]]) -> tuple[int | None, int | None]:
+    if not days:
+        return None, None
+    parsed = [(datetime.strptime(day, "%Y-%m-%d").date(), count) for day, count in days]
+    parsed.sort(key=lambda item: item[0])
+    longest = 0
+    run = 0
+    for _, count in parsed:
+        if count > 0:
+            run += 1
+            longest = max(longest, run)
+        else:
+            run = 0
+    by_date = {day: count for day, count in parsed}
+    cursor = date.today()
+    if by_date.get(cursor, 0) == 0:
+        cursor -= timedelta(days=1)
+    current = 0
+    while by_date.get(cursor, 0) > 0:
+        current += 1
+        cursor -= timedelta(days=1)
+    return current, longest
+
+
+def demo_data(config: dict[str, Any]) -> ProfileData:
+    today = date.today()
+    days: list[tuple[str, int]] = []
+    for index in range(364):
+        day = today - timedelta(days=363 - index)
+        count = 0 if (index * 7 + index // 11) % 9 < 4 else 1 + ((index * 13) % 6)
+        days.append((day.isoformat(), count))
+    repos = [
+        {
+            "name": "evaluation-lab",
+            "description": "MODEL EVALUATION TOOLING",
+            "stars": 72,
+            "forks": 14,
+            "pushed_at": (today - timedelta(days=2)).isoformat(),
+        },
+        {
+            "name": "trace-index",
+            "description": "RESEARCH TRACE SYSTEM",
+            "stars": 48,
+            "forks": 9,
+            "pushed_at": (today - timedelta(days=11)).isoformat(),
+        },
+        {
+            "name": "latent-probe",
+            "description": "REPRESENTATION ANALYSIS",
+            "stars": 39,
+            "forks": 11,
+            "pushed_at": (today - timedelta(days=29)).isoformat(),
+        },
+        {
+            "name": "dataset-audit",
+            "description": "DATASET INSPECTION",
+            "stars": 27,
+            "forks": 7,
+            "pushed_at": (today - timedelta(days=67)).isoformat(),
+        },
+    ]
+    events = [
+        {"type": "PUSH", "repo": "evaluation-lab", "date": today.isoformat()},
+        {"type": "REVIEW", "repo": "trace-index", "date": (today - timedelta(days=1)).isoformat()},
+        {"type": "PR", "repo": "latent-probe", "date": (today - timedelta(days=2)).isoformat()},
+        {"type": "ISSUE", "repo": "dataset-audit", "date": (today - timedelta(days=4)).isoformat()},
+        {"type": "CREATE", "repo": "evaluation-lab", "date": (today - timedelta(days=6)).isoformat()},
+        {"type": "PUSH", "repo": "trace-index", "date": (today - timedelta(days=8)).isoformat()},
+    ]
+    return ProfileData(
+        username=str(config.get("username") or "YOUR_USERNAME"),
+        display_name=str(config.get("display_name") or "YOUR NAME"),
+        role=str(config.get("role") or "ML RESEARCH / ENGINEERING"),
+        status=str(config.get("status") or "AVAILABLE FOR SELECT PROJECTS"),
+        location=str(config.get("location_override") or "LOCATION NOT SET"),
+        bio="PROFILE DATA WILL BE INDEXED AFTER CONFIGURATION",
+        public_repos=24,
+        followers=312,
+        stars=186,
+        forks=41,
+        top_repositories=repos,
+        languages=[
+            ("Python", 480000),
+            ("TypeScript", 260000),
+            ("Rust", 145000),
+            ("Jupyter", 72000),
+            ("Shell", 33000),
+        ],
+        contributions=days,
+        total_contributions=sum(count for _, count in days),
+        current_streak=11,
+        longest_streak=38,
+        focus=[str(item) for item in config.get("focus", [])][:4],
+        recent_events=events,
+        demo=True,
+    )
+
+
+def fetch_profile(config: dict[str, Any]) -> ProfileData:
+    username = str(config.get("username") or "").strip()
+    if not username or username.upper() == "YOUR_USERNAME":
+        return demo_data(config)
+
+    token = os.getenv("GITHUB_TOKEN") or os.getenv("GH_TOKEN")
+    user = request_json(f"https://api.github.com/users/{username}", token)
+    repos = fetch_repositories(username, token)
+    if not bool(config.get("include_forks", False)):
+        repos = [repo for repo in repos if not bool(repo.get("fork"))]
+
+    stars = sum(int(repo.get("stargazers_count", 0)) for repo in repos)
+    forks = sum(int(repo.get("forks_count", 0)) for repo in repos)
+    top_repositories: list[dict[str, Any]] = []
+    for repo in sorted(
+        repos,
+        key=lambda item: (
+            int(item.get("stargazers_count", 0)),
+            str(item.get("pushed_at", "")),
+        ),
+        reverse=True,
+    )[:4]:
+        top_repositories.append(
+            {
+                "name": str(repo.get("name") or "repository"),
+                "description": str(repo.get("description") or "NO DESCRIPTION").upper(),
+                "stars": int(repo.get("stargazers_count", 0)),
+                "forks": int(repo.get("forks_count", 0)),
+                "pushed_at": str(repo.get("pushed_at") or ""),
+            }
+        )
+
+    languages = fetch_languages(
+        repos, token, int(config.get("language_repo_limit", 30))
+    )
+    contributions: list[tuple[str, int]] = []
+    total_contributions: int | None = None
+    try:
+        contributions, total_contributions = fetch_contributions(username, token)
+    except RuntimeError as exc:
+        print(f"Warning: contribution data unavailable: {exc}", file=sys.stderr)
+    current_streak, longest_streak = streaks(contributions)
+    try:
+        events = fetch_events(username, token)
+    except RuntimeError as exc:
+        print(f"Warning: event data unavailable: {exc}", file=sys.stderr)
+        events = []
+
+    return ProfileData(
+        username=username,
+        display_name=str(config.get("display_name") or user.get("name") or username),
+        role=str(config.get("role") or "OPEN SOURCE PROFILE"),
+        status=str(config.get("status") or "INDEXED"),
+        location=str(config.get("location_override") or user.get("location") or "LOCATION NOT SET"),
+        bio=str(user.get("bio") or "PUBLIC WORK, REPOSITORIES, AND CONTRIBUTIONS"),
+        public_repos=int(user.get("public_repos", len(repos))),
+        followers=int(user.get("follo
