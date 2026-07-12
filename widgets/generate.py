@@ -33,6 +33,7 @@ DEFAULT_CONFIG = ROOT / "config.json"
 DEFAULT_OUTPUT = ROOT / "generated"
 PREVIEW_OUTPUT = ROOT / "preview"
 LOGO_SOURCE = ROOT.parent / "assets" / "logo.png"
+IDENTITY_SOURCE = ROOT.parent / "assets" / "banner.png"
 
 WIDTH = 900
 HEIGHT = 220
@@ -476,6 +477,57 @@ def image_data_uri(image: Image.Image) -> str:
     return f"data:image/png;base64,{payload}"
 
 
+def wordmark_image(
+    mask: Image.Image,
+    width: int,
+    colour: tuple[int, int, int],
+    *,
+    outline: bool = False,
+    opacity: int = 255,
+    outline_width: int = 5,
+) -> Image.Image:
+    """Render the canonical extracted wordmark without reconstructing its type."""
+    height = max(1, round(width * mask.height / mask.width))
+    resized = mask.resize((width, height), Image.Resampling.LANCZOS)
+    if outline:
+        filter_size = max(3, outline_width | 1)
+        dilated = resized.filter(ImageFilter.MaxFilter(filter_size))
+        eroded = resized.filter(ImageFilter.MinFilter(filter_size))
+        alpha = ImageChops.subtract(dilated, eroded)
+    else:
+        alpha = resized
+    if opacity < 255:
+        alpha = alpha.point(lambda value: round(value * opacity / 255))
+    rendered = Image.new("RGBA", resized.size, (*colour, 0))
+    rendered.putalpha(alpha)
+    return rendered
+
+
+def extract_wordmark_mask(source: Path) -> Image.Image:
+    if not source.exists():
+        raise SystemExit(f"Required identity authority is missing: {source}")
+    image = Image.open(source).convert("RGB")
+    if image.size != (1983, 793):
+        raise SystemExit(
+            f"Unexpected banner.png dimensions {image.size}; expected 1983 x 793"
+        )
+    crop = image.crop((320, 230, 1660, 570))
+    mask = Image.new("L", crop.size, 0)
+    source_pixels = crop.load()
+    mask_pixels = mask.load()
+    for y in range(crop.height):
+        for x in range(crop.width):
+            red, green, blue = source_pixels[x, y]
+            luminance = (299 * red + 587 * green + 114 * blue) // 1000
+            chroma = max(red, green, blue) - min(red, green, blue)
+            if luminance < 100 and chroma < 40:
+                mask_pixels[x, y] = max(0, min(255, round((105 - luminance) * 255 / 100)))
+    bounds = mask.getbbox()
+    if bounds is None:
+        raise SystemExit("The canonical banner does not contain a detectable POVVO wordmark")
+    return mask.crop(bounds)
+
+
 def load_logo_assets() -> dict[str, Any]:
     if not LOGO_SOURCE.exists():
         raise SystemExit(f"Required production logo is missing: {LOGO_SOURCE}")
@@ -509,11 +561,36 @@ def load_logo_assets() -> dict[str, Any]:
     alpha = mark.getchannel("A")
     inverse = Image.new("RGBA", mark.size, (*hex_rgb(TOKENS["text.inverse"]), 0))
     inverse.putalpha(alpha)
+    wordmark_mask = extract_wordmark_mask(IDENTITY_SOURCE)
+    wordmark_ink = wordmark_image(wordmark_mask, 430, hex_rgb(TOKENS["text.primary"]))
+    wordmark_inverse = wordmark_image(wordmark_mask, 430, hex_rgb(TOKENS["text.inverse"]))
+    wordmark_ghost = wordmark_image(
+        wordmark_mask,
+        980,
+        hex_rgb(TOKENS["border.hairline"]),
+        outline=True,
+        opacity=112,
+        outline_width=5,
+    )
+    wordmark_board = wordmark_image(
+        wordmark_mask,
+        980,
+        hex_rgb(TOKENS["scan.edge"]),
+        outline=True,
+        opacity=138,
+        outline_width=5,
+    )
     return {
         "mark": mark,
         "mark_inverse": inverse,
         "mark_uri": image_data_uri(mark),
         "mark_inverse_uri": image_data_uri(inverse),
+        "wordmark_mask": wordmark_mask,
+        "wordmark_ink_uri": image_data_uri(wordmark_ink),
+        "wordmark_inverse_uri": image_data_uri(wordmark_inverse),
+        "wordmark_ghost_uri": image_data_uri(wordmark_ghost),
+        "wordmark_board_uri": image_data_uri(wordmark_board),
+        "wordmark_ratio": wordmark_mask.width / wordmark_mask.height,
     }
 
 
@@ -758,16 +835,88 @@ def new_field(seed: int) -> Image.Image:
     return image
 
 
+def paste_wordmark(
+    image: Image.Image,
+    assets: dict[str, Any],
+    xy: tuple[float, float],
+    width: float,
+    *,
+    colour: tuple[int, int, int] = CYAN,
+    outline: bool = True,
+    opacity: int = 84,
+    outline_width: float = 2.0,
+) -> Image.Image:
+    layer = wordmark_image(
+        assets["wordmark_mask"],
+        sx(width),
+        colour,
+        outline=outline,
+        opacity=opacity,
+        outline_width=sr(outline_width),
+    )
+    image.paste(layer, (sx(xy[0]), sx(xy[1])), layer)
+    return layer
+
+
+def draw_ruler(
+    draw: ImageDraw.ImageDraw,
+    x0: float,
+    x1: float,
+    y: float,
+    *,
+    ticks: int = 18,
+    fill: tuple[int, int, int] = CYAN,
+) -> None:
+    draw_line(draw, (x0, y, x1, y), fill=mix(FIELD, fill, 0.58), width=0.65)
+    for index in range(ticks + 1):
+        x = lerp(x0, x1, index / max(1, ticks))
+        height = 8 if index % 6 == 0 else 4 if index % 3 == 0 else 2
+        draw_line(draw, (x, y - height / 2, x, y + height / 2), fill=mix(FIELD, fill, 0.76), width=0.7)
+
+
+def draw_registration_cross(
+    draw: ImageDraw.ImageDraw,
+    xy: tuple[float, float],
+    *,
+    size: float = 8,
+    fill: tuple[int, int, int] = CYAN,
+) -> None:
+    x, y = xy
+    draw_line(draw, (x - size, y, x + size, y), fill=fill, width=0.8)
+    draw_line(draw, (x, y - size, x, y + size), fill=fill, width=0.8)
+    draw.ellipse(
+        (sx(x - 1.4), sx(y - 1.4), sx(x + 1.4), sx(y + 1.4)),
+        outline=fill,
+        width=sr(0.7),
+    )
+
+
+def draw_signature_slashes(
+    draw: ImageDraw.ImageDraw,
+    xy: tuple[float, float],
+    *,
+    fill: tuple[int, int, int] = INK,
+) -> None:
+    x, y = xy
+    for index in range(4):
+        offset = index * 11
+        draw_line(draw, (x + offset, y + 8, x + offset + 7, y - 4), fill=fill, width=2.2)
+
+
 def draw_header(draw: ImageDraw.ImageDraw, title: str, number: int, data: ProfileData, *, x: float = 40) -> None:
-    tracked_text(draw, (x, 34), f"{title} / {number:02d}", size=10)
-    draw_line(draw, (x, 53, x + 30, 53), fill=INK, width=1.25)
-    draw_line(draw, (x + 30, 53, x + 66, 53), fill=mix(FIELD, CYAN, 0.82), width=0.8)
+    tracked_text(draw, (x, 28), title, size=10)
+    draw_text(draw, (846, 15), f"{number:02d}", role="display", size=34, fill=mix(FIELD, CYAN, 0.42), anchor="rt")
+    draw_line(draw, (x, 47, x + 34, 47), fill=INK, width=1.5)
+    draw_line(draw, (x + 34, 47, x + 76, 47), fill=mix(FIELD, CYAN, 0.82), width=0.8)
+    draw_ruler(draw, 560, 790, 30, ticks=18)
     if data.demo:
-        tracked_text(draw, (834, 34), "DEMO DATA", size=10, anchor="right")
+        tracked_text(draw, (528, 28), "DEMO DATA", size=9, anchor="right")
 
 
 def draw_footer(draw: ImageDraw.ImageDraw, label: str) -> None:
     tracked_text(draw, (40, 201), label, size=9)
+    draw_signature_slashes(draw, (792, 195))
+    draw_registration_cross(draw, (858, 197), size=6)
 
 
 def downsample(image: Image.Image) -> Image.Image:
@@ -880,16 +1029,53 @@ def svg_start(title: str, description: str) -> list[str]:
     ]
 
 
+def svg_wordmark(
+    lines: list[str],
+    href: str,
+    ratio: float,
+    *,
+    x: float,
+    y: float,
+    width: float,
+    opacity: float = 1.0,
+) -> None:
+    height = width / ratio
+    lines.append(
+        f'<image x="{x}" y="{y}" width="{width}" height="{height:.2f}" opacity="{opacity:.3f}" href="{href}" preserveAspectRatio="xMidYMid meet"/>'
+    )
+
+
+def svg_ruler(lines: list[str], x0: float, x1: float, y: float, *, ticks: int = 18) -> None:
+    lines.append(f'<path d="M{x0} {y}H{x1}" stroke="#6E9DB2" stroke-opacity=".58" stroke-width=".65"/>')
+    for index in range(ticks + 1):
+        x = lerp(x0, x1, index / max(1, ticks))
+        height = 8 if index % 6 == 0 else 4 if index % 3 == 0 else 2
+        lines.append(
+            f'<path d="M{x:.2f} {y-height/2:.2f}V{y+height/2:.2f}" stroke="#6E9DB2" stroke-opacity=".76" stroke-width=".7"/>'
+        )
+
+
+def svg_registration_cross(lines: list[str], x: float, y: float, *, size: float = 6) -> None:
+    lines.append(
+        f'<path d="M{x-size} {y}H{x+size}M{x} {y-size}V{y+size}" fill="none" stroke="#6E9DB2" stroke-width=".8"/>'
+    )
+    lines.append(f'<circle cx="{x}" cy="{y}" r="1.4" fill="none" stroke="#6E9DB2" stroke-width=".7"/>')
+
+
 def svg_header(lines: list[str], title: str, number: int, data: ProfileData, *, x: int = 40) -> None:
-    lines.append(f'<text x="{x}" y="42" class="micro">{escape(f"{title} / {number:02d}")}</text>')
-    lines.append(f'<path d="M{x} 53H{x+30}" stroke="#050706" stroke-width="1.25"/>')
-    lines.append(f'<path d="M{x+30} 53H{x+66}" stroke="#6E9DB2" stroke-width=".8"/>')
+    lines.append(f'<text x="{x}" y="36" class="micro">{escape(title)}</text>')
+    lines.append(f'<text x="846" y="42" text-anchor="end" class="display" style="font-size:34px;fill:#DCE4DF">{number:02d}</text>')
+    lines.append(f'<path d="M{x} 47H{x+34}" stroke="#050706" stroke-width="1.5"/>')
+    lines.append(f'<path d="M{x+34} 47H{x+76}" stroke="#6E9DB2" stroke-width=".8"/>')
+    svg_ruler(lines, 560, 790, 30, ticks=18)
     if data.demo:
-        lines.append('<text x="834" y="42" text-anchor="end" class="micro">DEMO DATA</text>')
+        lines.append('<text x="528" y="36" text-anchor="end" class="micro9">DEMO DATA</text>')
 
 
 def svg_footer(lines: list[str], label: str) -> None:
     lines.append(f'<text x="40" y="209" class="micro9">{escape(label)}</text>')
+    lines.append('<path d="M792 203l7-12m4 12 7-12m4 12 7-12m4 12 7-12" stroke="#050706" stroke-width="2.2"/>')
+    svg_registration_cross(lines, 858, 197, size=6)
 
 
 def svg_bracket(lines: list[str], box: tuple[float, float, float, float], *, corner: float = 9, width: float = 1.5) -> None:
@@ -903,11 +1089,12 @@ def svg_bracket(lines: list[str], box: tuple[float, float, float, float], *, cor
     lines.append(f'<path d="{" ".join(paths)}" fill="none" stroke="#6E9DB2" stroke-width="{width}"/>')
 
 
-def contribution_svg(data: ProfileData) -> str:
+def contribution_svg(data: ProfileData, assets: dict[str, Any]) -> str:
     lines = svg_start(
         "Povvo contribution scan",
         f"A measured 364-day contribution field with total and streak values for @{data.username}.",
     )
+    svg_wordmark(lines, assets["wordmark_ghost_uri"], assets["wordmark_ratio"], x=252, y=48, width=790, opacity=.42)
     svg_header(lines, "CONTRIBUTION SCAN", 1, data)
     stats = [("TOTAL", data.total_contributions), ("CURRENT", data.current_streak), ("LONGEST", data.longest_streak)]
     for index, (label, value) in enumerate(stats):
@@ -937,36 +1124,41 @@ def contribution_svg(data: ProfileData) -> str:
 def focus_svg(data: ProfileData, assets: dict[str, Any]) -> str:
     lines = svg_start(
         "Povvo current focus",
-        f"Current workstreams for @{data.username}, with the exact Povvo production mark on a black identity board.",
+        f"Current workstreams for @{data.username}, with the exact Povvo wordmark on a black identity board.",
     )
-    lines.append('<rect x="0" y="0" width="272" height="220" fill="#050706"/>')
-    lines.append('<path d="M272 0V220" stroke="#6E9DB2" stroke-width="1"/>')
-    lines.append('<text x="28" y="42" class="micro inverse">CURRENT FOCUS / 02</text>')
+    lines.append('<rect x="0" y="0" width="900" height="220" fill="#050706"/>')
+    lines.append('<rect x=".5" y=".5" width="899" height="219" fill="none" stroke="#6E9DB2" stroke-opacity=".82"/>')
+    svg_wordmark(lines, assets["wordmark_board_uri"], assets["wordmark_ratio"], x=-92, y=35, width=780, opacity=.94)
+    svg_wordmark(lines, assets["wordmark_inverse_uri"], assets["wordmark_ratio"], x=44, y=78, width=430, opacity=1)
+    lines.append('<path d="M548 34V188" stroke="#6E9DB2" stroke-opacity=".82"/>')
+    lines.append('<text x="32" y="36" class="micro inverse">POVVO / CURRENT FOCUS</text>')
+    lines.append('<text x="846" y="42" text-anchor="end" class="display" style="font-size:34px;fill:#0B2B34">02</text>')
+    svg_ruler(lines, 610, 790, 30, ticks=15)
     if data.demo:
-        lines.append('<text x="242" y="42" text-anchor="end" class="micro inverse">DEMO</text>')
-    lines.append(f'<image x="48" y="59" width="174" height="110" href="{assets["mark_inverse_uri"]}" preserveAspectRatio="xMidYMid meet"/>')
+        lines.append('<text x="520" y="36" text-anchor="end" class="micro9 inverse">DEMO</text>')
     status_lines = wrap_words(data.status, 22, 2)
     for index, value in enumerate(status_lines):
-        lines.append(f'<text x="28" y="{184 + index * 12}" class="micro9 inverse">{escape(value)}</text>')
-    lines.append('<text x="304" y="50" class="micro">ACTIVE WORKSTREAMS</text>')
+        lines.append(f'<text x="32" y="{192 + index * 12}" class="micro9 inverse">{escape(value)}</text>')
+    lines.append('<text x="582" y="64" class="micro inverse">ACTIVE WORKSTREAMS</text>')
     focus = (data.focus or ["NO FOCUS ITEMS CONFIGURED"])[:4]
     for index, item in enumerate(focus):
-        y = 75 + index * 34
-        lines.append(f'<text x="304" y="{y+17}" class="display" style="font-size:21px">{index+1:02d}</text>')
-        lines.append(f'<path d="M352 {y+10}H826" stroke="#6E9DB2" stroke-width=".8"/>')
-        lines.append(f'<text x="368" y="{y+17}" class="body">{escape(truncate(item.upper(), 42))}</text>')
-    svg_bracket(lines, (290, 69, 838, 99), corner=10, width=1.6)
-    lines.append(f'<text x="304" y="205" class="micro9">{escape(truncate(data.bio.upper(), 65))}</text>')
+        y = 82 + index * 31
+        lines.append(f'<text x="582" y="{y+17}" class="display inverse" style="font-size:19px">{index+1:02d}</text>')
+        lines.append(f'<path d="M622 {y+10}H846" stroke="#6E9DB2" stroke-opacity=".78" stroke-width=".8"/>')
+        lines.append(f'<text x="636" y="{y+17}" class="body inverse" style="font-size:12px">{escape(truncate(item.upper(), 28))}</text>')
+    svg_bracket(lines, (570, 78, 854, 108), corner=9, width=1.4)
+    lines.append(f'<text x="582" y="205" class="micro9 inverse">{escape(truncate(data.bio.upper(), 40))}</text>')
     lines.append("</svg>")
     return "\n".join(lines)
 
 
-def repository_index_svg(data: ProfileData) -> str:
+def repository_index_svg(data: ProfileData, assets: dict[str, Any]) -> str:
     repos = list(data.top_repositories[:4])
     lines = svg_start(
         "Povvo repository index",
         f"Repository totals and {len(repos)} indexed public repositories for @{data.username}.",
     )
+    svg_wordmark(lines, assets["wordmark_ghost_uri"], assets["wordmark_ratio"], x=-196, y=58, width=760, opacity=.34)
     svg_header(lines, "REPOSITORY INDEX", 3, data)
     lines.append('<path d="M310 64V187" stroke="#050706" stroke-width="2"/>')
     stats = [
@@ -993,12 +1185,13 @@ def repository_index_svg(data: ProfileData) -> str:
     lines.append("</svg>")
     return "\n".join(lines)
 
-def event_rail_svg(data: ProfileData) -> str:
+def event_rail_svg(data: ProfileData, assets: dict[str, Any]) -> str:
     events = list(data.recent_events[:6])
     lines = svg_start(
         "Povvo event rail",
         f"Up to six distinct recent public GitHub events for @{data.username}, ordered from most recent to oldest.",
     )
+    svg_wordmark(lines, assets["wordmark_ghost_uri"], assets["wordmark_ratio"], x=142, y=53, width=900, opacity=.34)
     svg_header(lines, "EVENT RAIL", 4, data)
     x0, x1, y = 72, 788, 86
     lines.append(f'<path d="M{x0} {y}H{x1}" stroke="#050706" stroke-width="1.8"/>')
@@ -1030,11 +1223,12 @@ def language_metrics(data: ProfileData) -> tuple[list[tuple[str, int]], list[flo
     maximum = max(10.0, math.ceil(max(percentages) / 10.0) * 10.0)
     return languages, percentages, maximum
 
-def code_spectrum_svg(data: ProfileData) -> str:
+def code_spectrum_svg(data: ProfileData, assets: dict[str, Any]) -> str:
     lines = svg_start(
         "Povvo code spectrum",
         f"Byte-weighted language proportions from public repositories for @{data.username}, or an explicit empty state when no language data is published.",
     )
+    svg_wordmark(lines, assets["wordmark_ghost_uri"], assets["wordmark_ratio"], x=-84, y=64, width=940, opacity=.30)
     svg_header(lines, "CODE SPECTRUM", 5, data)
     languages, percentages, scale_max = language_metrics(data)
     x0, x1 = 200, 744
@@ -1072,12 +1266,13 @@ def repo_age_days(repo: dict[str, Any]) -> int:
     return max(0, min(120, (date.today() - pushed_date).days))
 
 
-def repository_signal_svg(data: ProfileData) -> str:
+def repository_signal_svg(data: ProfileData, assets: dict[str, Any]) -> str:
     repos = list(data.top_repositories[:4])
     lines = svg_start(
         "Povvo repository signal",
         f"Last-push ages for {len(repos)} indexed public repositories belonging to @{data.username}.",
     )
+    svg_wordmark(lines, assets["wordmark_ghost_uri"], assets["wordmark_ratio"], x=208, y=68, width=850, opacity=.30)
     svg_header(lines, "REPOSITORY SIGNAL", 6, data)
     x0, x1 = 254, 824
     lines.append(f'<path d="M{x0} 60H{x1}" stroke="#6E9DB2" stroke-width=".8"/>')
@@ -1128,8 +1323,11 @@ def _paste_reveal(
     image.paste(crop, (sx(x0), sx(y0)), crop)
 
 
-def make_contribution_renderer(data: ProfileData, plan: MotionPlan) -> Callable[[int], Image.Image]:
+def make_contribution_renderer(
+    data: ProfileData, assets: dict[str, Any], plan: MotionPlan
+) -> Callable[[int], Image.Image]:
     base = new_field(201)
+    paste_wordmark(base, assets, (252, 48), 790, opacity=44, outline_width=2.0)
     draw = ImageDraw.Draw(base)
     draw_header(draw, "CONTRIBUTION SCAN", 1, data)
     stats = [("TOTAL", data.total_contributions), ("CURRENT", data.current_streak), ("LONGEST", data.longest_streak)]
@@ -1225,47 +1423,54 @@ def make_contribution_renderer(data: ProfileData, plan: MotionPlan) -> Callable[
     return renderer
 
 
-def _logo_layers(assets: dict[str, Any]) -> tuple[Image.Image, Image.Image]:
-    target_size = (sx(174), sx(110))
-    fill = assets["mark_inverse"].resize(target_size, Image.Resampling.LANCZOS)
-    alpha = fill.getchannel("A")
-    outer = alpha.filter(ImageFilter.MaxFilter(7))
-    inner = alpha.filter(ImageFilter.MinFilter(7))
-    edge = ImageChops.subtract(outer, inner)
-    outline = Image.new("RGBA", target_size, (*CYAN, 0))
-    outline.putalpha(edge)
+def _wordmark_layers(assets: dict[str, Any]) -> tuple[Image.Image, Image.Image]:
+    fill = wordmark_image(assets["wordmark_mask"], sx(430), INVERSE)
+    outline = wordmark_image(
+        assets["wordmark_mask"],
+        sx(780),
+        EDGE,
+        outline=True,
+        opacity=138,
+        outline_width=sr(2.0),
+    )
     return fill, outline
 
 
 def make_focus_renderer(data: ProfileData, assets: dict[str, Any], plan: MotionPlan) -> Callable[[int], Image.Image]:
-    base = new_field(203)
+    base = Image.new("RGB", (sx(WIDTH), sx(HEIGHT)), BLACK)
     draw = ImageDraw.Draw(base)
-    draw_rectangle(draw, (0, 0, 272, 220), fill=BLACK)
     rng = random.Random(203)
-    board_grain = mix(BLACK, INVERSE, 0.06)
-    for _ in range(90):
-        x = rng.randrange(sx(272))
+    board_grain = mix(BLACK, INVERSE, 0.055)
+    for _ in range(360):
+        x = rng.randrange(sx(WIDTH))
         y = rng.randrange(sx(220))
         draw.ellipse((x, y, x + 1, y + 1), fill=board_grain)
-    draw_line(draw, (272, 0, 272, 220), fill=CYAN, width=0.9)
-    tracked_text(draw, (28, 34), "CURRENT FOCUS / 02", fill=INVERSE, size=10)
+    draw_rectangle(draw, (0.5, 0.5, 899.5, 219.5), outline=CYAN, width=0.8)
+    fill_logo, outline_logo = _wordmark_layers(assets)
+    base.paste(outline_logo, (sx(-92), sx(35)), outline_logo)
+    draw = ImageDraw.Draw(base)
+    draw_line(draw, (548, 34, 548, 188), fill=CYAN, width=0.9)
+    tracked_text(draw, (32, 28), "POVVO / CURRENT FOCUS", fill=INVERSE, size=10)
+    draw_text(draw, (846, 15), "02", role="display", size=34, fill=EDGE, anchor="rt")
+    draw_ruler(draw, 610, 790, 30, ticks=15)
     if data.demo:
-        tracked_text(draw, (242, 34), "DEMO", fill=INVERSE, size=10, anchor="right")
+        tracked_text(draw, (520, 28), "DEMO", fill=INVERSE, size=9, anchor="right")
     status_lines = wrap_words(data.status, 22, 2)
     for index, value in enumerate(status_lines):
-        tracked_text(draw, (28, 176 + index * 12), value, fill=INVERSE, size=9)
-    tracked_text(draw, (304, 42), "ACTIVE WORKSTREAMS", size=10)
+        tracked_text(draw, (32, 192 + index * 12), value, fill=INVERSE, size=9)
+    tracked_text(draw, (582, 56), "ACTIVE WORKSTREAMS", fill=INVERSE, size=10)
     focus = (data.focus or ["NO FOCUS ITEMS CONFIGURED"])[:4]
     row_ys: list[float] = []
     for index, item in enumerate(focus):
-        y = 71 + index * 34
+        y = 82 + index * 31
         row_ys.append(y)
-        draw_text(draw, (304, y), f"{index+1:02d}", role="display", size=21)
-        draw_line(draw, (352, y + 10, 826, y + 10), fill=mix(FIELD, CYAN, 0.8), width=0.75)
-        draw_text(draw, (368, y + 1), truncate(item.upper(), 42), role="body", size=14)
-    tracked_text(draw, (304, 195), truncate(data.bio.upper(), 65), size=9)
-    fill_logo, outline_logo = _logo_layers(assets)
-    logo_xy = (sx(48), sx(59))
+        draw_text(draw, (582, y), f"{index+1:02d}", role="display", size=19, fill=INVERSE)
+        draw_line(draw, (622, y + 10, 846, y + 10), fill=mix(BLACK, CYAN, 0.82), width=0.75)
+        draw_text(draw, (636, y + 1), truncate(item.upper(), 28), role="body", size=12, fill=INVERSE)
+    tracked_text(draw, (582, 195), truncate(data.bio.upper(), 40), fill=INVERSE, size=9)
+    draw_signature_slashes(draw, (786, 195), fill=INVERSE)
+    draw_registration_cross(draw, (858, 197), size=6, fill=CYAN)
+    logo_xy = (sx(44), sx(78))
 
     def renderer(timestamp: int) -> Image.Image:
         image = base.copy()
@@ -1291,15 +1496,15 @@ def make_focus_renderer(data: ProfileData, assets: dict[str, Any], plan: MotionP
             image.paste(crop, logo_xy, crop)
 
         if entering:
-            scan_x = 48 + 174 * fill_amount
-            draw_scan_line(frame, scan_x, 54, 174, direction=1, background=BLACK)
+            scan_x = 44 + 430 * fill_amount
+            draw_scan_line(frame, scan_x, 68, 164, direction=1, background=BLACK)
             if row_ys:
                 scan_progress = clamp((timestamp - plan.start_ms) / (plan.reveal_end_ms - plan.start_ms))
                 scan_y = lerp(row_ys[0] - 6, row_ys[-1] + 28, scan_progress)
-                draw_line(frame, (286, scan_y, 840, scan_y), fill=mix(FIELD, CYAN, 0.86), width=1.0)
+                draw_line(frame, (566, scan_y, 854, scan_y), fill=mix(BLACK, CYAN, 0.86), width=1.0)
         elif exiting:
-            scan_x = 48 + 174 * fill_amount
-            draw_scan_line(frame, scan_x, 54, 174, direction=-1, background=BLACK)
+            scan_x = 44 + 430 * fill_amount
+            draw_scan_line(frame, scan_x, 68, 164, direction=-1, background=BLACK)
 
         if locking:
             bracket_amount = (timestamp - plan.reveal_end_ms) / max(1, plan.lock_end_ms - plan.reveal_end_ms)
@@ -1310,14 +1515,17 @@ def make_focus_renderer(data: ProfileData, assets: dict[str, Any], plan: MotionP
         else:
             bracket_amount = 0.0
         if row_ys:
-            draw_bracket(frame, (290, row_ys[0] - 2, 838, row_ys[0] + 28), amount=bracket_amount, corner=10, width=1.6)
+            draw_bracket(frame, (570, row_ys[0] - 4, 854, row_ys[0] + 26), amount=bracket_amount, corner=9, width=1.4)
         return downsample(image)
 
     return renderer
 
 
-def make_repository_index_renderer(data: ProfileData, plan: MotionPlan) -> Callable[[int], Image.Image]:
+def make_repository_index_renderer(
+    data: ProfileData, assets: dict[str, Any], plan: MotionPlan
+) -> Callable[[int], Image.Image]:
     base = new_field(205)
+    paste_wordmark(base, assets, (-196, 58), 760, opacity=36, outline_width=2.0)
     draw = ImageDraw.Draw(base)
     draw_header(draw, "REPOSITORY INDEX", 3, data)
     draw_line(draw, (310, 64, 310, 187), fill=INK, width=2)
@@ -1397,8 +1605,11 @@ def make_repository_index_renderer(data: ProfileData, plan: MotionPlan) -> Calla
 
     return renderer
 
-def make_event_rail_renderer(data: ProfileData, plan: MotionPlan) -> Callable[[int], Image.Image]:
+def make_event_rail_renderer(
+    data: ProfileData, assets: dict[str, Any], plan: MotionPlan
+) -> Callable[[int], Image.Image]:
     base = new_field(207)
+    paste_wordmark(base, assets, (142, 53), 900, opacity=36, outline_width=2.0)
     draw = ImageDraw.Draw(base)
     draw_header(draw, "EVENT RAIL", 4, data)
     events = list(data.recent_events[:6])
@@ -1474,8 +1685,11 @@ def make_event_rail_renderer(data: ProfileData, plan: MotionPlan) -> Callable[[i
 
     return renderer
 
-def make_code_spectrum_renderer(data: ProfileData, plan: MotionPlan) -> Callable[[int], Image.Image]:
+def make_code_spectrum_renderer(
+    data: ProfileData, assets: dict[str, Any], plan: MotionPlan
+) -> Callable[[int], Image.Image]:
     base = new_field(209)
+    paste_wordmark(base, assets, (-84, 64), 940, opacity=32, outline_width=2.0)
     draw = ImageDraw.Draw(base)
     draw_header(draw, "CODE SPECTRUM", 5, data)
     languages, percentages, scale_max = language_metrics(data)
@@ -1561,8 +1775,11 @@ def make_code_spectrum_renderer(data: ProfileData, plan: MotionPlan) -> Callable
 
     return renderer
 
-def make_repository_signal_renderer(data: ProfileData, plan: MotionPlan) -> Callable[[int], Image.Image]:
+def make_repository_signal_renderer(
+    data: ProfileData, assets: dict[str, Any], plan: MotionPlan
+) -> Callable[[int], Image.Image]:
     base = new_field(211)
+    paste_wordmark(base, assets, (208, 68), 850, opacity=32, outline_width=2.0)
     draw = ImageDraw.Draw(base)
     draw_header(draw, "REPOSITORY SIGNAL", 6, data)
     repos = list(data.top_repositories[:4])
@@ -1669,12 +1886,12 @@ def write_outputs(data: ProfileData, assets: dict[str, Any], output: Path) -> li
     PREVIEW_OUTPUT.mkdir(parents=True, exist_ok=True)
 
     svgs = {
-        "contribution-scan.svg": contribution_svg(data),
+        "contribution-scan.svg": contribution_svg(data, assets),
         "focus-board.svg": focus_svg(data, assets),
-        "repository-index.svg": repository_index_svg(data),
-        "event-rail.svg": event_rail_svg(data),
-        "code-spectrum.svg": code_spectrum_svg(data),
-        "repository-signal.svg": repository_signal_svg(data),
+        "repository-index.svg": repository_index_svg(data, assets),
+        "event-rail.svg": event_rail_svg(data, assets),
+        "code-spectrum.svg": code_spectrum_svg(data, assets),
+        "repository-signal.svg": repository_signal_svg(data, assets),
     }
     written: list[Path] = []
     for filename, content in svgs.items():
@@ -1683,12 +1900,12 @@ def write_outputs(data: ProfileData, assets: dict[str, Any], output: Path) -> li
         written.append(path)
 
     renderers = {
-        "contribution-scan": make_contribution_renderer(data, MOTION_PLANS["contribution-scan"]),
+        "contribution-scan": make_contribution_renderer(data, assets, MOTION_PLANS["contribution-scan"]),
         "focus-board": make_focus_renderer(data, assets, MOTION_PLANS["focus-board"]),
-        "repository-index": make_repository_index_renderer(data, MOTION_PLANS["repository-index"]),
-        "event-rail": make_event_rail_renderer(data, MOTION_PLANS["event-rail"]),
-        "code-spectrum": make_code_spectrum_renderer(data, MOTION_PLANS["code-spectrum"]),
-        "repository-signal": make_repository_signal_renderer(data, MOTION_PLANS["repository-signal"]),
+        "repository-index": make_repository_index_renderer(data, assets, MOTION_PLANS["repository-index"]),
+        "event-rail": make_event_rail_renderer(data, assets, MOTION_PLANS["event-rail"]),
+        "code-spectrum": make_code_spectrum_renderer(data, assets, MOTION_PLANS["code-spectrum"]),
+        "repository-signal": make_repository_signal_renderer(data, assets, MOTION_PLANS["repository-signal"]),
     }
 
     animation_metadata: dict[str, Any] = {}
@@ -1742,8 +1959,9 @@ def write_outputs(data: ProfileData, assets: dict[str, Any], output: Path) -> li
         "render_scale": RENDER_SCALE,
         "gif_palette_colours": GIF_PALETTE_COLOURS,
         "gif_disposal": 1,
-        "logo_widget": "focus-board",
+        "identity_widget": "focus-board",
         "source_logo": str(LOGO_SOURCE.relative_to(ROOT.parent)),
+        "source_wordmark": str(IDENTITY_SOURCE.relative_to(ROOT.parent)),
         "animations": animation_metadata,
     }
     metadata_path = output / "metadata.json"
