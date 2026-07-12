@@ -25,6 +25,9 @@ import {
 import { solverMetadata, strategyFor } from "./game/policy";
 
 const MATCH_TARGET = 7;
+const ACTION_BEAT_MS = 420;
+const AI_THINK_MS = 1200;
+const RESULT_LOCK_MS = 900;
 const app = getAppRoot();
 
 function getAppRoot(): HTMLDivElement {
@@ -56,6 +59,7 @@ interface GameState {
   history: History;
   humanScore: number;
   phase: Phase;
+  actionLocked: boolean;
   aiThinking: boolean;
   revealed: boolean;
   actions: ActionRecord[];
@@ -75,6 +79,7 @@ function createHand(hand: number, humanScore: number): GameState {
     history: "",
     humanScore,
     phase: "active",
+    actionLocked: false,
     aiThinking: false,
     revealed: false,
     actions: [],
@@ -113,7 +118,7 @@ function resetMatch(): void {
 }
 
 function commitAction(player: Player, action: ActionCode): void {
-  if (state.phase !== "active" || state.aiThinking) return;
+  if (state.phase !== "active" || state.actionLocked || state.aiThinking) return;
   const turn = activePlayer(state.history);
   if (turn !== player) return;
   clearTimer();
@@ -126,9 +131,13 @@ function commitAction(player: Player, action: ActionCode): void {
     label: actionLabel(history, action),
   });
   state.history = appendAction(history, action);
+  state.actionLocked = true;
   render();
 
-  timer = window.setTimeout(advanceTurn, 260);
+  timer = window.setTimeout(() => {
+    state.actionLocked = false;
+    advanceTurn();
+  }, ACTION_BEAT_MS);
 }
 
 function advanceTurn(): void {
@@ -154,7 +163,7 @@ function advanceTurn(): void {
       const action = sampleAction(strategy);
       state.lastAiDecision = { card, history, strategy, action };
       commitAction(aiPosition(), action);
-    }, 620);
+    }, AI_THINK_MS);
   } else {
     render(true);
   }
@@ -172,7 +181,7 @@ function settleHand(): void {
     state.revealed = true;
     state.phase = Math.abs(state.humanScore) >= MATCH_TARGET ? "complete" : "settled";
     render(true);
-  }, 520);
+  }, RESULT_LOCK_MS);
 }
 
 function statusCopy(): { eyebrow: string; title: string; detail: string } {
@@ -185,12 +194,42 @@ function statusCopy(): { eyebrow: string; title: string; detail: string } {
   }
 
   if (state.phase === "settled" || state.phase === "complete") {
-    const winner = state.handPayoff > 0 ? "YOU TAKE THE HAND" : "POVVO TAKES THE HAND";
+    const winner =
+      state.phase === "complete"
+        ? state.handPayoff > 0
+          ? "YOU WON THE MATCH"
+          : "YOU LOST THE MATCH"
+        : state.handPayoff > 0
+          ? "YOU WON THE HAND"
+          : "YOU LOST THE HAND";
     return {
       eyebrow: state.phase === "complete" ? "MATCH COMPLETE" : "HAND COMPLETE",
       title: winner,
       detail: `${formatSigned(state.handPayoff)} LEDGER / ${terminalDetail()}`,
     };
+  }
+
+  if (state.actionLocked) {
+    const next = activePlayer(state.history);
+    if (next === null) {
+      return {
+        eyebrow: "ACTION LOCKED / HAND CLOSED",
+        title: "RESULT PENDING",
+        detail: `POT ${potForHistory(state.history)} / TRACE ${historyLabel(state.history)}`,
+      };
+    }
+
+    return next === state.humanPosition
+      ? {
+          eyebrow: "POVVO / ACTION LOCKED",
+          title: "YOUR TURN NEXT",
+          detail: `POT ${potForHistory(state.history)} / TRACE ${historyLabel(state.history)}`,
+        }
+      : {
+          eyebrow: "YOU / ACTION LOCKED",
+          title: "PASSING TO POVVO",
+          detail: `POT ${potForHistory(state.history)} / TRACE ${historyLabel(state.history)}`,
+        };
   }
 
   if (state.aiThinking) {
@@ -226,8 +265,41 @@ function historyLabel(history: History): string {
 
 function terminalDetail(): string {
   if (!isTerminal(state.history)) return "";
-  if (state.history === "bp" || state.history === "pbp") return "FOLD / NO SHOWDOWN";
-  return `${cardLabel(state.cards[0])} : ${cardLabel(state.cards[1])} / SHOWDOWN`;
+  if (state.history === "bp" || state.history === "pbp") {
+    const folder = state.actions.at(-1);
+    return `${folder ? actorName(folder.player) : "PLAYER"} FOLDED / NO SHOWDOWN`;
+  }
+  return `YOU ${cardLabel(playerCard(state.humanPosition))} : POVVO ${cardLabel(playerCard(aiPosition()))} / SHOWDOWN`;
+}
+
+function resultMarkup(): string {
+  if (state.phase !== "settled" && state.phase !== "complete") return "";
+
+  const humanWon = state.handPayoff > 0;
+  const matchComplete = state.phase === "complete";
+  const title = matchComplete
+    ? humanWon
+      ? "YOU WON THE MATCH"
+      : "YOU LOST THE MATCH"
+    : humanWon
+      ? "YOU WON THE HAND"
+      : "YOU LOST THE HAND";
+  const eyebrow = matchComplete ? "MATCH RESULT / CONFIRMED" : `HAND ${String(state.hand).padStart(2, "0")} / RESULT`;
+
+  return `
+    <div class="hand-result hand-result--${humanWon ? "win" : "loss"}" role="status" aria-live="polite" aria-atomic="true">
+      <div class="hand-result__copy">
+        <span>${eyebrow}</span>
+        <strong>${title}</strong>
+        <small>${terminalDetail()}</small>
+      </div>
+      <div class="hand-result__score" aria-label="${formatSigned(state.handPayoff)} ledger points">
+        <span>LEDGER</span>
+        <b>${formatSigned(state.handPayoff)}</b>
+      </div>
+      <div class="hand-result__slashes" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    </div>
+  `;
 }
 
 function rulerTicks(count = 24): string {
@@ -324,7 +396,7 @@ function actionButtonsMarkup(): string {
   }
 
   const turn = activePlayer(state.history);
-  const unavailable = state.phase !== "active" || state.aiThinking || turn !== state.humanPosition;
+  const unavailable = state.phase !== "active" || state.actionLocked || state.aiThinking || turn !== state.humanPosition;
   if (unavailable) {
     return `
       <button class="spec-button" type="button" disabled>CHECK</button>
@@ -401,7 +473,7 @@ function render(focusPrimary = false): void {
           <section class="seat seat--povvo ${active === aiPosition() ? "seat--active" : ""}" aria-label="Povvo seat">
             <div class="seat-label seat-label--inverse">
               <span>POVVO / ${aiPosition() === 0 ? "OPEN" : "RESPONSE"}</span>
-              <strong>${state.aiThinking ? "INSPECTING" : active === aiPosition() ? "ACTING" : "LOCKED"}</strong>
+              <strong>${state.aiThinking ? "INSPECTING" : state.actionLocked && active === aiPosition() ? "RECEIVING" : active === aiPosition() ? "ACTING" : "LOCKED"}</strong>
             </div>
             ${cardMarkup(aiPosition(), !state.revealed)}
             ${solverTraceMarkup()}
@@ -419,16 +491,18 @@ function render(focusPrimary = false): void {
           <section class="seat seat--human ${active === state.humanPosition && state.phase === "active" ? "seat--active" : ""}" aria-label="Your seat">
             <div class="seat-label">
               <span>YOU / ${state.humanPosition === 0 ? "OPEN" : "RESPONSE"}</span>
-              <strong>${state.phase === "active" && active === state.humanPosition ? "YOUR ACTION" : `CARD ${cardLabel(humanCard)}`}</strong>
+              <strong>${state.phase === "active" && !state.actionLocked && active === state.humanPosition ? "YOUR ACTION" : `CARD ${cardLabel(humanCard)}`}</strong>
             </div>
             ${cardMarkup(state.humanPosition, false)}
             ${actionLogMarkup()}
           </section>
+
+          ${resultMarkup()}
         </section>
       </main>
 
       <footer class="action-rail">
-        <div class="turn-status" aria-live="polite">
+        <div class="turn-status" aria-live="${state.phase === "settled" || state.phase === "complete" ? "off" : "polite"}">
           <span>${status.eyebrow}</span>
           <strong>${status.title}</strong>
           <small>${status.detail}</small>
