@@ -1,0 +1,3 @@
+display_name: "Povvo Spec-Scan"
+short_description: "Apply Povvo measured spec-scan design language"
+default_prompt: "Use $povvo-design to apply the Povvo Spec-Scan design language. Read DESIGN.md first; preserve black/off-white dominance, pale cyan as instrument line only, compressed anchors, measured fields, scan/crop rules, accessibility states, and reject people, sport subject matter, saturated cyan fields, generic dark UI, and source-copying drift."
