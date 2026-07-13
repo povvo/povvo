@@ -4,7 +4,10 @@
 
 <p align="center">
   <a href="https://povvo.github.io/povvo/">
-    <img src="./poker/profile-preview.png" alt="Play Povvo Poker, a one-on-one Kuhn Poker table against the Povvo DCFR policy" width="100%">
+    <picture>
+      <source media="(prefers-reduced-motion: reduce)" srcset="./poker/profile-strip.png">
+      <img src="./poker/profile-strip.gif" alt="Enter Povvo Poker, a one-on-one Kuhn Poker table against the Povvo DCFR policy" width="100%">
+    </picture>
   </a>
 </p>
 

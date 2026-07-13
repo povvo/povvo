@@ -27,6 +27,17 @@ pnpm build
 
 The production build fails if the source checksum, policy distributions, known Kuhn game value, or exploitability gates drift.
 
+## Profile strip
+
+The linked profile invitation is generated from the production Povvo mark as a static reduced-motion poster and a one-shot animated GIF:
+
+```powershell
+python -m pip install -r ../widgets/requirements.txt
+python scripts/generate-profile-strip.py
+```
+
+The GIF stops on the ace after 4.65 seconds; it does not loop. The profile serves the matching PNG when reduced motion is requested.
+
 ## Deployment
 
 The profile repository verifies pull requests and deploys `dist/` from `main` through GitHub Actions. The public table is served at [povvo.github.io/povvo](https://povvo.github.io/povvo/).

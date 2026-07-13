@@ -244,7 +244,7 @@
     {
       "name": "GIF size: event-rail.gif",
       "passed": true,
-      "detail": "97.1 KiB"
+      "detail": "97.5 KiB"
     },
     {
       "name": "GIF loop seam: event-rail.gif",
@@ -254,7 +254,7 @@
     {
       "name": "GIF bounded motion: event-rail.gif",
       "passed": true,
-      "detail": "median 0.60%, maximum 0.96% pixels changed"
+      "detail": "median 0.61%, maximum 0.96% pixels changed"
     },
     {
       "name": "GIF static-field stability: event-rail.gif",
@@ -289,7 +289,7 @@
     {
       "name": "GIF bounded motion: code-spectrum.gif",
       "passed": true,
-      "detail": "median 0.64%, maximum 2.69% pixels changed"
+      "detail": "median 0.64%, maximum 2.77% pixels changed"
     },
     {
       "name": "GIF static-field stability: code-spectrum.gif",
@@ -334,7 +334,7 @@
     {
       "name": "aggregate GIF budget",
       "passed": true,
-      "detail": "606.6 KiB across 6 animations"
+      "detail": "606.9 KiB across 6 animations"
     },
     {
       "name": "preview dimensions: contribution-scan.png",
@@ -404,12 +404,12 @@
     {
       "name": "black/off-white dominance: code-spectrum.png",
       "passed": true,
-      "detail": "87.61%"
+      "detail": "87.62%"
     },
     {
       "name": "cyan subordination: code-spectrum.png",
       "passed": true,
-      "detail": "0.026%"
+      "detail": "0.020%"
     },
     {
       "name": "preview dimensions: repository-signal.png",
@@ -449,5 +449,5 @@
   ],
   "logo_sha256": "4a519d9bb147ed834ecc7724118337e417c3de60e29e923477e725167f4b6458",
   "identity_sha256": "3dcc64f3a29109f6c5a87b305f12e3f0ac792363f175ef2fe18e1af9c980c857",
-  "validated_at": "2026-07-12T22:50:02.141454+00:00"
+  "validated_at": "2026-07-12T23:53:02.119179+00:00"
 }
