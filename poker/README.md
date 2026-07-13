@@ -1,0 +1,47 @@
+# Povvo Poker
+
+A compact 1v1 Kuhn Poker game played against a deterministic DCFR policy in the Povvo design language.
+
+## Solver
+
+`solver/toy_dcfr.lua` contains a standalone Discounted Counterfactual Regret Minimization implementation for abstract poker games. The build executes its Kuhn Poker solver through Wasmoon for 10,000 iterations, validates the source checksum and game-theoretic metrics, then exports the policy consumed by the browser game.
+
+## Run locally
+
+```powershell
+corepack enable
+pnpm install --frozen-lockfile
+pnpm dev
+```
+
+The local server prints its URL after the policy export completes.
+
+## Validate
+
+```powershell
+pnpm test
+pnpm build
+```
+
+The production build fails if the source checksum, policy distributions, known Kuhn game value, or exploitability gates drift.
+
+## Profile strip
+
+The linked profile invitation is generated from the production Povvo mark as a static reduced-motion poster and a one-shot animated GIF:
+
+```powershell
+python -m pip install -r ../widgets/requirements.txt
+python scripts/generate-profile-strip.py
+```
+
+The GIF stops on the ace after 4.65 seconds; it does not loop. The profile serves the matching PNG when reduced motion is requested.
+
+## Deployment
+
+The profile repository verifies pull requests and deploys `dist/` from `main` through GitHub Actions. The public table is served at [povvo.github.io/povvo](https://povvo.github.io/povvo/).
+
+## Play
+
+Each player antes one point and receives one card from J, Q, and K. Players may check or bet; after a bet, the response is fold or call. The highest card wins at showdown. Position alternates each hand, and the first side to lead the ledger by seven points wins the match.
+
+Use the visible controls or press `1` and `2` for the available actions. Press `N` for the next hand.
