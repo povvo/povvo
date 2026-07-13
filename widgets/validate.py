@@ -19,6 +19,7 @@ from PIL import Image, ImageChops, ImageSequence, ImageStat
 ROOT = Path(__file__).resolve().parent
 GENERATED = ROOT / "generated"
 PREVIEW = ROOT / "preview"
+PROFILE_ASSETS = ROOT.parent / "assets" / "widgets"
 EXPECTED_NAMES = [
     "contribution-scan",
     "focus-board",
@@ -29,6 +30,7 @@ EXPECTED_NAMES = [
 ]
 EXPECTED_SVGS = [f"{name}.svg" for name in EXPECTED_NAMES]
 EXPECTED_GIFS = [f"{name}.gif" for name in EXPECTED_NAMES]
+TELEMETRY_REEL_LOOP_MS = 13_680
 ALLOWED_HEX = {
     "#F4F6F1",
     "#DCE4DF",
@@ -146,6 +148,19 @@ def main() -> int:
         f"embedded image counts: {image_elements}",
     )
 
+    for filename in EXPECTED_SVGS:
+        generated_svg = GENERATED / filename
+        profile_svg = PROFILE_ASSETS / filename
+        try:
+            identical = generated_svg.read_bytes() == profile_svg.read_bytes()
+            record(
+                f"profile SVG parity: {filename}",
+                identical,
+                "matches generated source" if identical else "asset copy has drifted",
+            )
+        except FileNotFoundError as exc:
+            record(f"profile SVG parity: {filename}", False, str(exc))
+
     magick = shutil.which("magick")
     if magick:
         with tempfile.TemporaryDirectory() as temporary_directory:
@@ -232,6 +247,52 @@ def main() -> int:
         f"{total_gif_bytes / 1024:.1f} KiB across {len(EXPECTED_GIFS)} animations",
     )
 
+    reel_path = PROFILE_ASSETS / "telemetry-reel.gif"
+    try:
+        reel = Image.open(reel_path)
+        reel_frames: list[Image.Image] = []
+        reel_durations: list[int] = []
+        reel_disposals: list[int | None] = []
+        for index in range(reel.n_frames):
+            reel.seek(index)
+            reel_frames.append(reel.convert("RGB").copy())
+            reel_durations.append(int(reel.info.get("duration", 0)))
+            reel_disposals.append(getattr(reel, "disposal_method", None))
+        reel_duration = sum(reel_durations)
+        record(
+            "telemetry reel dimensions",
+            reel.size == (900, 220),
+            f"{reel.size[0]} x {reel.size[1]}",
+        )
+        record(
+            "telemetry reel cadence",
+            36 <= len(reel_frames) <= 60
+            and reel_duration == TELEMETRY_REEL_LOOP_MS
+            and reel.info.get("loop") == 0,
+            f"{len(reel_frames)} frames, {reel_duration}ms, loop={reel.info.get('loop')}",
+        )
+        record(
+            "telemetry reel disposal",
+            set(reel_disposals) == {1},
+            f"disposal methods {sorted({value for value in reel_disposals if value is not None})}",
+        )
+        reel_size = reel_path.stat().st_size
+        record(
+            "telemetry reel size",
+            reel_size <= 1_500_000,
+            f"{reel_size / 1024:.1f} KiB",
+        )
+        seam_rms = max(
+            ImageStat.Stat(ImageChops.difference(reel_frames[0], reel_frames[-1])).rms
+        )
+        record(
+            "telemetry reel loop seam",
+            seam_rms <= 0.5,
+            f"maximum channel RMS {seam_rms:.3f}",
+        )
+    except (FileNotFoundError, OSError) as exc:
+        record("telemetry reel open", False, str(exc))
+
     field = rgb("#F4F6F1")
     ink = rgb("#050706")
     cyan = rgb("#6E9DB2")
@@ -272,6 +333,20 @@ def main() -> int:
     except (FileNotFoundError, json.JSONDecodeError) as exc:
         record("metadata contract", False, str(exc))
 
+    profile_source = ROOT / "PROFILE-README.md"
+    try:
+        profile_markup = profile_source.read_text(encoding="utf-8")
+        record(
+            "profile telemetry composition",
+            profile_markup.count("telemetry-reel.gif") == 1
+            and "./assets/widgets/focus-board.svg" in profile_markup
+            and '<a href="./assets/widgets/">' in profile_markup
+            and "./widgets/generated/" not in profile_markup,
+            "one linked reel with a static focus fallback",
+        )
+    except FileNotFoundError as exc:
+        record("profile telemetry composition", False, str(exc))
+
     passed = all(bool(check["passed"]) for check in checks)
     results = {
         "passed": passed,
@@ -298,7 +373,7 @@ def main() -> int:
             "",
             "## Scope",
             "",
-            "Validation covers SVG XML and accessibility metadata, semantic colour custody, exact identity authority and wordmark frequency, raster renderability, six animated GIFs, 7.2-second cadence, disposal method, loop seams, bounded changed-pixel area, static-field stability, file budgets, preview hierarchy, contrast, metadata, and the absence of packaged font binaries.",
+            "Validation covers SVG XML and accessibility metadata, profile-gallery parity, semantic colour custody, exact identity authority and wordmark frequency, raster renderability, individual and consolidated GIF cadence, disposal methods, loop seams, bounded changed-pixel area, static-field stability, file budgets, preview hierarchy, profile composition, contrast, metadata, and the absence of packaged font binaries.",
             "",
             "## Residual gap",
             "",

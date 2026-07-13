@@ -122,6 +122,36 @@
       "detail": "embedded image counts: {'contribution-scan.svg': 1, 'focus-board.svg': 2, 'repository-index.svg': 1, 'event-rail.svg': 1, 'code-spectrum.svg': 1, 'repository-signal.svg': 1}"
     },
     {
+      "name": "profile SVG parity: contribution-scan.svg",
+      "passed": true,
+      "detail": "matches generated source"
+    },
+    {
+      "name": "profile SVG parity: focus-board.svg",
+      "passed": true,
+      "detail": "matches generated source"
+    },
+    {
+      "name": "profile SVG parity: repository-index.svg",
+      "passed": true,
+      "detail": "matches generated source"
+    },
+    {
+      "name": "profile SVG parity: event-rail.svg",
+      "passed": true,
+      "detail": "matches generated source"
+    },
+    {
+      "name": "profile SVG parity: code-spectrum.svg",
+      "passed": true,
+      "detail": "matches generated source"
+    },
+    {
+      "name": "profile SVG parity: repository-signal.svg",
+      "passed": true,
+      "detail": "matches generated source"
+    },
+    {
       "name": "GIF dimensions: contribution-scan.gif",
       "passed": true,
       "detail": "900 x 220"
@@ -337,6 +367,31 @@
       "detail": "604.9 KiB across 6 animations"
     },
     {
+      "name": "telemetry reel dimensions",
+      "passed": true,
+      "detail": "900 x 220"
+    },
+    {
+      "name": "telemetry reel cadence",
+      "passed": true,
+      "detail": "44 frames, 13680ms, loop=0"
+    },
+    {
+      "name": "telemetry reel disposal",
+      "passed": true,
+      "detail": "disposal methods [1]"
+    },
+    {
+      "name": "telemetry reel size",
+      "passed": true,
+      "detail": "312.7 KiB"
+    },
+    {
+      "name": "telemetry reel loop seam",
+      "passed": true,
+      "detail": "maximum channel RMS 0.339"
+    },
+    {
       "name": "preview dimensions: contribution-scan.png",
       "passed": true,
       "detail": "900 x 220"
@@ -389,7 +444,7 @@
     {
       "name": "black/off-white dominance: event-rail.png",
       "passed": true,
-      "detail": "95.98%"
+      "detail": "95.96%"
     },
     {
       "name": "cyan subordination: event-rail.png",
@@ -445,9 +500,14 @@
       "name": "metadata contract",
       "passed": true,
       "detail": "6 static, 6 animated, 7200ms"
+    },
+    {
+      "name": "profile telemetry composition",
+      "passed": true,
+      "detail": "one linked reel with a static focus fallback"
     }
   ],
   "logo_sha256": "4a519d9bb147ed834ecc7724118337e417c3de60e29e923477e725167f4b6458",
   "identity_sha256": "3dcc64f3a29109f6c5a87b305f12e3f0ac792363f175ef2fe18e1af9c980c857",
-  "validated_at": "2026-07-13T00:07:10.554282+00:00"
+  "validated_at": "2026-07-13T00:31:27.937544+00:00"
 }
