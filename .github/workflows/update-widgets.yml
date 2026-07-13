@@ -8,12 +8,14 @@ on:
     paths:
       - "widgets/source-parts/**"
       - "widgets/generate.py"
+      - "widgets/generate-reel.py"
       - "widgets/validate.py"
       - "widgets/config.json"
       - "widgets/requirements.txt"
       - "widgets/PROFILE-README.md"
       - "assets/banner.png"
       - "assets/logo.png"
+      - "assets/widgets/README.md"
 
 permissions:
   contents: write
@@ -54,6 +56,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python widgets/generate.py --config widgets/config.json --output widgets/generated
+      - name: Assemble telemetry reel and gallery
+        run: python widgets/generate-reel.py
       - name: Validate widgets
         run: python widgets/validate.py
       - name: Publish profile

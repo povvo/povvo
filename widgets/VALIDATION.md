@@ -28,6 +28,12 @@ Overall: **PASS**
 | SVG accessibility: repository-signal.svg | PASS | title, description, and ARIA binding present |
 | SVG token palette: repository-signal.svg | PASS | semantic palette only |
 | canonical wordmark frequency | PASS | embedded image counts: {'contribution-scan.svg': 1, 'focus-board.svg': 2, 'repository-index.svg': 1, 'event-rail.svg': 1, 'code-spectrum.svg': 1, 'repository-signal.svg': 1} |
+| profile SVG parity: contribution-scan.svg | PASS | matches generated source |
+| profile SVG parity: focus-board.svg | PASS | matches generated source |
+| profile SVG parity: repository-index.svg | PASS | matches generated source |
+| profile SVG parity: event-rail.svg | PASS | matches generated source |
+| profile SVG parity: code-spectrum.svg | PASS | matches generated source |
+| profile SVG parity: repository-signal.svg | PASS | matches generated source |
 | GIF dimensions: contribution-scan.gif | PASS | 900 x 220 |
 | GIF cadence: contribution-scan.gif | PASS | 50 encoded frames, 7200ms loop, delays [40, 480, 1640, 3200] |
 | GIF disposal: contribution-scan.gif | PASS | disposal methods [1] |
@@ -71,6 +77,11 @@ Overall: **PASS**
 | GIF bounded motion: repository-signal.gif | PASS | median 0.61%, maximum 0.76% pixels changed |
 | GIF static-field stability: repository-signal.gif | PASS | unchanged calibration field |
 | aggregate GIF budget | PASS | 604.9 KiB across 6 animations |
+| telemetry reel dimensions | PASS | 900 x 220 |
+| telemetry reel cadence | PASS | 44 frames, 13680ms, loop=0 |
+| telemetry reel disposal | PASS | disposal methods [1] |
+| telemetry reel size | PASS | 312.7 KiB |
+| telemetry reel loop seam | PASS | maximum channel RMS 0.338 |
 | preview dimensions: contribution-scan.png | PASS | 900 x 220 |
 | black/off-white dominance: contribution-scan.png | PASS | 88.79% |
 | cyan subordination: contribution-scan.png | PASS | 0.018% |
@@ -93,10 +104,11 @@ Overall: **PASS**
 | micro text contrast | PASS | 11.83:1 |
 | inverse text contrast | PASS | 16.62:1 |
 | metadata contract | PASS | 6 static, 6 animated, 7200ms |
+| profile telemetry composition | PASS | one linked reel with a static focus fallback |
 
 ## Scope
 
-Validation covers SVG XML and accessibility metadata, semantic colour custody, exact identity authority and wordmark frequency, raster renderability, six animated GIFs, 7.2-second cadence, disposal method, loop seams, bounded changed-pixel area, static-field stability, file budgets, preview hierarchy, contrast, metadata, and the absence of packaged font binaries.
+Validation covers SVG XML and accessibility metadata, profile-gallery parity, semantic colour custody, exact identity authority and wordmark frequency, raster renderability, individual and consolidated GIF cadence, disposal methods, loop seams, bounded changed-pixel area, static-field stability, file budgets, preview hierarchy, profile composition, contrast, metadata, and the absence of packaged font binaries.
 
 ## Residual gap
 
