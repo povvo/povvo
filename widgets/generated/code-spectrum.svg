@@ -56,32 +56,32 @@
 <path d="M689.6 54.0V58.0" stroke="#6E9DB2" stroke-width=".7"/>
 <path d="M744.0 52.0V60.0" stroke="#6E9DB2" stroke-width=".7"/>
 <text x="200" y="49" class="micro9">0</text>
-<text x="744" y="49" text-anchor="end" class="micro9">60% SCALE</text>
+<text x="744" y="49" text-anchor="end" class="micro9">80% SCALE</text>
 <text x="40" y="80" class="micro">PYTHON</text>
 <path d="M200 76H744" stroke="#DCE4DF" stroke-width="10"/>
-<path d="M200 76H698.77" stroke="#050706" stroke-width="10"/>
-<path d="M698.77 68V84" stroke="#6E9DB2" stroke-width="1.2"/>
-<text x="834" y="80" text-anchor="end" class="utility">55.0%</text>
-<text x="40" y="105" class="micro">LUA</text>
+<path d="M200 76H676.36" stroke="#050706" stroke-width="10"/>
+<path d="M676.36 68V84" stroke="#6E9DB2" stroke-width="1.2"/>
+<text x="834" y="80" text-anchor="end" class="utility">70.1%</text>
+<text x="40" y="105" class="micro">TYPESCRIPT</text>
 <path d="M200 101H744" stroke="#DCE4DF" stroke-width="10"/>
-<path d="M200 101H331.36" stroke="#050706" stroke-width="10"/>
-<path d="M331.36 93V109" stroke="#6E9DB2" stroke-width="1.2"/>
-<text x="834" y="105" text-anchor="end" class="utility">14.5%</text>
-<text x="40" y="130" class="micro">CSS</text>
+<path d="M200 101H385.84" stroke="#050706" stroke-width="10"/>
+<path d="M385.84 93V109" stroke="#6E9DB2" stroke-width="1.2"/>
+<text x="834" y="105" text-anchor="end" class="utility">27.3%</text>
+<text x="40" y="130" class="micro">LUA</text>
 <path d="M200 126H744" stroke="#DCE4DF" stroke-width="10"/>
-<path d="M200 126H330.18" stroke="#050706" stroke-width="10"/>
-<path d="M330.18 118V134" stroke="#6E9DB2" stroke-width="1.2"/>
-<text x="834" y="130" text-anchor="end" class="utility">14.4%</text>
-<text x="40" y="155" class="micro">TYPESCRIPT</text>
+<path d="M200 126H207.70" stroke="#050706" stroke-width="10"/>
+<path d="M207.70 118V134" stroke="#6E9DB2" stroke-width="1.2"/>
+<text x="834" y="130" text-anchor="end" class="utility">01.1%</text>
+<text x="40" y="155" class="micro">CSS</text>
 <path d="M200 151H744" stroke="#DCE4DF" stroke-width="10"/>
-<path d="M200 151H326.51" stroke="#050706" stroke-width="10"/>
-<path d="M326.51 143V159" stroke="#6E9DB2" stroke-width="1.2"/>
-<text x="834" y="155" text-anchor="end" class="utility">14.0%</text>
+<path d="M200 151H207.63" stroke="#050706" stroke-width="10"/>
+<path d="M207.63 143V159" stroke="#6E9DB2" stroke-width="1.2"/>
+<text x="834" y="155" text-anchor="end" class="utility">01.1%</text>
 <text x="40" y="180" class="micro">JAVASCRIPT</text>
 <path d="M200 176H744" stroke="#DCE4DF" stroke-width="10"/>
-<path d="M200 176H219.84" stroke="#050706" stroke-width="10"/>
-<path d="M219.84 168V184" stroke="#6E9DB2" stroke-width="1.2"/>
-<text x="834" y="180" text-anchor="end" class="utility">02.2%</text>
+<path d="M200 176H202.47" stroke="#050706" stroke-width="10"/>
+<path d="M202.47 168V184" stroke="#6E9DB2" stroke-width="1.2"/>
+<text x="834" y="180" text-anchor="end" class="utility">00.4%</text>
 <text x="40" y="209" class="micro9">BYTE-WEIGHTED / PUBLIC REPOSITORIES</text>
 <path d="M792 203l7-12m4 12 7-12m4 12 7-12m4 12 7-12" stroke="#050706" stroke-width="2.2"/>
 <path d="M852 197H864M858 191V203" fill="none" stroke="#6E9DB2" stroke-width=".8"/>
