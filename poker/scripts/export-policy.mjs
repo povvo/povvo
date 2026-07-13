@@ -8,7 +8,7 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const SOLVER_PATH = resolve(ROOT, "solver", "toy_dcfr.lua");
 const OUTPUT_PATH = resolve(ROOT, "src", "game", "kuhn-policy.generated.json");
 const EXPECTED_SOURCE_SHA256 =
-  "091191fae5c7aa6f85327dbf101bfb58dbe8f7d39a151570182ad4aa262e8920";
+  "bca1b39e2dc41b64ba1308a46b3191469a11db61c7a4f002a3995c5131d57e44";
 const ITERATIONS = 10_000;
 
 const COMPATIBILITY_MODULES = String.raw`

@@ -1,10 +1,7 @@
--- engines/test/toy_dcfr.lua
+-- toy_dcfr.lua
 -- Standalone DCFR solver for abstract toy poker games (Kuhn, AKQ, Leduc).
--- Shares the EXACT same DCFR update math as cfr_solver.lua (ETH-6):
---   α=1.5, β=0, γ=2 (Brown & Sandholm, AAAI 2019)
--- but operates on abstract info sets (card + action history) rather than
--- real poker hand combos. This isolates the algorithm validation from
--- the card-encoding and tree-building logic of the production solver.
+-- Uses α=1.5, β=0, γ=2 from Brown & Sandholm (AAAI 2019) and abstract
+-- information sets keyed by card and action history.
 --
 -- SciLua integration:
 --   sci.stat.olmean(0) — Welford online mean for O(1) convergence tracking
@@ -12,8 +9,7 @@
 --   Standard math.pow/max retained for DCFR discounts (LuaJIT trace-compiles
 --   these to native machine code; wrapping in sci.math adds no benefit).
 --
--- Created for: ETH-7 (Validate DCFR on Kuhn / AKQ / Leduc toy games)
--- Source: Kuhn (1950), Chen & Ankenman (2006), Southey et al. (2005)
+-- References: Kuhn (1950), Chen & Ankenman (2006), Southey et al. (2005)
 
 local stat = require('sci.stat')
 local prng = require('sci.prng')
@@ -23,7 +19,7 @@ local M = {}
 -- ── Module-level PRNG ─────────────────────────────────────────────────────
 -- SciLua LFIB4 (period 2^287, proven equidistribution).
 -- The toy solvers enumerate all card deals exhaustively, so this PRNG is
--- not used in CFR traversal. It is exposed for spec-level deterministic
+-- not used in CFR traversal. It is exposed for deterministic
 -- seeding via tostring(rng) / prng.restore(state_str).
 local _rng = prng.lfib4()
 M._rng = _rng
@@ -64,7 +60,7 @@ local function getOrCreateInfoSet(store, key, numActions)
 end
 
 -- ── Regret-Matching on Positive Regrets ──────────────────────────────────
--- Identical to cfr_solver.lua getStrategy: uniform if all regrets ≤ 0.
+-- Falls back to a uniform strategy when all positive regrets are zero.
 local function getStrategy(infoSet)
   local n = infoSet.numActions
   local strat = {}
@@ -83,7 +79,7 @@ local function getStrategy(infoSet)
 end
 
 -- ── DCFR Discount Factors ────────────────────────────────────────────────
--- Source: Brown & Sandholm, AAAI 2019; d5-math-reference.md lines 82-87.
+-- Source: Brown & Sandholm, AAAI 2019.
 -- All factors use (t-1), NOT t. At t=1, all yield 0.0 — correctly
 -- discarding the zero-initialized state from iteration 0.
 -- α=1.5: positive regret discount = (t-1)^1.5 / ((t-1)^1.5 + 1)
@@ -167,14 +163,12 @@ local function kuhnCFR(store, card1, card2, history, reachProbs, traverser, iter
     local posDiscount, negDiscount, gammaFactor = dcfrDiscounts(iteration)
     local opponentReach = reachProbs[1 - player]
     for a = 1, numActions do
-      -- Counterfactual regret: weighted by opponent reach probability.
-      -- This matches cfr_solver.lua where terminal values are pre-weighted
-      -- by opponent reach (iR[j]*oopPayoff). Without this weighting,
-      -- regrets from each card deal contribute equally regardless of
-      -- opponent likelihood, preventing equilibrium convergence.
+      -- Counterfactual regret is weighted by opponent reach probability.
+      -- Without this weighting, regrets from each card deal contribute
+      -- equally regardless of opponent likelihood, preventing convergence.
       local instRegret = opponentReach * (actionVals[a] - nodeVal)
       local oldRegret = infoSet.regret[a]
-      -- DCFR: discount-before-add (ETH-6 spec, Brown & Sandholm 2019)
+      -- DCFR discounts accumulated regret before adding the current update.
       if oldRegret > 0 then
         infoSet.regret[a] = (oldRegret * posDiscount) + instRegret
       else
@@ -190,7 +184,7 @@ end
 function M.solveKuhn(numIterations, tracker)
   local store = {}
   for t = 1, numIterations do
-    -- ETH-8: Alternating traverser required for DCFR convergence guarantees
+    -- Alternate the traverser on each iteration.
     local traverser = (t - 1) % 2
     for _, cards in ipairs(KUHN_DEALS) do
       kuhnCFR(store, cards[1], cards[2], '', {[0]=1, [1]=1}, traverser, t)

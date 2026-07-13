@@ -2,11 +2,9 @@
 
 A compact 1v1 Kuhn Poker game played against a deterministic DCFR policy in the Povvo design language.
 
-## Solver provenance
+## Solver
 
-`solver/toy_dcfr.lua` is the release-safe Kuhn Poker proof from The Adviser. The build executes that Lua source through Wasmoon for 10,000 DCFR iterations, validates its checksum and game-theoretic metrics, then exports the policy consumed by the browser game.
-
-The production Adviser model, range abstraction, application integration, and private implementation details are not included.
+`solver/toy_dcfr.lua` contains a standalone Discounted Counterfactual Regret Minimization implementation for abstract poker games. The build executes its Kuhn Poker solver through Wasmoon for 10,000 iterations, validates the source checksum and game-theoretic metrics, then exports the policy consumed by the browser game.
 
 ## Run locally
 
