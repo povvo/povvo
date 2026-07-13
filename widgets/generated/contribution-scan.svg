@@ -43,11 +43,11 @@
 <path d="M764.44 29.00V31.00" stroke="#6E9DB2" stroke-opacity=".76" stroke-width=".7"/>
 <path d="M777.22 29.00V31.00" stroke="#6E9DB2" stroke-opacity=".76" stroke-width=".7"/>
 <path d="M790.00 26.00V34.00" stroke="#6E9DB2" stroke-opacity=".76" stroke-width=".7"/>
-<text x="40" y="86" class="display">30</text>
+<text x="40" y="86" class="display">34</text>
 <text x="40" y="103" class="micro9">TOTAL</text>
-<text x="148" y="86" class="display">2</text>
+<text x="148" y="86" class="display">3</text>
 <text x="148" y="103" class="micro9">CURRENT</text>
-<text x="256" y="86" class="display">2</text>
+<text x="256" y="86" class="display">3</text>
 <text x="256" y="103" class="micro9">LONGEST</text>
 <rect x="40" y="116" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
 <rect x="40" y="127" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
@@ -371,8 +371,8 @@
 <rect x="535" y="160" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
 <rect x="535" y="171" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
 <rect x="535" y="182" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
-<rect x="546" y="116" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
-<rect x="546" y="127" width="8" height="8" fill="#050706" fill-opacity="0.304" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
+<rect x="546" y="116" width="8" height="8" fill="#050706" fill-opacity="0.304" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
+<rect x="546" y="127" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
 <rect x="546" y="138" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
 <rect x="546" y="149" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
 <rect x="546" y="160" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
@@ -410,9 +410,9 @@
 <rect x="601" y="127" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
 <rect x="601" y="138" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
 <rect x="601" y="149" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
-<rect x="601" y="160" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
-<rect x="601" y="171" width="8" height="8" fill="#050706" fill-opacity="0.329" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
-<rect x="601" y="182" width="8" height="8" fill="#050706" fill-opacity="0.940" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
+<rect x="601" y="160" width="8" height="8" fill="#050706" fill-opacity="0.329" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
+<rect x="601" y="171" width="8" height="8" fill="#050706" fill-opacity="0.940" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
+<rect x="601" y="182" width="8" height="8" fill="#050706" fill-opacity="0.378" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
 <path d="M599 112h4M599 112v4 M607 112h4M611 112v4 M599 190v4M599 194h4 M611 190v4M607 194h4" fill="none" stroke="#6E9DB2" stroke-width="1.2"/>
 <text x="642" y="128" class="micro">364 DAYS</text>
 <path d="M642 139H836" stroke="#6E9DB2" stroke-width=".8"/>
