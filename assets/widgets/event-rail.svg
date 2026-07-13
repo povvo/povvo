@@ -46,32 +46,32 @@
 <path d="M72 86H788" stroke="#050706" stroke-width="1.8"/>
 <path d="M72.0 72V100" stroke="#6E9DB2" stroke-width="1"/>
 <circle cx="72.0" cy="86" r="4" fill="#050706"/>
-<text x="72.0" y="115" text-anchor="middle" class="micro9">PUSH</text>
+<text x="72.0" y="115" text-anchor="middle" class="micro9">CREATE</text>
 <text x="72.0" y="139" text-anchor="middle" class="bodybold" style="font-size:12px">povvo</text>
 <text x="72.0" y="161" text-anchor="middle" class="micro9" style="font-size:8px">2026-07-13</text>
 <path d="M215.2 72V100" stroke="#6E9DB2" stroke-width="1"/>
 <circle cx="215.2" cy="86" r="4" fill="#050706"/>
-<text x="215.2" y="115" text-anchor="middle" class="micro9">PR</text>
+<text x="215.2" y="115" text-anchor="middle" class="micro9">DELETE</text>
 <text x="215.2" y="139" text-anchor="middle" class="bodybold" style="font-size:12px">povvo</text>
 <text x="215.2" y="161" text-anchor="middle" class="micro9" style="font-size:8px">2026-07-13</text>
 <path d="M358.4 72V100" stroke="#6E9DB2" stroke-width="1"/>
 <circle cx="358.4" cy="86" r="4" fill="#050706"/>
 <text x="358.4" y="115" text-anchor="middle" class="micro9">PUSH</text>
 <text x="358.4" y="139" text-anchor="middle" class="bodybold" style="font-size:12px">povvo</text>
-<text x="358.4" y="161" text-anchor="middle" class="micro9" style="font-size:8px">2026-07-12</text>
+<text x="358.4" y="161" text-anchor="middle" class="micro9" style="font-size:8px">2026-07-13</text>
 <path d="M501.59999999999997 72V100" stroke="#6E9DB2" stroke-width="1"/>
 <circle cx="501.59999999999997" cy="86" r="4" fill="#050706"/>
 <text x="501.59999999999997" y="115" text-anchor="middle" class="micro9">PR</text>
 <text x="501.59999999999997" y="139" text-anchor="middle" class="bodybold" style="font-size:12px">povvo</text>
-<text x="501.59999999999997" y="161" text-anchor="middle" class="micro9" style="font-size:8px">2026-07-12</text>
+<text x="501.59999999999997" y="161" text-anchor="middle" class="micro9" style="font-size:8px">2026-07-13</text>
 <path d="M644.8 72V100" stroke="#6E9DB2" stroke-width="1"/>
 <circle cx="644.8" cy="86" r="4" fill="#050706"/>
-<text x="644.8" y="115" text-anchor="middle" class="micro9">CREATE</text>
+<text x="644.8" y="115" text-anchor="middle" class="micro9">PUSH</text>
 <text x="644.8" y="139" text-anchor="middle" class="bodybold" style="font-size:12px">povvo</text>
 <text x="644.8" y="161" text-anchor="middle" class="micro9" style="font-size:8px">2026-07-12</text>
 <path d="M788.0 72V100" stroke="#6E9DB2" stroke-width="1"/>
 <circle cx="788.0" cy="86" r="4" fill="#050706"/>
-<text x="788.0" y="115" text-anchor="middle" class="micro9">DELETE</text>
+<text x="788.0" y="115" text-anchor="middle" class="micro9">PR</text>
 <text x="788.0" y="139" text-anchor="middle" class="bodybold" style="font-size:12px">povvo</text>
 <text x="788.0" y="161" text-anchor="middle" class="micro9" style="font-size:8px">2026-07-12</text>
 <path d="M54.0 62h8M54.0 62v8 M82.0 62h8M90.0 62v8 M54.0 170v8M54.0 178h8 M90.0 170v8M82.0 178h8" fill="none" stroke="#6E9DB2" stroke-width="1.2"/>

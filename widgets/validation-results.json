@@ -389,7 +389,7 @@
     {
       "name": "telemetry reel loop seam",
       "passed": true,
-      "detail": "maximum channel RMS 0.338"
+      "detail": "maximum channel RMS 0.339"
     },
     {
       "name": "preview dimensions: contribution-scan.png",
@@ -444,7 +444,7 @@
     {
       "name": "black/off-white dominance: event-rail.png",
       "passed": true,
-      "detail": "95.98%"
+      "detail": "95.96%"
     },
     {
       "name": "cyan subordination: event-rail.png",
@@ -509,5 +509,5 @@
   ],
   "logo_sha256": "4a519d9bb147ed834ecc7724118337e417c3de60e29e923477e725167f4b6458",
   "identity_sha256": "3dcc64f3a29109f6c5a87b305f12e3f0ac792363f175ef2fe18e1af9c980c857",
-  "validated_at": "2026-07-13T00:30:06.716931+00:00"
+  "validated_at": "2026-07-13T00:31:27.937544+00:00"
 }
