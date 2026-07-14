@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="900" height="220" viewBox="0 0 900 220" role="img" aria-labelledby="title desc">
 <title id="title">Povvo repository signal</title>
-<desc id="desc">Last-push ages for 4 indexed public repositories belonging to @povvo.</desc>
+<desc id="desc">Last-push ages for 2 indexed public repositories belonging to @povvo.</desc>
 <defs>
 <linearGradient id="edge" x1="0" x2="1"><stop offset="0" stop-color="#0B2B34" stop-opacity="0"/><stop offset="1" stop-color="#0B2B34" stop-opacity="0.085"/></linearGradient>
 <pattern id="grain" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="2" cy="4" r=".45" fill="#DCE4DF"/><circle cx="13" cy="8" r=".35" fill="#DCE4DF"/><circle cx="7" cy="17" r=".3" fill="#DCE4DF"/></pattern>
@@ -59,27 +59,17 @@
 <path d="M824.0 56.0V64.0" stroke="#6E9DB2" stroke-width=".7"/>
 <text x="254" y="50" class="micro9">120D</text>
 <text x="730" y="50" text-anchor="end" class="micro9">NOW / 0D</text>
-<text x="40" y="86" class="micro9">GREED-SUPPRESSION</text>
+<text x="40" y="86" class="micro9">POVVO</text>
 <path d="M254 82H824" stroke="#DCE4DF" stroke-width="2"/>
-<path d="M824.00 82H824" stroke="#050706" stroke-width="2"/>
-<circle cx="824.00" cy="82" r="4" fill="#F4F6F1" stroke="#050706" stroke-width="2"/>
-<text x="846" y="86" text-anchor="end" class="micro9">00D</text>
-<text x="40" y="116" class="micro9">FORGET-ME-NOT</text>
+<path d="M819.25 82H824" stroke="#050706" stroke-width="2"/>
+<circle cx="819.25" cy="82" r="4" fill="#F4F6F1" stroke="#050706" stroke-width="2"/>
+<text x="846" y="86" text-anchor="end" class="micro9">01D</text>
+<text x="40" y="116" class="micro9">.GITHUB</text>
 <path d="M254 112H824" stroke="#DCE4DF" stroke-width="2"/>
-<path d="M824.00 112H824" stroke="#050706" stroke-width="2"/>
-<circle cx="824.00" cy="112" r="4" fill="#F4F6F1" stroke="#050706" stroke-width="2"/>
-<text x="846" y="116" text-anchor="end" class="micro9">00D</text>
-<text x="40" y="146" class="micro9">BRANDING-BONANZA</text>
-<path d="M254 142H824" stroke="#DCE4DF" stroke-width="2"/>
-<path d="M824.00 142H824" stroke="#050706" stroke-width="2"/>
-<circle cx="824.00" cy="142" r="4" fill="#F4F6F1" stroke="#050706" stroke-width="2"/>
-<text x="846" y="146" text-anchor="end" class="micro9">00D</text>
-<text x="40" y="176" class="micro9">SLEUTH</text>
-<path d="M254 172H824" stroke="#DCE4DF" stroke-width="2"/>
-<path d="M824.00 172H824" stroke="#050706" stroke-width="2"/>
-<circle cx="824.00" cy="172" r="4" fill="#F4F6F1" stroke="#050706" stroke-width="2"/>
-<text x="846" y="176" text-anchor="end" class="micro9">00D</text>
-<path d="M814.0 70h5M814.0 70v5 M829.0 70h5M834.0 70v5 M814.0 89v5M814.0 94h5 M834.0 89v5M829.0 94h5" fill="none" stroke="#6E9DB2" stroke-width="1.1"/>
+<path d="M814.50 112H824" stroke="#050706" stroke-width="2"/>
+<circle cx="814.50" cy="112" r="4" fill="#F4F6F1" stroke="#050706" stroke-width="2"/>
+<text x="846" y="116" text-anchor="end" class="micro9">02D</text>
+<path d="M809.25 70h5M809.25 70v5 M824.25 70h5M829.25 70v5 M809.25 89v5M809.25 94h5 M829.25 89v5M824.25 94h5" fill="none" stroke="#6E9DB2" stroke-width="1.1"/>
 <text x="40" y="209" class="micro9">LAST PUSH / AGE SPAN FROM NOW</text>
 <path d="M792 203l7-12m4 12 7-12m4 12 7-12m4 12 7-12" stroke="#050706" stroke-width="2.2"/>
 <path d="M852 197H864M858 191V203" fill="none" stroke="#6E9DB2" stroke-width=".8"/>

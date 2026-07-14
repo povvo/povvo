@@ -169,7 +169,7 @@
     {
       "name": "GIF size: contribution-scan.gif",
       "passed": true,
-      "detail": "90.3 KiB"
+      "detail": "90.4 KiB"
     },
     {
       "name": "GIF loop seam: contribution-scan.gif",
@@ -179,7 +179,7 @@
     {
       "name": "GIF bounded motion: contribution-scan.gif",
       "passed": true,
-      "detail": "median 0.36%, maximum 0.45% pixels changed"
+      "detail": "median 0.35%, maximum 0.48% pixels changed"
     },
     {
       "name": "GIF static-field stability: contribution-scan.gif",
@@ -239,7 +239,7 @@
     {
       "name": "GIF size: repository-index.gif",
       "passed": true,
-      "detail": "99.2 KiB"
+      "detail": "87.9 KiB"
     },
     {
       "name": "GIF loop seam: repository-index.gif",
@@ -249,7 +249,7 @@
     {
       "name": "GIF bounded motion: repository-index.gif",
       "passed": true,
-      "detail": "median 0.56%, maximum 1.98% pixels changed"
+      "detail": "median 0.55%, maximum 1.18% pixels changed"
     },
     {
       "name": "GIF static-field stability: repository-index.gif",
@@ -274,7 +274,7 @@
     {
       "name": "GIF size: event-rail.gif",
       "passed": true,
-      "detail": "99.9 KiB"
+      "detail": "96.1 KiB"
     },
     {
       "name": "GIF loop seam: event-rail.gif",
@@ -284,7 +284,7 @@
     {
       "name": "GIF bounded motion: event-rail.gif",
       "passed": true,
-      "detail": "median 0.58%, maximum 0.99% pixels changed"
+      "detail": "median 0.61%, maximum 0.96% pixels changed"
     },
     {
       "name": "GIF static-field stability: event-rail.gif",
@@ -309,7 +309,7 @@
     {
       "name": "GIF size: code-spectrum.gif",
       "passed": true,
-      "detail": "96.0 KiB"
+      "detail": "95.6 KiB"
     },
     {
       "name": "GIF loop seam: code-spectrum.gif",
@@ -319,7 +319,7 @@
     {
       "name": "GIF bounded motion: code-spectrum.gif",
       "passed": true,
-      "detail": "median 0.59%, maximum 2.21% pixels changed"
+      "detail": "median 0.64%, maximum 2.43% pixels changed"
     },
     {
       "name": "GIF static-field stability: code-spectrum.gif",
@@ -344,7 +344,7 @@
     {
       "name": "GIF size: repository-signal.gif",
       "passed": true,
-      "detail": "91.8 KiB"
+      "detail": "85.8 KiB"
     },
     {
       "name": "GIF loop seam: repository-signal.gif",
@@ -354,7 +354,7 @@
     {
       "name": "GIF bounded motion: repository-signal.gif",
       "passed": true,
-      "detail": "median 0.61%, maximum 1.01% pixels changed"
+      "detail": "median 0.61%, maximum 0.79% pixels changed"
     },
     {
       "name": "GIF static-field stability: repository-signal.gif",
@@ -364,7 +364,7 @@
     {
       "name": "aggregate GIF budget",
       "passed": true,
-      "detail": "627.1 KiB across 6 animations"
+      "detail": "605.8 KiB across 6 animations"
     },
     {
       "name": "telemetry reel dimensions",
@@ -384,12 +384,12 @@
     {
       "name": "telemetry reel size",
       "passed": true,
-      "detail": "325.4 KiB"
+      "detail": "313.5 KiB"
     },
     {
       "name": "telemetry reel loop seam",
       "passed": true,
-      "detail": "maximum channel RMS 0.372"
+      "detail": "maximum channel RMS 0.328"
     },
     {
       "name": "preview dimensions: contribution-scan.png",
@@ -399,7 +399,7 @@
     {
       "name": "black/off-white dominance: contribution-scan.png",
       "passed": true,
-      "detail": "88.81%"
+      "detail": "88.80%"
     },
     {
       "name": "cyan subordination: contribution-scan.png",
@@ -429,7 +429,7 @@
     {
       "name": "black/off-white dominance: repository-index.png",
       "passed": true,
-      "detail": "94.45%"
+      "detail": "95.80%"
     },
     {
       "name": "cyan subordination: repository-index.png",
@@ -444,7 +444,7 @@
     {
       "name": "black/off-white dominance: event-rail.png",
       "passed": true,
-      "detail": "95.60%"
+      "detail": "95.96%"
     },
     {
       "name": "cyan subordination: event-rail.png",
@@ -459,7 +459,7 @@
     {
       "name": "black/off-white dominance: code-spectrum.png",
       "passed": true,
-      "detail": "86.88%"
+      "detail": "87.52%"
     },
     {
       "name": "cyan subordination: code-spectrum.png",
@@ -474,12 +474,12 @@
     {
       "name": "black/off-white dominance: repository-signal.png",
       "passed": true,
-      "detail": "96.94%"
+      "detail": "97.51%"
     },
     {
       "name": "cyan subordination: repository-signal.png",
       "passed": true,
-      "detail": "0.002%"
+      "detail": "0.016%"
     },
     {
       "name": "primary text contrast",
@@ -509,5 +509,5 @@
   ],
   "logo_sha256": "4a519d9bb147ed834ecc7724118337e417c3de60e29e923477e725167f4b6458",
   "identity_sha256": "3dcc64f3a29109f6c5a87b305f12e3f0ac792363f175ef2fe18e1af9c980c857",
-  "validated_at": "2026-07-13T07:43:38.777647+00:00"
+  "validated_at": "2026-07-14T06:28:33.301086+00:00"
 }

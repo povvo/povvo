@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="900" height="220" viewBox="0 0 900 220" role="img" aria-labelledby="title desc">
 <title id="title">Povvo repository index</title>
-<desc id="desc">Repository totals and 4 indexed public repositories for @povvo.</desc>
+<desc id="desc">Repository totals and 2 indexed public repositories for @povvo.</desc>
 <defs>
 <linearGradient id="edge" x1="0" x2="1"><stop offset="0" stop-color="#0B2B34" stop-opacity="0"/><stop offset="1" stop-color="#0B2B34" stop-opacity="0.085"/></linearGradient>
 <pattern id="grain" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="2" cy="4" r=".45" fill="#DCE4DF"/><circle cx="13" cy="8" r=".35" fill="#DCE4DF"/><circle cx="7" cy="17" r=".3" fill="#DCE4DF"/></pattern>
@@ -44,7 +44,7 @@
 <path d="M777.22 29.00V31.00" stroke="#6E9DB2" stroke-opacity=".76" stroke-width=".7"/>
 <path d="M790.00 26.00V34.00" stroke="#6E9DB2" stroke-opacity=".76" stroke-width=".7"/>
 <path d="M310 64V187" stroke="#050706" stroke-width="2"/>
-<text x="40" y="92" class="display">8</text>
+<text x="40" y="92" class="display">2</text>
 <text x="40" y="110" class="micro9">REPOSITORIES</text>
 <text x="166" y="92" class="display">0</text>
 <text x="166" y="110" class="micro9">FOLLOWERS</text>
@@ -52,19 +52,13 @@
 <text x="40" y="172" class="micro9">STARS</text>
 <text x="166" y="154" class="display">0</text>
 <text x="166" y="172" class="micro9">FORKS</text>
-<text x="346" y="72" class="micro">TOP REPOSITORIES / 04</text>
+<text x="346" y="72" class="micro">TOP REPOSITORIES / 02</text>
 <path d="M346 80H836" stroke="#6E9DB2" stroke-width=".75"/>
-<text x="346" y="96" class="bodybold">greed-suppression</text>
+<text x="346" y="96" class="bodybold">povvo</text>
 <text x="836" y="95" text-anchor="end" class="micro9">S 0 / F 0</text>
 <path d="M346 107H836" stroke="#6E9DB2" stroke-width=".75"/>
-<text x="346" y="123" class="bodybold">forget-me-not</text>
+<text x="346" y="123" class="bodybold">.github</text>
 <text x="836" y="122" text-anchor="end" class="micro9">S 0 / F 0</text>
-<path d="M346 134H836" stroke="#6E9DB2" stroke-width=".75"/>
-<text x="346" y="150" class="bodybold">branding-bonanza</text>
-<text x="836" y="149" text-anchor="end" class="micro9">S 0 / F 0</text>
-<path d="M346 161H836" stroke="#6E9DB2" stroke-width=".75"/>
-<text x="346" y="177" class="bodybold">sleuth</text>
-<text x="836" y="176" text-anchor="end" class="micro9">S 0 / F 0</text>
 <path d="M338 78h8M338 78v8 M836 78h8M844 78v8 M338 97v8M338 105h8 M844 97v8M836 105h8" fill="none" stroke="#6E9DB2" stroke-width="1.2"/>
 <text x="40" y="209" class="micro9">PUBLIC REPOSITORIES / STAR-WEIGHTED INDEX</text>
 <path d="M792 203l7-12m4 12 7-12m4 12 7-12m4 12 7-12" stroke="#050706" stroke-width="2.2"/>
