@@ -169,7 +169,7 @@
     {
       "name": "GIF size: contribution-scan.gif",
       "passed": true,
-      "detail": "90.5 KiB"
+      "detail": "90.6 KiB"
     },
     {
       "name": "GIF loop seam: contribution-scan.gif",
@@ -239,7 +239,7 @@
     {
       "name": "GIF size: repository-index.gif",
       "passed": true,
-      "detail": "97.9 KiB"
+      "detail": "97.7 KiB"
     },
     {
       "name": "GIF loop seam: repository-index.gif",
@@ -249,7 +249,7 @@
     {
       "name": "GIF bounded motion: repository-index.gif",
       "passed": true,
-      "detail": "median 0.56%, maximum 1.64% pixels changed"
+      "detail": "median 0.56%, maximum 1.66% pixels changed"
     },
     {
       "name": "GIF static-field stability: repository-index.gif",
@@ -344,7 +344,7 @@
     {
       "name": "GIF size: repository-signal.gif",
       "passed": true,
-      "detail": "92.4 KiB"
+      "detail": "92.7 KiB"
     },
     {
       "name": "GIF loop seam: repository-signal.gif",
@@ -354,7 +354,7 @@
     {
       "name": "GIF bounded motion: repository-signal.gif",
       "passed": true,
-      "detail": "median 0.61%, maximum 0.99% pixels changed"
+      "detail": "median 0.61%, maximum 1.01% pixels changed"
     },
     {
       "name": "GIF static-field stability: repository-signal.gif",
@@ -364,7 +364,7 @@
     {
       "name": "aggregate GIF budget",
       "passed": true,
-      "detail": "629.2 KiB across 6 animations"
+      "detail": "629.3 KiB across 6 animations"
     },
     {
       "name": "telemetry reel dimensions",
@@ -384,12 +384,12 @@
     {
       "name": "telemetry reel size",
       "passed": true,
-      "detail": "325.2 KiB"
+      "detail": "324.6 KiB"
     },
     {
       "name": "telemetry reel loop seam",
       "passed": true,
-      "detail": "maximum channel RMS 0.329"
+      "detail": "maximum channel RMS 0.333"
     },
     {
       "name": "preview dimensions: contribution-scan.png",
@@ -399,7 +399,7 @@
     {
       "name": "black/off-white dominance: contribution-scan.png",
       "passed": true,
-      "detail": "88.75%"
+      "detail": "88.74%"
     },
     {
       "name": "cyan subordination: contribution-scan.png",
@@ -429,7 +429,7 @@
     {
       "name": "black/off-white dominance: repository-index.png",
       "passed": true,
-      "detail": "94.60%"
+      "detail": "94.54%"
     },
     {
       "name": "cyan subordination: repository-index.png",
@@ -474,7 +474,7 @@
     {
       "name": "black/off-white dominance: repository-signal.png",
       "passed": true,
-      "detail": "96.96%"
+      "detail": "96.94%"
     },
     {
       "name": "cyan subordination: repository-signal.png",
@@ -509,5 +509,5 @@
   ],
   "logo_sha256": "4a519d9bb147ed834ecc7724118337e417c3de60e29e923477e725167f4b6458",
   "identity_sha256": "3dcc64f3a29109f6c5a87b305f12e3f0ac792363f175ef2fe18e1af9c980c857",
-  "validated_at": "2026-07-16T06:34:26.008012+00:00"
+  "validated_at": "2026-07-17T06:30:35.973989+00:00"
 }
