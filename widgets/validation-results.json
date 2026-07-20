@@ -169,7 +169,7 @@
     {
       "name": "GIF size: contribution-scan.gif",
       "passed": true,
-      "detail": "90.3 KiB"
+      "detail": "90.2 KiB"
     },
     {
       "name": "GIF loop seam: contribution-scan.gif",
@@ -344,7 +344,7 @@
     {
       "name": "GIF size: repository-signal.gif",
       "passed": true,
-      "detail": "86.0 KiB"
+      "detail": "85.9 KiB"
     },
     {
       "name": "GIF loop seam: repository-signal.gif",
@@ -354,7 +354,7 @@
     {
       "name": "GIF bounded motion: repository-signal.gif",
       "passed": true,
-      "detail": "median 0.61%, maximum 0.76% pixels changed"
+      "detail": "median 0.61%, maximum 0.75% pixels changed"
     },
     {
       "name": "GIF static-field stability: repository-signal.gif",
@@ -364,7 +364,7 @@
     {
       "name": "aggregate GIF budget",
       "passed": true,
-      "detail": "608.1 KiB across 6 animations"
+      "detail": "608.0 KiB across 6 animations"
     },
     {
       "name": "telemetry reel dimensions",
@@ -384,7 +384,7 @@
     {
       "name": "telemetry reel size",
       "passed": true,
-      "detail": "314.7 KiB"
+      "detail": "314.9 KiB"
     },
     {
       "name": "telemetry reel loop seam",
@@ -399,7 +399,7 @@
     {
       "name": "black/off-white dominance: contribution-scan.png",
       "passed": true,
-      "detail": "88.81%"
+      "detail": "88.80%"
     },
     {
       "name": "cyan subordination: contribution-scan.png",
@@ -474,7 +474,7 @@
     {
       "name": "black/off-white dominance: repository-signal.png",
       "passed": true,
-      "detail": "97.46%"
+      "detail": "97.45%"
     },
     {
       "name": "cyan subordination: repository-signal.png",
@@ -509,5 +509,5 @@
   ],
   "logo_sha256": "4a519d9bb147ed834ecc7724118337e417c3de60e29e923477e725167f4b6458",
   "identity_sha256": "3dcc64f3a29109f6c5a87b305f12e3f0ac792363f175ef2fe18e1af9c980c857",
-  "validated_at": "2026-07-19T06:45:05.838851+00:00"
+  "validated_at": "2026-07-20T07:33:57.868591+00:00"
 }
