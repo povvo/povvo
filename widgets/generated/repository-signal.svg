@@ -66,9 +66,9 @@
 <text x="846" y="86" text-anchor="end" class="micro9">01D</text>
 <text x="40" y="116" class="micro9">.GITHUB</text>
 <path d="M254 112H824" stroke="#DCE4DF" stroke-width="2"/>
-<path d="M781.25 112H824" stroke="#050706" stroke-width="2"/>
-<circle cx="781.25" cy="112" r="4" fill="#F4F6F1" stroke="#050706" stroke-width="2"/>
-<text x="846" y="116" text-anchor="end" class="micro9">09D</text>
+<path d="M776.50 112H824" stroke="#050706" stroke-width="2"/>
+<circle cx="776.50" cy="112" r="4" fill="#F4F6F1" stroke="#050706" stroke-width="2"/>
+<text x="846" y="116" text-anchor="end" class="micro9">10D</text>
 <path d="M809.25 70h5M809.25 70v5 M824.25 70h5M829.25 70v5 M809.25 89v5M809.25 94h5 M829.25 89v5M824.25 94h5" fill="none" stroke="#6E9DB2" stroke-width="1.1"/>
 <text x="40" y="209" class="micro9">LAST PUSH / AGE SPAN FROM NOW</text>
 <path d="M792 203l7-12m4 12 7-12m4 12 7-12m4 12 7-12" stroke="#050706" stroke-width="2.2"/>

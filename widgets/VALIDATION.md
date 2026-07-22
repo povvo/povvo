@@ -72,18 +72,18 @@ Overall: **PASS**
 | GIF dimensions: repository-signal.gif | PASS | 900 x 220 |
 | GIF cadence: repository-signal.gif | PASS | 50 encoded frames, 7200ms loop, delays [40, 1340, 1480, 2500] |
 | GIF disposal: repository-signal.gif | PASS | disposal methods [1] |
-| GIF size: repository-signal.gif | PASS | 86.3 KiB |
+| GIF size: repository-signal.gif | PASS | 86.2 KiB |
 | GIF loop seam: repository-signal.gif | PASS | maximum channel RMS 0.000 |
-| GIF bounded motion: repository-signal.gif | PASS | median 0.61%, maximum 0.73% pixels changed |
+| GIF bounded motion: repository-signal.gif | PASS | median 0.61%, maximum 0.72% pixels changed |
 | GIF static-field stability: repository-signal.gif | PASS | unchanged calibration field |
-| aggregate GIF budget | PASS | 608.4 KiB across 6 animations |
+| aggregate GIF budget | PASS | 608.3 KiB across 6 animations |
 | telemetry reel dimensions | PASS | 900 x 220 |
 | telemetry reel cadence | PASS | 44 frames, 13680ms, loop=0 |
 | telemetry reel disposal | PASS | disposal methods [1] |
 | telemetry reel size | PASS | 313.8 KiB |
 | telemetry reel loop seam | PASS | maximum channel RMS 0.335 |
 | preview dimensions: contribution-scan.png | PASS | 900 x 220 |
-| black/off-white dominance: contribution-scan.png | PASS | 88.81% |
+| black/off-white dominance: contribution-scan.png | PASS | 88.80% |
 | cyan subordination: contribution-scan.png | PASS | 0.018% |
 | preview dimensions: focus-board.png | PASS | 900 x 220 |
 | black/off-white dominance: focus-board.png | PASS | 85.82% |
