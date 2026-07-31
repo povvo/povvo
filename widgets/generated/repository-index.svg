@@ -44,7 +44,7 @@
 <path d="M777.22 29.00V31.00" stroke="#6E9DB2" stroke-opacity=".76" stroke-width=".7"/>
 <path d="M790.00 26.00V34.00" stroke="#6E9DB2" stroke-opacity=".76" stroke-width=".7"/>
 <path d="M310 64V187" stroke="#050706" stroke-width="2"/>
-<text x="40" y="92" class="display">9</text>
+<text x="40" y="92" class="display">11</text>
 <text x="40" y="110" class="micro9">REPOSITORIES</text>
 <text x="166" y="92" class="display">0</text>
 <text x="166" y="110" class="micro9">FOLLOWERS</text>
