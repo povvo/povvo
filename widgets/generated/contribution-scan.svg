@@ -45,7 +45,7 @@
 <path d="M790.00 26.00V34.00" stroke="#6E9DB2" stroke-opacity=".76" stroke-width=".7"/>
 <text x="40" y="86" class="display">92</text>
 <text x="40" y="103" class="micro9">TOTAL</text>
-<text x="148" y="86" class="display">1</text>
+<text x="148" y="86" class="display">0</text>
 <text x="148" y="103" class="micro9">CURRENT</text>
 <text x="256" y="86" class="display">3</text>
 <text x="256" y="103" class="micro9">LONGEST</text>
@@ -210,13 +210,13 @@
 <rect x="282" y="160" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
 <rect x="282" y="171" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
 <rect x="282" y="182" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
-<rect x="293" y="116" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
-<rect x="293" y="127" width="8" height="8" fill="#050706" fill-opacity="0.312" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
-<rect x="293" y="138" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
-<rect x="293" y="149" width="8" height="8" fill="#050706" fill-opacity="0.328" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
+<rect x="293" y="116" width="8" height="8" fill="#050706" fill-opacity="0.312" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
+<rect x="293" y="127" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
+<rect x="293" y="138" width="8" height="8" fill="#050706" fill-opacity="0.328" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
+<rect x="293" y="149" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
 <rect x="293" y="160" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
-<rect x="293" y="171" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
-<rect x="293" y="182" width="8" height="8" fill="#050706" fill-opacity="0.296" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
+<rect x="293" y="171" width="8" height="8" fill="#050706" fill-opacity="0.296" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
+<rect x="293" y="182" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
 <rect x="304" y="116" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
 <rect x="304" y="127" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
 <rect x="304" y="138" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
@@ -287,8 +287,8 @@
 <rect x="403" y="160" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
 <rect x="403" y="171" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
 <rect x="403" y="182" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
-<rect x="414" y="116" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
-<rect x="414" y="127" width="8" height="8" fill="#050706" fill-opacity="0.296" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
+<rect x="414" y="116" width="8" height="8" fill="#050706" fill-opacity="0.296" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
+<rect x="414" y="127" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
 <rect x="414" y="138" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
 <rect x="414" y="149" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
 <rect x="414" y="160" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
@@ -351,8 +351,8 @@
 <rect x="502" y="171" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
 <rect x="502" y="182" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
 <rect x="513" y="116" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
-<rect x="513" y="127" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
-<rect x="513" y="138" width="8" height="8" fill="#050706" fill-opacity="0.296" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
+<rect x="513" y="127" width="8" height="8" fill="#050706" fill-opacity="0.296" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
+<rect x="513" y="138" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
 <rect x="513" y="149" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
 <rect x="513" y="160" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
 <rect x="513" y="171" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
@@ -390,10 +390,10 @@
 <rect x="568" y="138" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
 <rect x="568" y="149" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
 <rect x="568" y="160" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
-<rect x="568" y="171" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
-<rect x="568" y="182" width="8" height="8" fill="#050706" fill-opacity="0.312" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
-<rect x="579" y="116" width="8" height="8" fill="#050706" fill-opacity="0.747" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
-<rect x="579" y="127" width="8" height="8" fill="#050706" fill-opacity="0.473" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
+<rect x="568" y="171" width="8" height="8" fill="#050706" fill-opacity="0.312" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
+<rect x="568" y="182" width="8" height="8" fill="#050706" fill-opacity="0.747" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
+<rect x="579" y="116" width="8" height="8" fill="#050706" fill-opacity="0.473" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
+<rect x="579" y="127" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
 <rect x="579" y="138" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
 <rect x="579" y="149" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
 <rect x="579" y="160" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
@@ -410,8 +410,8 @@
 <rect x="601" y="127" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
 <rect x="601" y="138" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
 <rect x="601" y="149" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
-<rect x="601" y="160" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
-<rect x="601" y="171" width="8" height="8" fill="#050706" fill-opacity="0.940" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
+<rect x="601" y="160" width="8" height="8" fill="#050706" fill-opacity="0.940" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
+<rect x="601" y="171" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
 <rect x="601" y="182" width="8" height="8" fill="#050706" fill-opacity="0.000" stroke="#6E9DB2" stroke-opacity=".68" stroke-width=".65"/>
 <path d="M599 112h4M599 112v4 M607 112h4M611 112v4 M599 190v4M599 194h4 M611 190v4M607 194h4" fill="none" stroke="#6E9DB2" stroke-width="1.2"/>
 <text x="642" y="128" class="micro">364 DAYS</text>
