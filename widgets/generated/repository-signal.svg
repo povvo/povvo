@@ -61,9 +61,9 @@
 <text x="730" y="50" text-anchor="end" class="micro9">NOW / 0D</text>
 <text x="40" y="86" class="micro9">CLAUDIKINS-KERNEL</text>
 <path d="M254 82H824" stroke="#DCE4DF" stroke-width="2"/>
-<path d="M334.75 82H824" stroke="#050706" stroke-width="2"/>
-<circle cx="334.75" cy="82" r="4" fill="#F4F6F1" stroke="#050706" stroke-width="2"/>
-<text x="846" y="86" text-anchor="end" class="micro9">103D</text>
+<path d="M330.00 82H824" stroke="#050706" stroke-width="2"/>
+<circle cx="330.00" cy="82" r="4" fill="#F4F6F1" stroke="#050706" stroke-width="2"/>
+<text x="846" y="86" text-anchor="end" class="micro9">104D</text>
 <text x="40" y="116" class="micro9">CLAUDIKINS-TOOL-EXECUTOR</text>
 <path d="M254 112H824" stroke="#DCE4DF" stroke-width="2"/>
 <path d="M254.00 112H824" stroke="#050706" stroke-width="2"/>
@@ -71,15 +71,15 @@
 <text x="846" y="116" text-anchor="end" class="micro9">120D</text>
 <text x="40" y="146" class="micro9">SLEUTH</text>
 <path d="M254 142H824" stroke="#DCE4DF" stroke-width="2"/>
-<path d="M420.25 142H824" stroke="#050706" stroke-width="2"/>
-<circle cx="420.25" cy="142" r="4" fill="#F4F6F1" stroke="#050706" stroke-width="2"/>
-<text x="846" y="146" text-anchor="end" class="micro9">85D</text>
+<path d="M415.50 142H824" stroke="#050706" stroke-width="2"/>
+<circle cx="415.50" cy="142" r="4" fill="#F4F6F1" stroke="#050706" stroke-width="2"/>
+<text x="846" y="146" text-anchor="end" class="micro9">86D</text>
 <text x="40" y="176" class="micro9">CLAUDIKINS-MARKETPLACE</text>
 <path d="M254 172H824" stroke="#DCE4DF" stroke-width="2"/>
 <path d="M254.00 172H824" stroke="#050706" stroke-width="2"/>
 <circle cx="254.00" cy="172" r="4" fill="#F4F6F1" stroke="#050706" stroke-width="2"/>
 <text x="846" y="176" text-anchor="end" class="micro9">120D</text>
-<path d="M410.25 130h5M410.25 130v5 M425.25 130h5M430.25 130v5 M410.25 149v5M410.25 154h5 M430.25 149v5M425.25 154h5" fill="none" stroke="#6E9DB2" stroke-width="1.1"/>
+<path d="M405.5 130h5M405.5 130v5 M420.5 130h5M425.5 130v5 M405.5 149v5M405.5 154h5 M425.5 149v5M420.5 154h5" fill="none" stroke="#6E9DB2" stroke-width="1.1"/>
 <text x="40" y="209" class="micro9">LAST PUSH / AGE SPAN FROM NOW</text>
 <path d="M792 203l7-12m4 12 7-12m4 12 7-12m4 12 7-12" stroke="#050706" stroke-width="2.2"/>
 <path d="M852 197H864M858 191V203" fill="none" stroke="#6E9DB2" stroke-width=".8"/>
