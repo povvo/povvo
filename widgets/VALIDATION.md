@@ -37,7 +37,7 @@ Overall: **PASS**
 | GIF dimensions: contribution-scan.gif | PASS | 900 x 220 |
 | GIF cadence: contribution-scan.gif | PASS | 50 encoded frames, 7200ms loop, delays [40, 480, 1640, 3200] |
 | GIF disposal: contribution-scan.gif | PASS | disposal methods [1] |
-| GIF size: contribution-scan.gif | PASS | 90.8 KiB |
+| GIF size: contribution-scan.gif | PASS | 90.9 KiB |
 | GIF loop seam: contribution-scan.gif | PASS | maximum channel RMS 0.000 |
 | GIF bounded motion: contribution-scan.gif | PASS | median 0.37%, maximum 0.56% pixels changed |
 | GIF static-field stability: contribution-scan.gif | PASS | unchanged calibration field |
@@ -51,9 +51,9 @@ Overall: **PASS**
 | GIF dimensions: repository-index.gif | PASS | 900 x 220 |
 | GIF cadence: repository-index.gif | PASS | 50 encoded frames, 7200ms loop, delays [40, 880, 1520, 2920] |
 | GIF disposal: repository-index.gif | PASS | disposal methods [1] |
-| GIF size: repository-index.gif | PASS | 103.2 KiB |
+| GIF size: repository-index.gif | PASS | 103.1 KiB |
 | GIF loop seam: repository-index.gif | PASS | maximum channel RMS 0.000 |
-| GIF bounded motion: repository-index.gif | PASS | median 0.56%, maximum 2.60% pixels changed |
+| GIF bounded motion: repository-index.gif | PASS | median 0.55%, maximum 2.56% pixels changed |
 | GIF static-field stability: repository-index.gif | PASS | unchanged calibration field |
 | GIF dimensions: event-rail.gif | PASS | 900 x 220 |
 | GIF cadence: event-rail.gif | PASS | 50 encoded frames, 7200ms loop, delays [40, 1080, 1460, 2780] |
@@ -70,26 +70,26 @@ Overall: **PASS**
 | GIF bounded motion: code-spectrum.gif | PASS | median 0.64%, maximum 2.22% pixels changed |
 | GIF static-field stability: code-spectrum.gif | PASS | unchanged calibration field |
 | GIF dimensions: repository-signal.gif | PASS | 900 x 220 |
-| GIF cadence: repository-signal.gif | PASS | 51 encoded frames, 7200ms loop, delays [40, 1340, 1480, 2460] |
+| GIF cadence: repository-signal.gif | PASS | 50 encoded frames, 7200ms loop, delays [40, 1340, 1480, 2500] |
 | GIF disposal: repository-signal.gif | PASS | disposal methods [1] |
-| GIF size: repository-signal.gif | PASS | 95.8 KiB |
+| GIF size: repository-signal.gif | PASS | 94.8 KiB |
 | GIF loop seam: repository-signal.gif | PASS | maximum channel RMS 0.000 |
-| GIF bounded motion: repository-signal.gif | PASS | median 0.76%, maximum 2.18% pixels changed |
+| GIF bounded motion: repository-signal.gif | PASS | median 0.76%, maximum 2.17% pixels changed |
 | GIF static-field stability: repository-signal.gif | PASS | unchanged calibration field |
-| aggregate GIF budget | PASS | 638.8 KiB across 6 animations |
+| aggregate GIF budget | PASS | 637.8 KiB across 6 animations |
 | telemetry reel dimensions | PASS | 900 x 220 |
 | telemetry reel cadence | PASS | 44 frames, 13680ms, loop=0 |
 | telemetry reel disposal | PASS | disposal methods [1] |
-| telemetry reel size | PASS | 330.2 KiB |
+| telemetry reel size | PASS | 331.4 KiB |
 | telemetry reel loop seam | PASS | maximum channel RMS 0.371 |
 | preview dimensions: contribution-scan.png | PASS | 900 x 220 |
-| black/off-white dominance: contribution-scan.png | PASS | 88.70% |
+| black/off-white dominance: contribution-scan.png | PASS | 88.71% |
 | cyan subordination: contribution-scan.png | PASS | 0.018% |
 | preview dimensions: focus-board.png | PASS | 900 x 220 |
 | black/off-white dominance: focus-board.png | PASS | 85.82% |
 | cyan subordination: focus-board.png | PASS | 0.002% |
 | preview dimensions: repository-index.png | PASS | 900 x 220 |
-| black/off-white dominance: repository-index.png | PASS | 93.88% |
+| black/off-white dominance: repository-index.png | PASS | 93.87% |
 | cyan subordination: repository-index.png | PASS | 0.018% |
 | preview dimensions: event-rail.png | PASS | 900 x 220 |
 | black/off-white dominance: event-rail.png | PASS | 95.25% |
@@ -98,8 +98,8 @@ Overall: **PASS**
 | black/off-white dominance: code-spectrum.png | PASS | 87.15% |
 | cyan subordination: code-spectrum.png | PASS | 0.053% |
 | preview dimensions: repository-signal.png | PASS | 900 x 220 |
-| black/off-white dominance: repository-signal.png | PASS | 92.52% |
-| cyan subordination: repository-signal.png | PASS | 0.018% |
+| black/off-white dominance: repository-signal.png | PASS | 92.50% |
+| cyan subordination: repository-signal.png | PASS | 0.002% |
 | primary text contrast | PASS | 18.57:1 |
 | micro text contrast | PASS | 11.83:1 |
 | inverse text contrast | PASS | 16.62:1 |
