@@ -48,7 +48,7 @@
 <text x="40" y="110" class="micro9">REPOSITORIES</text>
 <text x="166" y="92" class="display">2</text>
 <text x="166" y="110" class="micro9">FOLLOWERS</text>
-<text x="40" y="154" class="display">247</text>
+<text x="40" y="154" class="display">250</text>
 <text x="40" y="172" class="micro9">STARS</text>
 <text x="166" y="154" class="display">28</text>
 <text x="166" y="172" class="micro9">FORKS</text>
@@ -58,7 +58,7 @@
 <text x="836" y="95" text-anchor="end" class="micro9">S 126 / F 8</text>
 <path d="M346 107H836" stroke="#6E9DB2" stroke-width=".75"/>
 <text x="346" y="123" class="bodybold">claudikins-tool-executor</text>
-<text x="836" y="122" text-anchor="end" class="micro9">S 63 / F 7</text>
+<text x="836" y="122" text-anchor="end" class="micro9">S 65 / F 7</text>
 <path d="M346 134H836" stroke="#6E9DB2" stroke-width=".75"/>
 <text x="346" y="150" class="bodybold">sleuth</text>
 <text x="836" y="149" text-anchor="end" class="micro9">S 20 / F 4</text>
