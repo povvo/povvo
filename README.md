@@ -1,3 +1,6 @@
+<p align="center">
+  <img src="./assets/banner.png" alt="Povvo" width="100%">
+</p>
 
 <p align="center">
   <a href="https://povvo.github.io/povvo/">
