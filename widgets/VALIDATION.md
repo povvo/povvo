@@ -37,9 +37,9 @@ Overall: **PASS**
 | GIF dimensions: contribution-scan.gif | PASS | 900 x 220 |
 | GIF cadence: contribution-scan.gif | PASS | 50 encoded frames, 7200ms loop, delays [40, 480, 1640, 3200] |
 | GIF disposal: contribution-scan.gif | PASS | disposal methods [1] |
-| GIF size: contribution-scan.gif | PASS | 91.2 KiB |
+| GIF size: contribution-scan.gif | PASS | 91.3 KiB |
 | GIF loop seam: contribution-scan.gif | PASS | maximum channel RMS 0.000 |
-| GIF bounded motion: contribution-scan.gif | PASS | median 0.37%, maximum 0.54% pixels changed |
+| GIF bounded motion: contribution-scan.gif | PASS | median 0.38%, maximum 0.55% pixels changed |
 | GIF static-field stability: contribution-scan.gif | PASS | unchanged calibration field |
 | GIF dimensions: focus-board.gif | PASS | 900 x 220 |
 | GIF cadence: focus-board.gif | PASS | 49 encoded frames, 7200ms loop, delays [40, 680, 1570, 3110] |
@@ -70,17 +70,17 @@ Overall: **PASS**
 | GIF bounded motion: code-spectrum.gif | PASS | median 0.64%, maximum 2.18% pixels changed |
 | GIF static-field stability: code-spectrum.gif | PASS | unchanged calibration field |
 | GIF dimensions: repository-signal.gif | PASS | 900 x 220 |
-| GIF cadence: repository-signal.gif | PASS | 51 encoded frames, 7200ms loop, delays [40, 1340, 1480, 2460] |
+| GIF cadence: repository-signal.gif | PASS | 50 encoded frames, 7200ms loop, delays [40, 1340, 1480, 2500] |
 | GIF disposal: repository-signal.gif | PASS | disposal methods [1] |
-| GIF size: repository-signal.gif | PASS | 95.5 KiB |
+| GIF size: repository-signal.gif | PASS | 94.9 KiB |
 | GIF loop seam: repository-signal.gif | PASS | maximum channel RMS 0.000 |
-| GIF bounded motion: repository-signal.gif | PASS | median 0.76%, maximum 2.17% pixels changed |
+| GIF bounded motion: repository-signal.gif | PASS | median 0.76%, maximum 2.18% pixels changed |
 | GIF static-field stability: repository-signal.gif | PASS | unchanged calibration field |
-| aggregate GIF budget | PASS | 637.5 KiB across 6 animations |
+| aggregate GIF budget | PASS | 637.0 KiB across 6 animations |
 | telemetry reel dimensions | PASS | 900 x 220 |
 | telemetry reel cadence | PASS | 44 frames, 13680ms, loop=0 |
 | telemetry reel disposal | PASS | disposal methods [1] |
-| telemetry reel size | PASS | 331.4 KiB |
+| telemetry reel size | PASS | 331.2 KiB |
 | telemetry reel loop seam | PASS | maximum channel RMS 0.365 |
 | preview dimensions: contribution-scan.png | PASS | 900 x 220 |
 | black/off-white dominance: contribution-scan.png | PASS | 88.68% |
@@ -99,7 +99,7 @@ Overall: **PASS**
 | cyan subordination: code-spectrum.png | PASS | 0.032% |
 | preview dimensions: repository-signal.png | PASS | 900 x 220 |
 | black/off-white dominance: repository-signal.png | PASS | 92.36% |
-| cyan subordination: repository-signal.png | PASS | 0.016% |
+| cyan subordination: repository-signal.png | PASS | 0.002% |
 | primary text contrast | PASS | 18.57:1 |
 | micro text contrast | PASS | 11.83:1 |
 | inverse text contrast | PASS | 16.62:1 |
