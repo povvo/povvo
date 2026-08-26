@@ -169,7 +169,7 @@
     {
       "name": "GIF size: contribution-scan.gif",
       "passed": true,
-      "detail": "91.7 KiB"
+      "detail": "92.9 KiB"
     },
     {
       "name": "GIF loop seam: contribution-scan.gif",
@@ -179,7 +179,7 @@
     {
       "name": "GIF bounded motion: contribution-scan.gif",
       "passed": true,
-      "detail": "median 0.39%, maximum 0.53% pixels changed"
+      "detail": "median 0.37%, maximum 0.62% pixels changed"
     },
     {
       "name": "GIF static-field stability: contribution-scan.gif",
@@ -344,7 +344,7 @@
     {
       "name": "GIF size: repository-signal.gif",
       "passed": true,
-      "detail": "94.8 KiB"
+      "detail": "94.3 KiB"
     },
     {
       "name": "GIF loop seam: repository-signal.gif",
@@ -354,7 +354,7 @@
     {
       "name": "GIF bounded motion: repository-signal.gif",
       "passed": true,
-      "detail": "median 0.76%, maximum 2.15% pixels changed"
+      "detail": "median 0.76%, maximum 2.18% pixels changed"
     },
     {
       "name": "GIF static-field stability: repository-signal.gif",
@@ -364,7 +364,7 @@
     {
       "name": "aggregate GIF budget",
       "passed": true,
-      "detail": "637.1 KiB across 6 animations"
+      "detail": "637.9 KiB across 6 animations"
     },
     {
       "name": "telemetry reel dimensions",
@@ -384,12 +384,12 @@
     {
       "name": "telemetry reel size",
       "passed": true,
-      "detail": "329.3 KiB"
+      "detail": "330.9 KiB"
     },
     {
       "name": "telemetry reel loop seam",
       "passed": true,
-      "detail": "maximum channel RMS 0.367"
+      "detail": "maximum channel RMS 0.372"
     },
     {
       "name": "preview dimensions: contribution-scan.png",
@@ -399,7 +399,7 @@
     {
       "name": "black/off-white dominance: contribution-scan.png",
       "passed": true,
-      "detail": "88.65%"
+      "detail": "88.43%"
     },
     {
       "name": "cyan subordination: contribution-scan.png",
@@ -474,7 +474,7 @@
     {
       "name": "black/off-white dominance: repository-signal.png",
       "passed": true,
-      "detail": "92.32%"
+      "detail": "92.30%"
     },
     {
       "name": "cyan subordination: repository-signal.png",
@@ -509,5 +509,5 @@
   ],
   "logo_sha256": "4a519d9bb147ed834ecc7724118337e417c3de60e29e923477e725167f4b6458",
   "identity_sha256": "3dcc64f3a29109f6c5a87b305f12e3f0ac792363f175ef2fe18e1af9c980c857",
-  "validated_at": "2026-08-25T04:57:15.754279+00:00"
+  "validated_at": "2026-08-26T04:58:31.589874+00:00"
 }
