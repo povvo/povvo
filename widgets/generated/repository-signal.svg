@@ -71,15 +71,15 @@
 <text x="846" y="116" text-anchor="end" class="micro9">120D</text>
 <text x="40" y="146" class="micro9">SLEUTH</text>
 <path d="M254 142H824" stroke="#DCE4DF" stroke-width="2"/>
-<path d="M306.25 142H824" stroke="#050706" stroke-width="2"/>
-<circle cx="306.25" cy="142" r="4" fill="#F4F6F1" stroke="#050706" stroke-width="2"/>
-<text x="846" y="146" text-anchor="end" class="micro9">109D</text>
+<path d="M301.50 142H824" stroke="#050706" stroke-width="2"/>
+<circle cx="301.50" cy="142" r="4" fill="#F4F6F1" stroke="#050706" stroke-width="2"/>
+<text x="846" y="146" text-anchor="end" class="micro9">110D</text>
 <text x="40" y="176" class="micro9">CLAUDIKINS-MARKETPLACE</text>
 <path d="M254 172H824" stroke="#DCE4DF" stroke-width="2"/>
 <path d="M254.00 172H824" stroke="#050706" stroke-width="2"/>
 <circle cx="254.00" cy="172" r="4" fill="#F4F6F1" stroke="#050706" stroke-width="2"/>
 <text x="846" y="176" text-anchor="end" class="micro9">120D</text>
-<path d="M296.25 130h5M296.25 130v5 M311.25 130h5M316.25 130v5 M296.25 149v5M296.25 154h5 M316.25 149v5M311.25 154h5" fill="none" stroke="#6E9DB2" stroke-width="1.1"/>
+<path d="M291.5 130h5M291.5 130v5 M306.5 130h5M311.5 130v5 M291.5 149v5M291.5 154h5 M311.5 149v5M306.5 154h5" fill="none" stroke="#6E9DB2" stroke-width="1.1"/>
 <text x="40" y="209" class="micro9">LAST PUSH / AGE SPAN FROM NOW</text>
 <path d="M792 203l7-12m4 12 7-12m4 12 7-12m4 12 7-12" stroke="#050706" stroke-width="2.2"/>
 <path d="M852 197H864M858 191V203" fill="none" stroke="#6E9DB2" stroke-width=".8"/>
