@@ -169,7 +169,7 @@
     {
       "name": "GIF size: contribution-scan.gif",
       "passed": true,
-      "detail": "90.9 KiB"
+      "detail": "90.8 KiB"
     },
     {
       "name": "GIF loop seam: contribution-scan.gif",
@@ -179,7 +179,7 @@
     {
       "name": "GIF bounded motion: contribution-scan.gif",
       "passed": true,
-      "detail": "median 0.37%, maximum 0.55% pixels changed"
+      "detail": "median 0.37%, maximum 0.52% pixels changed"
     },
     {
       "name": "GIF static-field stability: contribution-scan.gif",
@@ -334,7 +334,7 @@
     {
       "name": "GIF cadence: repository-signal.gif",
       "passed": true,
-      "detail": "50 encoded frames, 7200ms loop, delays [40, 1340, 1480, 2500]"
+      "detail": "51 encoded frames, 7200ms loop, delays [40, 1340, 1480, 2460]"
     },
     {
       "name": "GIF disposal: repository-signal.gif",
@@ -344,7 +344,7 @@
     {
       "name": "GIF size: repository-signal.gif",
       "passed": true,
-      "detail": "93.9 KiB"
+      "detail": "94.2 KiB"
     },
     {
       "name": "GIF loop seam: repository-signal.gif",
@@ -364,7 +364,7 @@
     {
       "name": "aggregate GIF budget",
       "passed": true,
-      "detail": "633.2 KiB across 6 animations"
+      "detail": "633.3 KiB across 6 animations"
     },
     {
       "name": "telemetry reel dimensions",
@@ -384,7 +384,7 @@
     {
       "name": "telemetry reel size",
       "passed": true,
-      "detail": "328.4 KiB"
+      "detail": "329.2 KiB"
     },
     {
       "name": "telemetry reel loop seam",
@@ -479,7 +479,7 @@
     {
       "name": "cyan subordination: repository-signal.png",
       "passed": true,
-      "detail": "0.016%"
+      "detail": "0.002%"
     },
     {
       "name": "primary text contrast",
@@ -509,5 +509,5 @@
   ],
   "logo_sha256": "4a519d9bb147ed834ecc7724118337e417c3de60e29e923477e725167f4b6458",
   "identity_sha256": "3dcc64f3a29109f6c5a87b305f12e3f0ac792363f175ef2fe18e1af9c980c857",
-  "validated_at": "2026-08-31T10:55:28.175851+00:00"
+  "validated_at": "2026-09-01T09:27:21.431691+00:00"
 }
