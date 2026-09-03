@@ -37,9 +37,9 @@ Overall: **PASS**
 | GIF dimensions: contribution-scan.gif | PASS | 900 x 220 |
 | GIF cadence: contribution-scan.gif | PASS | 50 encoded frames, 7200ms loop, delays [40, 480, 1640, 3200] |
 | GIF disposal: contribution-scan.gif | PASS | disposal methods [1] |
-| GIF size: contribution-scan.gif | PASS | 90.9 KiB |
+| GIF size: contribution-scan.gif | PASS | 90.8 KiB |
 | GIF loop seam: contribution-scan.gif | PASS | maximum channel RMS 0.000 |
-| GIF bounded motion: contribution-scan.gif | PASS | median 0.36%, maximum 0.53% pixels changed |
+| GIF bounded motion: contribution-scan.gif | PASS | median 0.37%, maximum 0.53% pixels changed |
 | GIF static-field stability: contribution-scan.gif | PASS | unchanged calibration field |
 | GIF dimensions: focus-board.gif | PASS | 900 x 220 |
 | GIF cadence: focus-board.gif | PASS | 49 encoded frames, 7200ms loop, delays [40, 680, 1570, 3110] |
@@ -72,15 +72,15 @@ Overall: **PASS**
 | GIF dimensions: repository-signal.gif | PASS | 900 x 220 |
 | GIF cadence: repository-signal.gif | PASS | 50 encoded frames, 7200ms loop, delays [40, 1340, 1480, 2500] |
 | GIF disposal: repository-signal.gif | PASS | disposal methods [1] |
-| GIF size: repository-signal.gif | PASS | 93.9 KiB |
+| GIF size: repository-signal.gif | PASS | 93.7 KiB |
 | GIF loop seam: repository-signal.gif | PASS | maximum channel RMS 0.000 |
-| GIF bounded motion: repository-signal.gif | PASS | median 0.76%, maximum 2.18% pixels changed |
+| GIF bounded motion: repository-signal.gif | PASS | median 0.76%, maximum 2.15% pixels changed |
 | GIF static-field stability: repository-signal.gif | PASS | unchanged calibration field |
-| aggregate GIF budget | PASS | 633.1 KiB across 6 animations |
+| aggregate GIF budget | PASS | 632.7 KiB across 6 animations |
 | telemetry reel dimensions | PASS | 900 x 220 |
 | telemetry reel cadence | PASS | 44 frames, 13680ms, loop=0 |
 | telemetry reel disposal | PASS | disposal methods [1] |
-| telemetry reel size | PASS | 328.6 KiB |
+| telemetry reel size | PASS | 327.9 KiB |
 | telemetry reel loop seam | PASS | maximum channel RMS 0.370 |
 | preview dimensions: contribution-scan.png | PASS | 900 x 220 |
 | black/off-white dominance: contribution-scan.png | PASS | 88.70% |
