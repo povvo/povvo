@@ -1,4 +1,4 @@
-/** Pure catalogue helpers: numbering, inks, titles, ordering. No DOM, no three.js. */
+/** Pure catalogue helpers: numbering, shells, titles, ordering. No DOM, no three.js. */
 
 export interface Repo {
   name: string;
@@ -16,34 +16,71 @@ export interface Repo {
 }
 
 export interface Entry extends Repo {
-  /** Accession number: order of repository creation, 1-based. The key printed everywhere. */
+  /** Accession number: order of repository creation, 1-based. Identity and default order. */
   no: number;
-  /** Index into INKS. */
-  ink: number;
+  /** Index into SHELLS: the case colour. */
+  shell: number;
+  /** Cover layout (recipe/direction-v2.md, cover system). */
+  layout: Layout;
   /** Display title: the slug with hyphens and underscores as spaces. */
   title: string;
   /** Four-digit year of the last push. */
   year: string;
+  /** Four-digit year the repository was created. */
+  born: string;
   /** Short language code for spines and lines. */
   code: string;
+  /** Capsule code printed on the case and the caption, e.g. ELB-PY-26. */
+  capsule: string;
 }
 
-/** Printed-ink range; ordered so that consecutive accession numbers alternate hue families. */
-export const INKS = [
-  { name: "oxblood", hex: "#7A2E2E" },
-  { name: "teal", hex: "#2B6A6A" },
-  { name: "ochre", hex: "#7A5810" },
-  { name: "indigo", hex: "#3F3A8C" },
-  { name: "moss", hex: "#4F6A2E" },
-  { name: "plum", hex: "#6E3A62" },
-  { name: "slate", hex: "#44586F" },
-  { name: "rust", hex: "#8C4A22" },
-  { name: "bottle", hex: "#2F5243" },
-  { name: "graphite", hex: "#4A4642" },
-] as const;
+export type Layout = "quilt" | "block" | "horizon" | "specimen";
 
-export const STOCK = "#E9E5DD";
-export const INK = "#221F1C";
+export interface Shell {
+  name: string;
+  hex: string;
+  /** Text printed on this shell, chosen by measured contrast (recipe/direction-v2.md, tokens). */
+  text: string;
+  /** The collision colour this shell is paired with on covers. */
+  accent: string;
+}
+
+export const FIELD = { sky: "#CFE6DF", paper: "#F8F1DF", sand: "#EFE3C1", dust: "#D8BE83", bone: "#F4EFE1" } as const;
+export const INK = "#111719";
+export const PAPER = "#F8F1DF";
+export const SIGNAL = "#E7202E";
+
+/**
+ * Hot shells from the patchwork palette, ordered so neighbours alternate warm, cool, dark and
+ * light. Text on each is the measured better of ink and paper (all at or above 4.5).
+ * Bone is reserved for the specimen layout.
+ */
+export const SHELLS: Shell[] = [
+  { name: "teal", hex: "#008C9A", text: INK, accent: "#FF4B1F" },
+  { name: "orange", hex: "#FF4B1F", text: INK, accent: "#0B1BA2" },
+  { name: "violet", hex: "#5200DC", text: PAPER, accent: "#2EFFE3" },
+  { name: "acid", hex: "#EFE61B", text: INK, accent: "#2E5B2D" },
+  { name: "indigo", hex: "#0B1BA2", text: PAPER, accent: "#BAA07F" },
+  { name: "pink", hex: "#F59AC7", text: INK, accent: "#2E5B2D" },
+  { name: "forest", hex: "#2E5B2D", text: PAPER, accent: "#F59AC7" },
+  { name: "aqua", hex: "#2EFFE3", text: INK, accent: "#5200DC" },
+  { name: "magenta", hex: "#AE3571", text: PAPER, accent: "#9EAA75" },
+  { name: "lime", hex: "#DDEB28", text: INK, accent: "#5D0E1A" },
+  { name: "petrol", hex: "#092E35", text: PAPER, accent: "#FF4B1F" },
+  { name: "red", hex: "#DA0028", text: PAPER, accent: "#14C9F8" },
+  { name: "sage", hex: "#9EAA75", text: INK, accent: "#AE3571" },
+  { name: "brown", hex: "#8A4C0A", text: PAPER, accent: "#2EFFE3" },
+  { name: "sky", hex: "#14C9F8", text: INK, accent: "#DA0028" },
+  { name: "oxblood", hex: "#5D0E1A", text: PAPER, accent: "#EFE61B" },
+];
+export const BONE: Shell = { name: "bone", hex: FIELD.bone, text: INK, accent: SIGNAL };
+
+/** Eleven layouts against sixteen shells: the two cycles are coprime, so pairings keep varying. */
+const LAYOUT_CYCLE: Layout[] = ["quilt", "block", "horizon", "quilt", "specimen", "block", "quilt", "horizon", "block", "quilt", "horizon"];
+
+export function shellOf(entry: Entry): Shell {
+  return entry.layout === "specimen" ? BONE : SHELLS[entry.shell];
+}
 
 /** Repositories that are infrastructure for the profile rather than work. */
 export const META_REPOS = new Set([".github", "povvo"]);
@@ -86,6 +123,20 @@ export function formatNo(no: number): string {
   return `No. ${String(no).padStart(3, "0")}`;
 }
 
+/** Position in the current order, printed as 04 / 11. */
+export function pad2(n: number, total: number): string {
+  return String(n).padStart(String(total).length < 2 ? 2 : String(total).length, "0");
+}
+
+export function position(index: number, total: number): string {
+  return `${pad2(index + 1, total)} / ${pad2(total, total)}`;
+}
+
+export function capsuleOf(code: string, born: string): string {
+  const c = code === "—" ? "DOC" : code.replace(/[^A-Z0-9+#]/g, "").slice(0, 5);
+  return `ELB-${c}-${born.slice(2)}`;
+}
+
 export function yearOf(iso: string): string {
   return iso.slice(0, 4);
 }
@@ -96,14 +147,19 @@ export function toEntries(repos: Repo[]): Entry[] {
   work.sort((a, b) => a.created_at.localeCompare(b.created_at) || a.name.localeCompare(b.name));
   return work.map((r, i) => {
     const no = i + 1;
+    const code = languageCode(r.language);
+    const born = yearOf(r.created_at);
     return {
       ...r,
       topics: r.topics ?? [],
       no,
-      ink: (no - 1) % INKS.length,
+      shell: (no - 1) % SHELLS.length,
+      layout: LAYOUT_CYCLE[(no - 1) % LAYOUT_CYCLE.length],
       title: displayTitle(r.name),
       year: yearOf(r.pushed_at || r.created_at),
-      code: languageCode(r.language),
+      born,
+      code,
+      capsule: capsuleOf(code, born),
     };
   });
 }
@@ -131,17 +187,23 @@ export function orderEntries(entries: Entry[], order: Order): Entry[] {
 export function matches(entry: Entry, query: string): boolean {
   const q = query.trim().toLowerCase();
   if (!q) return true;
-  const hay = [entry.name, entry.title, entry.description ?? "", entry.language ?? "", entry.topics.join(" "), formatNo(entry.no)]
+  const hay = [entry.name, entry.title, entry.description ?? "", entry.language ?? "", entry.topics.join(" "), entry.capsule]
     .join(" ")
     .toLowerCase();
   return q.split(/\s+/).every((part) => hay.includes(part));
 }
 
 export function metaLine(entry: Entry): string {
-  const parts = [entry.language ?? "No language", entry.year];
+  const parts = [entry.language ?? "No language", `Updated ${dateLine(entry.pushed_at || entry.created_at)}`];
   if (entry.stargazers_count > 0) parts.push(`${entry.stargazers_count} ★`);
   if (entry.archived) parts.push("Archived");
-  return parts.join(" · ");
+  return parts.join(" — ");
+}
+
+export function dateLine(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso.slice(0, 10);
+  return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }).toUpperCase();
 }
 
 /** Deterministic stress set for review: synthetic names, real structure. */

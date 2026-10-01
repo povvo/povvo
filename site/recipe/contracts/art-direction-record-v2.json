@@ -1,0 +1,75 @@
+{
+  "mode": "route-comparison",
+  "product": "Ethan Lee Barrett public-work catalogue on povvo.github.io/povvo: a finder for about sixty repositories (v2 restyle)",
+  "audience": "Recruiters, collaborators and curious developers arriving from GitHub on laptops and phones for a few minutes",
+  "decision_owner": "Ethan Lee Barrett (direction drafted in this build; approval pending his review)",
+  "visual_thesis": "Because the visitor meets sixty projects by one person and must feel both the size of the work and the singularity of each piece, set the catalogue as a campaign sheet printed under heat: a pale sun-bleached field holds the rack like a horizon, one hot glossy case stands in front of its own enormous condensed title, a dense dark cockpit holds the tracklist, and small protocol apparatus annotates the object, so that the first read is the object, the second the title and the quiet read the codes.",
+  "perceptual_goals": [
+    "Orientation: one person's body of work; wordmark, protocol strip and count",
+    "Selection: the current case is the only hot object out of the rack and the only title on the field",
+    "Relation: edge rail ticks and tracklist rows mirror rack order",
+    "Interpretation: covers read as designed objects in one language with four layouts",
+    "Reward: the registration stamp, the drawn callout, the case opening into a feature spread"
+  ],
+  "anti_targets": [
+    {"name": "Festival neon", "failure_signature": "Every collision colour across the page as gradients or glow; dark page with neon type"},
+    {"name": "Library calm", "failure_signature": "Warm stock, book serif titles, muted inks, nothing large on the stage (the v1 result)"},
+    {"name": "Source cosplay", "failure_signature": "Anything recognisable as Flume, grandtao or greedy property: marks, cars, photographs, the orbital eye"},
+    {"name": "Glitch theatre", "failure_signature": "Registration offsets, scanlines or noise on reading text, or effects that loop with hands off"},
+    {"name": "Spec-Scan carry-over", "failure_signature": "Cyan instrument lines, Plex Mono, scanlines, the aperture P"}
+  ],
+  "routes": [
+    {
+      "name": "A. Heat Sheet",
+      "governing_relationship": "Object over title over field: one hot case stands in front of its giant condensed title on a pale heat field; a dark cockpit holds the dense list",
+      "tradeoff": "Fitting a giant title behind a moving 3D object needs a DOM layer under a transparent canvas and careful cut timing",
+      "falsification_test": "The giant title competes with the case at rest, or the cockpit reads as a generic dark sidebar",
+      "representative_states": ["settled wide", "browsing", "open spread", "phone portrait", "reduced motion", "sixty cases", "no WebGL"]
+    },
+    {
+      "name": "B. Cockpit Night",
+      "governing_relationship": "Density dominates: the whole page is the dark petrol cockpit, cases glow as the only colour, the list is primary",
+      "tradeoff": "Loses the heat field and the quiet register; drifts toward the dark portfolio default",
+      "falsification_test": "Competitor reassignment: another developer's dark portfolio could ship it unchanged",
+      "representative_states": ["settled wide", "browsing", "open spread", "phone portrait", "reduced motion", "sixty cases", "no WebGL"]
+    },
+    {
+      "name": "C. Monochrome Dossier",
+      "governing_relationship": "Order dominates: grandtao and editorialisated monochrome catalogue grid; cases in greys with one red; halftone specimens",
+      "tradeoff": "Coherent and restrained but loses Zawada's collision energy, which is what Ethan pointed at",
+      "falsification_test": "The reference the brief names is no longer visible in the result",
+      "representative_states": ["settled wide", "browsing", "open spread", "phone portrait", "reduced motion", "sixty cases", "no WebGL"]
+    }
+  ],
+  "signature_patterns": [
+    {
+      "name": "Type behind the object",
+      "governing_relationship": "The current title is set huge in condensed italic behind the extracted case, fitted to the stage width",
+      "recurrence_rule": "Exactly one title, always the current case, shown only when the rack has settled",
+      "variation_rule": "One or two lines by length; under reduced motion it swaps without the stamp",
+      "failure_signature": "Title over the case, two giant words, giant type in the cockpit"
+    },
+    {
+      "name": "The registration stamp",
+      "governing_relationship": "On settle the title arrives with a misregistered copy in the case colour, which registers within two frames",
+      "recurrence_rule": "Once per settle, on display type only",
+      "variation_rule": "Offset direction follows the turn direction",
+      "failure_signature": "Looping glitch, effects on reading text, effects on hover"
+    },
+    {
+      "name": "The callout",
+      "governing_relationship": "A hairline circle drawn around the extracted case's spine code with a leader to a mono label",
+      "recurrence_rule": "Only on the current case, only when settled, hidden when open",
+      "variation_rule": "Leader side flips on narrow screens",
+      "failure_signature": "Callouts on several objects or circles with nothing inside"
+    }
+  ],
+  "artefacts": [
+    {"name": "site/recipe/direction-v2.md", "purpose": "Synthesis record: mechanism map, contradictions resolved, tokens", "authority": "directional"},
+    {"name": "site/recipe/studies/type-specimen-v2.png", "purpose": "Display, protocol, voice and reading candidates at size", "authority": "exploratory"},
+    {"name": "Playwright review frames", "purpose": "Representative states at 1440x900 and 390x844", "authority": "benchmark"}
+  ],
+  "exceptions": [
+    {"reason": "Route A keeps the v1 rack and index mechanism because the review praised the skeleton", "scope": "Stage geometry, state model and index behaviour", "return_condition": "Revisit if the cockpit tracklist is ignored in use"}
+  ]
+}

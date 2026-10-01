@@ -1,33 +1,35 @@
-/* Canvas-facing faces: the 2D canvas cannot set variation axes per draw call, so each
-   printed role gets its own face with the axes fixed in the descriptor. Verified in
-   recipe/studies/canvas-axes.html. */
+/* Canvas-facing faces. The 2D canvas cannot set variation axes per draw call, so each
+   printed role gets its own face with the axes fixed in the descriptor (the method is
+   verified in recipe/studies/canvas-axes.html). Families and roles: recipe/direction-v2.md. */
 @font-face {
-  font-family: "Fraunces Cover";
-  src: url("../node_modules/@fontsource-variable/fraunces/files/fraunces-latin-full-normal.woff2") format("woff2-variations");
+  /* Object words on covers and spines: Anybody, condensed italic. */
+  font-family: "Heat Display";
+  src: url("../node_modules/@fontsource-variable/anybody/files/anybody-latin-wdth-italic.woff2") format("woff2-variations");
   font-weight: 100 900;
   font-display: swap;
-  font-variation-settings: "opsz" 96, "SOFT" 20, "WONK" 1;
+  font-variation-settings: "wdth" 50;
 }
 @font-face {
-  font-family: "Fraunces Text";
-  src: url("../node_modules/@fontsource-variable/fraunces/files/fraunces-latin-full-normal.woff2") format("woff2-variations");
-  font-weight: 100 900;
+  /* Apparatus: Martian Mono at its squared, extended width. */
+  font-family: "Heat Mono";
+  src: url("../node_modules/@fontsource-variable/martian-mono/files/martian-mono-latin-wdth-normal.woff2") format("woff2-variations");
+  font-weight: 100 800;
   font-display: swap;
-  font-variation-settings: "opsz" 14, "SOFT" 0, "WONK" 0;
+  font-variation-settings: "wdth" 112.5;
 }
 @font-face {
-  font-family: "Archivo Spine";
-  src: url("../node_modules/@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2") format("woff2-variations");
-  font-weight: 100 900;
-  font-stretch: 62% 125%;
+  /* Provenance lines: Martian Mono, condensed. */
+  font-family: "Heat Mono Narrow";
+  src: url("../node_modules/@fontsource-variable/martian-mono/files/martian-mono-latin-wdth-normal.woff2") format("woff2-variations");
+  font-weight: 100 800;
   font-display: swap;
-  font-variation-settings: "wdth" 80;
+  font-variation-settings: "wdth" 75;
 }
 @font-face {
-  font-family: "Archivo Label";
-  src: url("../node_modules/@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2") format("woff2-variations");
-  font-weight: 100 900;
-  font-stretch: 62% 125%;
+  /* The voice on printed sheets: Bodoni Moda italic at a text optical size. */
+  font-family: "Heat Serif";
+  src: url("../node_modules/@fontsource-variable/bodoni-moda/files/bodoni-moda-latin-opsz-italic.woff2") format("woff2-variations");
+  font-weight: 400 900;
   font-display: swap;
-  font-variation-settings: "wdth" 88;
+  font-variation-settings: "opsz" 24;
 }

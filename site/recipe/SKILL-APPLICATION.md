@@ -2,6 +2,77 @@
 
 The catalogue is one production that used the Motion Design Skills and the Good Fuckin Frontend skills by the decision being made, not by loading all of them. This map records which workflow references were actually read, which helpers were actually run on this project's inputs, and where each skill's contribution lives in the source. Helpers were run on authored contracts in `contracts/`; their results are in `evidence/`. A helper `PASS` is a mechanical fact about its contract and not an aesthetic verdict.
 
+
+## v2: Heat Sheet (restyle and mechanism repair)
+
+The v2 pass answers two pieces of feedback:
+- **Restyle.** Ethan asked for Jonathan Zawada's *Hi This Is Flume* visuals, mixed with four of his pastiche extractions, as one language.
+- **Repair.** Cases cut through each other, and moving off an open case snapped it shut.
+
+**Motion art direction** and **UI art direction**.
+- Synthesised five extracted design languages by mechanism rather than surface (`direction-v2.md`, mechanism-first map).
+- Resolved the contradictions explicitly: colour, type, texture, motion, density, numbering.
+- Wrote three structurally different routes (Heat Sheet, Cockpit Night, Monochrome Dossier) with falsification tests and selected Heat Sheet.
+- Routed references: `anti-targets-and-reference-research.md` (mechanism-first map, fixation control), `direction-boards-and-element-collages.md`, `route-generation-and-convergence.md`, `signature-patterns-and-rules.md`.
+- Helpers:
+  - `check_direction.py` on `contracts/art-direction-record-v2.json`: PASS, no warnings.
+  - `direction_matrix.py` on `contracts/direction-matrix-v2.json`: Heat Sheet first. Bookkeeping only.
+
+**UI typography**, **UI colour**, **UI visual language**, **UI layout and composition**.
+- Four families with one job each, chosen from a rendered specimen (`studies/type-specimen-v2.png`).
+- Shells measured for text contrast, and the text colour on each is computed (`covers.ts: textOn`).
+- Edge rails, capsules, the specimen label and the cockpit are recorded in `visual-system.md`.
+- Production locations: `src/styles.css`, `src/fonts.css`, `src/catalogue.ts` (shells, layouts, capsule codes).
+
+**Procedural motion** and **visual development for motion**.
+- The patchwork was added after Ethan sent images of the Zawada artwork (a video frame, the packaging, the gatefold, the vinyl label). It is a seeded tile system in `src/tiles.ts`:
+  - eight tile kinds;
+  - a quilt composer that never repeats a neighbour's colour and lays diamonds across grid intersections;
+  - an isometric tile cube;
+  - strips.
+
+  The mechanism is borrowed; the marks are not.
+- The cover system has four deterministic layouts (quilt, block, horizon, specimen) on coprime cycles with sixteen shells.
+- One fitting routine (`fitDisplay`) is shared by the covers and the page's giant title, so page and print use the same face and metrics.
+- Evidence: `studies/cover-sheet.html`.
+
+**Look development for motion**.
+- The look thesis changed to glossy automotive shells in hard sun.
+- A generated heat-field environment replaces the room environment.
+- Neutral tone mapping keeps the shells' hues.
+- A shadow-only floor anchors the rack on the page's printed horizon, which the stage computes from the floor's vanishing line.
+
+**Motion foundations**, **interactive and real-time motion**, **3D motion design**.
+- Each case owns gated `pull`, `turn` and `open` springs (`src/gates.ts`). The way out is pull, turn, open; the way back is close, turn back, retract. Only one case turns at a time, and the way home is stiffer than the way out.
+- A presented case holds the front while the rack turns, then returns along the arc outside the rack.
+- Reflow sinks visible cases through a clipped floor, re-slots them unseen and raises them from the front out.
+- Helpers:
+  - `spring_response.py` on `contracts/spring-case-{pull,turn,open,lift}.json`: all PASS, no overshoot. Settling times are 0.50, 0.58, 0.88 and 0.54 s.
+  - A gate simulation (`scripts/simulate-gates.ts`, result in `evidence/gate-simulation.result.json`) runs the stage's own springs and gates through three interruption scenarios. All PASS:
+    - minimum clearance while yawed: +0.023 units;
+    - largest turn on a second case at the same time: 0.0007;
+    - no case opens while unturned.
+- Sampled sequences on a fixed-step review clock (`window.__rack.freeze()` and `step(ms)`) are in `evidence/review/sequence-*`.
+
+**Kinetic typography** and **narrative and editorial motion**.
+- Arrival: a once-per-session patchwork title card with the project count as its numeral. It is cut away in twelve scattered hard-cut batches (`src/ui/curtain.ts`).
+- Signature: the giant title cuts out the moment the rack moves and stamps in on settle, with a two-frame misregistered copy in the case colour.
+- The caption scans in left to right. The callout ring and leader draw on, then the label snaps.
+- Feedback and result stay separate: the position number moves at once, and the words wait for the settle.
+- Production locations: `src/ui/hero.ts`, `src/ui/caption.ts`, `src/styles.css` (`hero-*`, `scan`, `callout`).
+
+**Accessible and inclusive motion**.
+- Every new carrier has a reduced equivalent: `reduced_motion_state_map.py` on `contracts/reduced-motion-map-v2.json` returns PASS.
+- The giant title is decorative (`aria-hidden`). The caption carries the title for assistive technology.
+- Focus is ink on paper and lime in the cockpit.
+- On narrow screens, vertical scroll belongs to the page.
+
+**Data.** The live GitHub read now pages through every public repository (up to 1,000), so the catalogue has no 100-repository ceiling.
+
+---
+
+## v1 record (the first build; mechanism kept, visual sections superseded)
+
 ## Direction
 
 **Motion art direction** (`motion-design-skills/skills/motion-art-direction`). Reframed the brief into a motion thesis: the collection is one revolving object; turning selects; the chosen case leaves the rack; reading happens inside the object. Three structurally different routes were written and compared (the drum, the index, the shelf) and the drum was selected with the index locked as an invariant.

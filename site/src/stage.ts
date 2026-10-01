@@ -1,20 +1,31 @@
 import * as THREE from "three";
-import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import type { Entry } from "./catalogue";
-import { drawInsert, drawInsideLeft, drawInsideRight, drawSpine, edgeColour, ensureFonts, inkOf } from "./covers";
-import { Spring, clamp, easeOutCubic } from "./motion";
+import { FIELD } from "./catalogue";
+import { drawInsert, drawInsideLeft, drawInsideRight, drawSpine, edgeColour, ensureFonts, shellHex } from "./covers";
+import { FRONT_CLEAR, TURN_BLOCK, gateCase } from "./gates";
+import { Spring, clamp, easeOutCubic, smoothstep } from "./motion";
 import type { State, Store } from "./state";
 
 /**
  * The rack. Coordinate contract (3d-motion-design: transforms and pivots):
- *   world: right-handed, +y up, +z toward the viewer, units of ten centimetres.
- *   rack group: rotates about +y and translates along y; a case's slot i sits at
- *     angle i * STEP around the axis and height i * RISE. Slot 0 is at the front (+z).
- *   case group: local +x is the case's outward normal while it is on the rack (its
- *     spine faces the viewer); extraction yaws it by a quarter turn so local +z (the
- *     front cover) faces the viewer. The hinge pivot is the front edge of the spine.
+ *   world: right-handed, +y up, +z toward the viewer, units of ten centimetres. The floor is
+ *     the plane y = FLOOR_Y; it only receives shadows, the heat field behind is the page.
+ *   rack group: rotates about +y and translates along y; a case's slot i sits at angle
+ *     i * step around the axis and height i * rise. Slot 0 is at the front (+z).
+ *   case group: local +x is the case's outward normal while it is on the rack (its spine
+ *     faces the viewer); presenting yaws it by a quarter turn so local +z (the cover) faces
+ *     the viewer. The hinge pivot is the front edge of the spine.
  *
- * Springs own every continuous value; the store owns the committed selection.
+ * Each case owns three gated springs (recipe/direction-v2.md, mechanism changes):
+ *   pull  0..1  straight out along the outward normal, far enough to clear the rack
+ *   turn  0..1  the quarter turn and the float up to the presentation spot
+ *   open  0..1  the front leaf swings on the hinge
+ * Out runs pull, then turn, then open; back runs close, then turn back, then retract. Only
+ * one case may be turned at a time. A case that loses the selection runs its own reverse
+ * sequence while the rack turns, so nothing ever snaps shut or passes through a neighbour.
+ *
+ * Reflow (filter, sort, new data) never slides cases past each other: visible cases sink
+ * through the floor, the slots change unseen, and the cases rise again from the front out.
  */
 
 const CASE_W = 1.35;
@@ -22,9 +33,13 @@ const CASE_H = 1.9;
 const CASE_D = 0.15;
 const LEAF_D = CASE_D * 0.42;
 const SPINE_T = 0.03;
-const PULL = 1.3; // extraction travel along the outward normal
+const PULL_OUT = 1.6; // > 1.414, the radius a case sweeps while turning plus the rack's outer edge
+const FLOOR_Y = -CASE_H / 2;
+const SINK = CASE_H + 0.15;
 const WINDOW = THREE.MathUtils.degToRad(100); // cases beyond this angle from the front are not drawn
 const WINDOW_FADE = THREE.MathUtils.degToRad(12);
+const HINGE_OPEN = -2.55; // radians, how far the front leaf swings
+const REST_YAW = 0.14; // the presented case rests slightly turned so its spine edge catches the sun
 
 interface RackGeometry {
   step: number;
@@ -48,8 +63,14 @@ export function rackGeometry(count: number): RackGeometry {
   const perTurn = (Math.PI * 2) / step;
   return { step, radius: inner + CASE_W + SPINE_T, rise: helix ? (CASE_H * 1.18) / perTurn : 0 };
 }
-const HINGE_OPEN = -2.55; // radians, how far the front leaf swings
-const REST_YAW = 0.16; // the extracted case rests slightly turned so its spine edge catches the light
+
+/** Where the callout points on each cover layout, as fractions of the insert from its top left. */
+const CALLOUT_AT: Record<Entry["layout"], [number, number]> = {
+  quilt: [0.2, 0.928],
+  block: [0.2, 0.07],
+  horizon: [0.2, 0.735],
+  specimen: [0.79, 0.075],
+};
 
 interface CaseNode {
   entry: Entry;
@@ -58,8 +79,15 @@ interface CaseNode {
   back: THREE.Mesh;
   spine: THREE.Mesh;
   hinge: THREE.Group;
-  slot: Spring;
-  presence: Spring;
+  slot: number;
+  alive: boolean;
+  pull: Spring;
+  turn: Spring;
+  open: Spring;
+  lift: Spring;
+  /** Seconds to wait before rising, for the stagger. */
+  liftDelay: number;
+  clip: THREE.Plane;
   materials: THREE.MeshPhysicalMaterial[];
   frontMat: THREE.MeshPhysicalMaterial;
   spineMat: THREE.MeshPhysicalMaterial;
@@ -81,16 +109,48 @@ function texture(canvas: HTMLCanvasElement, renderer: THREE.WebGLRenderer): THRE
   return t;
 }
 
-let coatRoughness = 0.25;
+let coatRoughness = 0.16;
 function physical(opts: THREE.MeshPhysicalMaterialParameters): THREE.MeshPhysicalMaterial {
   return new THREE.MeshPhysicalMaterial({
-    roughness: 0.6,
+    roughness: 0.55,
     metalness: 0,
     clearcoat: 1,
     clearcoatRoughness: coatRoughness,
-    envMapIntensity: 0.9,
+    envMapIntensity: 1,
     ...opts,
   });
+}
+
+/**
+ * The environment the gloss reflects: a sky-to-sand dome with a low sun, so the cases
+ * pick up the same heat field the page is printed on (look development: environment).
+ */
+function heatEnvironment(renderer: THREE.WebGLRenderer): THREE.Texture {
+  const env = new THREE.Scene();
+  const dome = new THREE.Mesh(
+    new THREE.SphereGeometry(20, 48, 24),
+    new THREE.ShaderMaterial({
+      side: THREE.BackSide,
+      depthWrite: false,
+      uniforms: {
+        sky: { value: new THREE.Color(FIELD.sky) },
+        haze: { value: new THREE.Color(FIELD.paper) },
+        sand: { value: new THREE.Color(FIELD.dust) },
+      },
+      vertexShader: "varying vec3 vDir; void main(){ vDir = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
+      fragmentShader:
+        "uniform vec3 sky; uniform vec3 haze; uniform vec3 sand; varying vec3 vDir;" +
+        "void main(){ float y = vDir.y; vec3 c = y > 0.0 ? mix(haze, sky, smoothstep(0.0, 0.55, y)) : mix(haze, sand, smoothstep(0.0, 0.25, -y)); gl_FragColor = vec4(c, 1.0); }",
+    }),
+  );
+  env.add(dome);
+  const sun = new THREE.Mesh(new THREE.SphereGeometry(1.4, 16, 8), new THREE.MeshBasicMaterial({ color: new THREE.Color(6, 5.6, 5) }));
+  sun.position.set(-9, 11, 9);
+  env.add(sun);
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  const tex = pmrem.fromScene(env, 0.02).texture;
+  pmrem.dispose();
+  return tex;
 }
 
 export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store: Store): StageHandle | null {
@@ -100,84 +160,79 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
   } catch {
     return null;
   }
+  const stageEl = field.closest<HTMLElement>(".stage") ?? field;
   const small = Math.min(innerWidth, innerHeight) < 700;
   const params = new URLSearchParams(location.search);
   let quality: "high" | "low" = params.get("quality") === "low" ? "low" : "high";
   // Look wedges (review only): ?key=<intensity> and ?coat=<clearcoat roughness>.
   const wedgeKey = Number(params.get("key"));
   const wedgeCoat = Number(params.get("coat"));
+  if (wedgeCoat > 0) coatRoughness = wedgeCoat;
   renderer.setPixelRatio(quality === "low" ? 1 : Math.min(devicePixelRatio || 1, small ? 1.5 : 2));
-  function applyQuality(): void {
-    renderer.setPixelRatio(quality === "low" ? 1 : Math.min(devicePixelRatio || 1, small ? 1.5 : 2));
-    renderer.shadowMap.enabled = quality === "high";
-    for (const n of nodes.values()) for (const m of n.materials) m.needsUpdate = true;
-    dirty = true;
-  }
   renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.02;
+  // Neutral keeps the shells' hues where the direction measured them; ACES shifts orange to yellow.
+  renderer.toneMapping = THREE.NeutralToneMapping;
+  renderer.toneMappingExposure = 1.0;
   renderer.shadowMap.enabled = quality === "high";
   renderer.shadowMap.type = THREE.PCFShadowMap;
+  renderer.localClippingEnabled = true;
   renderer.setClearColor(0x000000, 0);
 
-  if (wedgeCoat > 0) coatRoughness = wedgeCoat;
   const scene = new THREE.Scene();
-  const pmrem = new THREE.PMREMGenerator(renderer);
-  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-  scene.environmentIntensity = 0.55;
-  pmrem.dispose();
+  scene.environment = heatEnvironment(renderer);
+  scene.environmentIntensity = 0.7;
 
-  const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 60);
-  const camBase = new THREE.Vector3(0, 0.7, 8.8);
+  const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 80);
+  const camBase = new THREE.Vector3(0, 0.2, 10);
   camera.position.copy(camBase);
-  const lookAt = new THREE.Vector3(0, 0.1, 0);
+  const lookAt = new THREE.Vector3(0, 0.35, 0);
 
-  // Light rig (look development record): one warm key with shadows, environment fill, a weak cool rim.
-  const key = new THREE.DirectionalLight(0xfff4e6, wedgeKey > 0 ? wedgeKey : 2.4);
-  key.position.set(-3.2, 5.2, 4.2);
+  // Light rig: one hot sun from high front left with hard-ish shadows, a cool sky fill.
+  const key = new THREE.DirectionalLight(0xfff1dc, wedgeKey > 0 ? wedgeKey : 2.6);
+  key.position.set(-4.2, 6.5, 5.2);
   key.castShadow = true;
-  key.shadow.mapSize.set(1536, 1536);
+  key.shadow.mapSize.set(2048, 2048);
   key.shadow.camera.near = 1;
-  key.shadow.camera.far = 20;
-  key.shadow.camera.left = -4.5;
-  key.shadow.camera.right = 4.5;
-  key.shadow.camera.top = 4.5;
-  key.shadow.camera.bottom = -4.5;
-  key.shadow.bias = -0.0006;
+  key.shadow.camera.far = 30;
+  key.shadow.camera.left = -7;
+  key.shadow.camera.right = 7;
+  key.shadow.camera.top = 7;
+  key.shadow.camera.bottom = -7;
+  key.shadow.bias = -0.0005;
   key.shadow.normalBias = 0.02;
-  key.shadow.radius = 4;
+  key.shadow.radius = 2;
   scene.add(key);
   scene.add(key.target);
-  const rim = new THREE.DirectionalLight(0xdde6ff, 0.6);
-  rim.position.set(3.5, 1.5, -3);
-  scene.add(rim);
+  const fill = new THREE.HemisphereLight(0xcfe6df, 0xd8be83, 0.5);
+  scene.add(fill);
+
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.ShadowMaterial({ color: 0x3a2a12, opacity: 0.22 }));
+  floor.rotation.x = -Math.PI / 2;
+  floor.position.y = FLOOR_Y - 0.002;
+  floor.receiveShadow = true;
+  scene.add(floor);
 
   const rack = new THREE.Group();
   scene.add(rack);
 
-  // Depth: far cases fade toward the stock so the near arc reads as the shelf. Range set on resize.
-  const fog = new THREE.Fog(0xe9e5dd, 8, 12);
+  // Heat haze: far cases fade into the field's off-white. Range set on resize.
+  const fog = new THREE.Fog(0xf4ecd6, 9, 16);
   scene.fog = fog;
 
-  // Shared geometry for every case.
   const leafGeo = new THREE.BoxGeometry(CASE_W, CASE_H, LEAF_D);
   const spineGeo = new THREE.BoxGeometry(SPINE_T, CASE_H, CASE_D);
 
   const nodes = new Map<string, CaseNode>();
   let order: Entry[] = [];
-  let total = 1;
   let geo = rackGeometry(11);
 
   // Continuous rack position in slots; the committed target is store.state.current.
   const pos = new Spring(0, { stiffness: 120, ratio: 1 });
-  const extract = new Spring(0, { stiffness: 110, ratio: 0.96 });
-  const openness = new Spring(0, { stiffness: 55, ratio: 1 });
-  const camPush = new Spring(0, { stiffness: 40, ratio: 1 });
   const inspectYaw = new Spring(0, { stiffness: 60, ratio: 0.9 });
   const inspectPitch = new Spring(0, { stiffness: 60, ratio: 0.9 });
 
   let reduced = store.state.motion === "reduced";
-  let dragging: null | { kind: "rack" | "inspect"; startX: number; startY: number; startPos: number; lastX: number; lastT: number; velocity: number; moved: boolean; pointerId: number } = null;
+  let dragging: null | { kind: "rack" | "inspect"; startX: number; startY: number; startPos: number; lastT: number; velocity: number; moved: boolean; pointerId: number } = null;
   let settledFor = -1;
   let arrivalT = reduced ? 1 : 0;
   let dirty = true;
@@ -186,21 +241,21 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
   let disposed = false;
   let hovered: CaseNode | null = null;
   let currentNode: CaseNode | null = null;
+  /** A reflow in progress: visible cases sinking before their slots change. */
+  let reflow: null | { phase: "sink" | "rise"; slots: Map<CaseNode, number> } = null;
   const heroCache = new Map<string, { front: THREE.CanvasTexture; left: THREE.CanvasTexture; right: THREE.CanvasTexture }>();
 
-  function slotAngle(i: number): number {
-    return i * geo.step;
-  }
-
   function buildNode(entry: Entry): CaseNode {
-    const ink = new THREE.Color(inkOf(entry));
+    const shell = new THREE.Color(shellHex(entry));
     const edge = new THREE.Color(edgeColour(entry));
-    const frontMat = physical({ color: ink });
-    const insideLeftMat = physical({ color: 0xf2efe9, clearcoat: 0.2, roughness: 0.85 });
-    const insideRightMat = physical({ color: ink, clearcoat: 0.6 });
-    const backMat = physical({ color: ink });
-    const spineMat = physical({ color: ink });
-    const edgeMat = physical({ color: edge, clearcoat: 0.8, roughness: 0.5 });
+    const clip = new THREE.Plane(new THREE.Vector3(0, 1, 0), 1000);
+    const clippingPlanes = [clip];
+    const frontMat = physical({ color: shell, clippingPlanes });
+    const insideLeftMat = physical({ color: FIELD.bone, clearcoat: 0.2, roughness: 0.85, clippingPlanes });
+    const insideRightMat = physical({ color: shell, clearcoat: 0.6, clippingPlanes });
+    const backMat = physical({ color: shell, clippingPlanes });
+    const spineMat = physical({ color: shell, clippingPlanes });
+    const edgeMat = physical({ color: edge, clearcoat: 0.8, roughness: 0.45, clippingPlanes });
 
     // Box material order: +x, -x, +y, -y, +z, -z
     const front = new THREE.Mesh(leafGeo, [edgeMat, edgeMat, edgeMat, edgeMat, frontMat, insideLeftMat]);
@@ -221,9 +276,6 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
     hinge.add(front);
     group.add(spine, back, hinge);
 
-    // On the rack the spine faces outward: a +90 degree yaw sends local -x along the rack's +z.
-    group.rotation.y = Math.PI / 2;
-
     const node: CaseNode = {
       entry,
       group,
@@ -231,8 +283,14 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
       back,
       spine,
       hinge,
-      slot: new Spring(0, { stiffness: 60, ratio: 1 }),
-      presence: new Spring(0, { stiffness: 50, ratio: 1 }),
+      slot: 0,
+      alive: true,
+      pull: new Spring(0, { stiffness: 200, ratio: 1 }),
+      turn: new Spring(0, { stiffness: 150, ratio: 1 }),
+      open: new Spring(0, { stiffness: 70, ratio: 1 }),
+      lift: new Spring(0, { stiffness: 170, ratio: 1 }),
+      liftDelay: 0,
+      clip,
       materials: [frontMat, insideLeftMat, insideRightMat, backMat, spineMat, edgeMat],
       frontMat,
       spineMat,
@@ -247,7 +305,7 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
   async function paintRackTextures(node: CaseNode): Promise<void> {
     await ensureFonts();
     if (disposed) return;
-    const insert = texture(drawInsert(node.entry, total, small ? 256 : 320), renderer);
+    const insert = texture(drawInsert(node.entry, small ? 256 : 320), renderer);
     const spine = texture(drawSpine(node.entry, small ? 48 : 64), renderer);
     node.frontMat.map = insert;
     node.frontMat.color.set(0xffffff);
@@ -264,8 +322,8 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
     let hero = heroCache.get(node.entry.name);
     if (!hero) {
       hero = {
-        front: texture(drawInsert(node.entry, total, small ? 640 : 1024), renderer),
-        left: texture(drawInsideLeft(node.entry, total, small ? 512 : 768), renderer),
+        front: texture(drawInsert(node.entry, small ? 640 : 1024), renderer),
+        left: texture(drawInsideLeft(node.entry, small ? 512 : 768), renderer),
         right: texture(drawInsideRight(node.entry, small ? 512 : 768), renderer),
       };
       heroCache.set(node.entry.name, hero);
@@ -274,6 +332,8 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
         const dropped = heroCache.get(oldest)!;
         heroCache.delete(oldest);
         for (const t of [dropped.front, dropped.left, dropped.right]) t.dispose();
+        const owner = nodes.get(oldest);
+        if (owner?.hero) dropHero(owner);
       }
     }
     node.frontMat.map = hero.front;
@@ -290,113 +350,215 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
     if (!node.hero) return;
     node.hero = false;
     node.insideLeftMat.map = null;
-    node.insideLeftMat.color.set(0xf2efe9);
+    node.insideLeftMat.color.set(FIELD.bone);
     node.insideRightMat.map = null;
-    node.insideRightMat.color.set(inkOf(node.entry));
+    node.insideRightMat.color.set(shellHex(node.entry));
     for (const m of [node.insideLeftMat, node.insideRightMat]) m.needsUpdate = true;
     // The rack-resolution insert is repainted lazily.
     void paintRackTextures(node);
   }
 
+  /** Angle of a slot relative to the front, unwrapped so the two ends of the arc never meet. */
+  function relAngle(slot: number): number {
+    return slot * geo.step - pos.x * geo.step;
+  }
+
+  function inView(node: CaseNode): boolean {
+    return node.group.visible && Math.abs(relAngle(node.slot)) < WINDOW + WINDOW_FADE;
+  }
+
+  function staggerFor(slot: number, front: number): number {
+    return reduced ? 0 : Math.min(0.5, Math.abs(slot - front) * 0.035);
+  }
+
   function syncCatalogue(state: State): void {
+    const firstLoad = nodes.size === 0;
     order = state.visible;
-    total = Math.max(1, state.all.length);
     const next = rackGeometry(Math.max(order.length, 1));
-    if (next.step !== geo.step || next.radius !== geo.radius || next.rise !== geo.rise) {
-      geo = next;
-      resize();
-    }
+    const geometryChanged = next.step !== geo.step || next.radius !== geo.radius || next.rise !== geo.rise;
+    const front = Math.max(0, state.current);
+    const slots = new Map<CaseNode, number>();
     const alive = new Set<string>();
+    let visibleChange = false;
     order.forEach((entry, i) => {
       alive.add(entry.name);
       let node = nodes.get(entry.name);
       if (!node) {
         node = buildNode(entry);
-        node.slot.snap(i);
-        node.presence.x = reduced ? 1 : 0;
-        node.presence.target = 1;
+        node.slot = i;
+        node.lift.snap(0);
+        node.alive = false; // rises with the reflow below
         nodes.set(entry.name, node);
         rack.add(node.group);
         void paintRackTextures(node);
       }
-      node.slot.target = i;
-      node.presence.target = 1;
-      if (reduced) {
-        node.slot.snap(i);
-        node.presence.snap(1);
+      if (node.slot !== i || !node.alive) {
+        slots.set(node, i);
+        if (node.alive && inView(node)) visibleChange = true;
       }
     });
-    for (const [name, node] of nodes) {
-      if (!alive.has(name)) {
-        node.presence.target = 0;
-        if (reduced) node.presence.snap(0);
+    for (const node of nodes.values()) {
+      if (!alive.has(node.entry.name) && node.alive) {
+        node.alive = false;
+        if (inView(node)) visibleChange = true;
       }
+    }
+    if (geometryChanged) visibleChange = visibleChange || !firstLoad;
+
+    if (reduced || firstLoad || (!visibleChange && !reflow)) {
+      // Nothing moving in view (or no motion wanted): change slots in place.
+      if (geometryChanged) {
+        geo = next;
+        resize();
+      }
+      for (const [node, slot] of slots) {
+        node.slot = slot;
+        node.alive = true;
+        node.lift.target = 1;
+        node.liftDelay = firstLoad ? 0.15 + staggerFor(slot, front) : staggerFor(slot, front);
+        if (reduced) node.lift.snap(1);
+      }
+      for (const node of nodes.values()) if (!alive.has(node.entry.name)) node.lift.target = 0;
+      if (reduced || firstLoad) for (const node of nodes.values()) if (!alive.has(node.entry.name)) node.lift.snap(0);
+      if (reduced || firstLoad) pos.snap(front);
+    } else {
+      // Sink everything in view, re-slot unseen, rise from the front out.
+      const all = new Map<CaseNode, number>();
+      order.forEach((entry, i) => all.set(nodes.get(entry.name)!, i));
+      reflow = { phase: "sink", slots: all };
+      pendingGeometry = geometryChanged ? next : pendingGeometry;
+      for (const node of nodes.values()) node.lift.target = 0;
     }
     dirty = true;
   }
+  let pendingGeometry: RackGeometry | null = null;
 
-  function placeNode(node: CaseNode, isCurrent: boolean): void {
-    const i = node.slot.x;
-    const a = slotAngle(i);
-    const p = node.presence.x;
-    const g = node.group;
-    // Only the front arc is drawn; cases fade out at the sides where they are edge-on.
-    // The angle is not wrapped, so the two ends of the arc never see each other.
-    const phi = pos.x * geo.step;
-    const rel = a - phi;
-    const arc = isCurrent ? 1 : clamp((WINDOW - Math.abs(rel)) / WINDOW_FADE, 0, 1);
-    const visible = p * arc;
-    g.visible = visible > 0.005;
-    if (!g.visible) return;
-    const e = isCurrent ? extract.x : 0;
-    const o = isCurrent ? openness.x : 0;
-    const r = geo.radius + e * PULL;
-    // The rack is rotated by -phi, so a sideways offset wanted in world x must be expressed
-    // in the rack's frame: local = R_y(phi) * world.
-    const cos = Math.cos(phi);
-    const sin = Math.sin(phi);
-    // On wide stages the extracted case moves to the right so the rack and the caption keep the left.
-    // When it opens, the spread (hinge at the case's left edge) is centred on layout.openX.
-    const worldX = e * layout.extractX * (1 - o) + (layout.openX - layout.rackX + CASE_W / 2) * o;
-    const baseX = Math.sin(a) * r;
-    const baseZ = Math.cos(a) * r;
-    const x = (1 - o) * baseX + o * (Math.sin(a) * geo.radius) + worldX * cos;
-    const z = (1 - o) * baseZ + o * (Math.cos(a) * (geo.radius + PULL)) - worldX * sin;
-    g.position.set(x, i * geo.rise + e * layout.extractY + o * 0.05, z);
-    // Base orientation: spine outward (yaw +90). Extraction yaws the cover toward the viewer.
-    const yaw = a + (Math.PI / 2) * (1 - e) + REST_YAW * e * (1 - o) + (isCurrent ? inspectYaw.x : 0);
-    const pitch = isCurrent ? inspectPitch.x : 0;
-    g.rotation.set(pitch, yaw, 0, "YXZ");
-    // Opening: the front leaf swings on the spine hinge.
-    node.hinge.rotation.y = HINGE_OPEN * o;
-    const s = 0.001 + visible * 0.999;
-    g.scale.setScalar(s);
+  /** Second half of a reflow, once every case in view is under the floor. */
+  function completeReflow(): void {
+    if (!reflow) return;
+    if (pendingGeometry) {
+      geo = pendingGeometry;
+      pendingGeometry = null;
+      resize();
+    }
+    const front = Math.max(0, store.state.current);
+    for (const node of nodes.values()) {
+      const slot = reflow.slots.get(node);
+      if (slot === undefined) {
+        node.alive = false;
+        node.lift.snap(0);
+        continue;
+      }
+      node.slot = slot;
+      node.alive = true;
+      node.pull.snap(0);
+      node.turn.snap(0);
+      node.open.snap(0);
+      node.lift.target = 0;
+      node.liftDelay = staggerFor(slot, front);
+    }
+    pos.snap(front);
+    reflow.phase = "rise";
   }
 
-  const layout = { extractX: 0.5, extractY: 0.12, lookY: 0.1, openX: 0.1, rackX: 0 };
+  const layout = { presentX: 0, presentY: 0.45, presentZ: 0, openX: 0, openY: 0.3, push: 0.4, wide: true };
+  const tmp = new THREE.Vector3();
+
+  function placeNode(node: CaseNode, isPresented: boolean): void {
+    const i = node.slot;
+    const rel = relAngle(i);
+    const lift = node.lift.x;
+    const g = node.group;
+    const out = node.pull.x > 0.001 || node.turn.x > 0.001;
+    const arc = out ? 1 : clamp((WINDOW - Math.abs(rel)) / WINDOW_FADE, 0, 1);
+    g.visible = arc > 0.005 && lift > 0.001;
+    if (!g.visible) return;
+    const p = node.pull.x;
+    const yawT = smoothstep(node.turn.x);
+    // The turn is phased. Low in its range the case swings along the arc, just outside the
+    // rack, between its slot's angle and the front; high in its range it floats forward and up
+    // to the presentation spot. So on the way home it first steps back from the viewer, then
+    // swings home close to the rack, and it is at its slot's exact angle whenever it is near
+    // enough to the rack to touch a neighbour.
+    const swing = smoothstep(clamp((node.turn.x - 0.1) / 0.35, 0, 1));
+    const float = smoothstep(clamp((node.turn.x - 0.45) / 0.55, 0, 1));
+    const o = node.open.x;
+    const phi = pos.x * geo.step;
+    // Positions are worked out in the world, then expressed in the rack's frame (local = R_y(phi) world).
+    const worldAngle = rel * (1 - swing);
+    const radius = geo.radius + p * PULL_OUT + float * layout.presentZ;
+    const X = Math.sin(worldAngle) * radius + float * layout.presentX + o * (layout.openX - layout.presentX);
+    const Z = Math.cos(worldAngle) * radius;
+    const lift3 = float * layout.presentY + o * (layout.openY - layout.presentY);
+    const cos = Math.cos(phi);
+    const sin = Math.sin(phi);
+    // Sinking clears the floor from wherever the case is, including the presentation spot.
+    const sinkY = -(SINK + Math.max(0, lift3)) * (1 - easeOutCubic(lift));
+    g.position.set(X * cos + Z * sin, i * geo.rise + lift3 + sinkY, -X * sin + Z * cos);
+    // Yaw: spine outward on the rack (+90), cover to the viewer when presented, with a little
+    // of the spine edge left in the light.
+    const worldYaw = worldAngle + (Math.PI / 2) * (1 - yawT) + REST_YAW * yawT * (1 - o) + (isPresented ? inspectYaw.x : 0);
+    const pitch = isPresented ? inspectPitch.x : 0;
+    g.rotation.set(pitch, worldYaw + phi, 0, "YXZ");
+    node.hinge.rotation.y = HINGE_OPEN * o;
+    g.scale.setScalar(0.001 + arc * 0.999);
+    // Clip at the floor while the case is below it.
+    const baseY = i * geo.rise - pos.x * geo.rise + FLOOR_Y;
+    node.clip.constant = lift < 0.999 ? -baseY + 0.001 : 1000;
+  }
+
   function resize(): void {
     const w = Math.max(1, field.clientWidth);
     const h = Math.max(1, field.clientHeight);
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
-    const wide = camera.aspect > 1.15;
-    // Wide: the case comes out to the right of the rack. Narrow: it stays centred and sits high,
-    // above the caption, and the camera backs off so the whole case fits.
-    // The rack sits left of centre on wide stages; the extracted case comes out to the right of it.
-    layout.rackX = wide ? -0.8 : 0;
-    layout.extractX = wide ? 1.35 : 0;
-    layout.extractY = wide ? 0.05 : 0.5;
-    layout.lookY = wide ? -0.5 : -0.3;
-    layout.openX = wide ? 0.3 : 0;
-    rack.position.x = layout.rackX;
-    lookAt.y = layout.lookY;
+    layout.wide = matchMedia("(min-width: 1024px)").matches;
     const halfV = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
-    const needed = (wide ? 2.4 : 1.45) / (halfV * camera.aspect) + geo.radius + 0.6;
-    camBase.z = Math.max(wide ? 8.4 : 9.4, needed);
-    fog.near = camBase.z - geo.radius + 1.0;
-    fog.far = camBase.z + geo.radius * 0.5;
+    const halfH = halfV * camera.aspect;
+    // Framing by proportion (direction-v2, composition): the presented case fills about two
+    // fifths of the stage height and the rack's front case a little over a quarter, so the rack
+    // reads as a band on the horizon and the presented case floats well in front of it.
+    const presentedShare = layout.wide ? 0.42 : 0.38;
+    const rackShare = layout.wide ? 0.27 : 0.25;
+    const dPresent = CASE_H / (2 * halfV * presentedShare);
+    const dRack = CASE_H / (2 * halfV * rackShare);
+    camBase.z = geo.radius + dRack;
+    camBase.y = layout.wide ? 0.25 : 0.35;
+    lookAt.y = layout.wide ? 0.3 : 0.4;
+    layout.presentX = 0;
+    layout.presentY = layout.wide ? 0.62 : 0.72;
+    layout.presentZ = Math.max(0, camBase.z - dPresent - (geo.radius + PULL_OUT));
+    // Open: the spread covers the right of the viewport, so the opened case (whose front leaf
+    // swings out to the left) is centred on what remains of the stage.
+    const spreadPx = Math.min(760, innerWidth * 0.54);
+    const rect = field.getBoundingClientRect();
+    const visibleRight = Math.min(rect.right, innerWidth - spreadPx);
+    const centrePx = Math.max(0, visibleRight - rect.left) / 2;
+    const ndcX = (centrePx / w) * 2 - 1;
+    layout.openX = layout.wide ? ndcX * halfH * dPresent + CASE_W * 0.45 : 0;
+    layout.openY = layout.wide ? 0.42 : 0.6;
+    layout.push = 0;
+    fog.near = camBase.z - geo.radius * 0.5;
+    fog.far = camBase.z + geo.radius * 2 + 4;
     camera.updateProjectionMatrix();
+    placeCamera(0, 1);
+    camera.updateMatrixWorld();
+    // The page's horizon is the floor's vanishing line, so the printed field and the 3D floor agree.
+    tmp.set(camera.position.x, camera.position.y, camera.position.z - 1000).project(camera);
+    stageEl.style.setProperty("--horizon", `${(((1 - tmp.y) / 2) * h).toFixed(1)}px`);
+    // The giant title sits behind the presentation spot.
+    const presentZ = geo.radius + PULL_OUT + layout.presentZ;
+    tmp.set(layout.presentX, layout.presentY, presentZ).project(camera);
+    stageEl.style.setProperty("--hero-y", `${(((1 - tmp.y) / 2) * h).toFixed(1)}px`);
+    const top = tmp.clone().set(layout.presentX, layout.presentY + CASE_H / 2, presentZ).project(camera);
+    const bottom = tmp.clone().set(layout.presentX, layout.presentY - CASE_H / 2, presentZ).project(camera);
+    stageEl.style.setProperty("--case-h", `${(((top.y - bottom.y) / 2) * h).toFixed(1)}px`);
     dirty = true;
+  }
+
+  function placeCamera(openAmount: number, arrival: number): void {
+    camera.position.set(camBase.x, camBase.y + (1 - arrival) * 0.25, camBase.z + (1 - arrival) * 0.9 - openAmount * layout.push);
+    camera.lookAt(lookAt.x + openAmount * layout.openX * 0.25, lookAt.y, lookAt.z);
   }
 
   const ro = new ResizeObserver(resize);
@@ -412,7 +574,7 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
     ndc.set(((x - rect.left) / rect.width) * 2 - 1, -(((y - rect.top) / rect.height) * 2 - 1));
     raycaster.setFromCamera(ndc, camera);
     const meshes: THREE.Object3D[] = [];
-    for (const n of nodes.values()) if (n.group.visible) meshes.push(n.front, n.back, n.spine);
+    for (const n of nodes.values()) if (n.group.visible && n.alive) meshes.push(n.front, n.back, n.spine);
     const found = raycaster.intersectObjects(meshes, false);
     return found.length ? (found[0].object.userData.node as CaseNode) : null;
   }
@@ -430,9 +592,12 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
   let wheelTimer = 0;
   function onWheel(e: WheelEvent): void {
     if (store.state.mode === "loading" || store.state.mode === "failed") return;
+    // On narrow layouts the page scrolls vertically; only horizontal wheels turn the rack there.
+    const horizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY);
+    if (!layout.wide && !horizontal) return;
     e.preventDefault();
     const unit = e.deltaMode === 1 ? 40 : e.deltaMode === 2 ? 800 : 1;
-    const delta = (Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX) * unit;
+    const delta = (horizontal ? e.deltaX : e.deltaY) * unit;
     wheelAccum += delta;
     const threshold = 90;
     const steps = Math.trunc(wheelAccum / threshold);
@@ -444,18 +609,22 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
     wheelTimer = window.setTimeout(() => (wheelAccum = 0), 240);
   }
 
+  function presented(): CaseNode | null {
+    return currentNode && currentNode.turn.x > 0.9 ? currentNode : null;
+  }
+
   function onPointerDown(e: PointerEvent): void {
     if (e.button !== 0 && e.pointerType === "mouse") return;
     if (store.state.mode === "loading" || store.state.mode === "failed") return;
     const target = hit(e.clientX, e.clientY);
-    const inspecting = target !== null && target === currentNode && store.state.mode === "settled";
-    dragging = { kind: inspecting ? "inspect" : "rack", startX: e.clientX, startY: e.clientY, startPos: pos.x, lastX: e.clientX, lastT: performance.now(), velocity: 0, moved: false, pointerId: e.pointerId };
+    const inspecting = target !== null && target === presented() && store.state.mode === "settled";
+    dragging = { kind: inspecting ? "inspect" : "rack", startX: e.clientX, startY: e.clientY, startPos: pos.x, lastT: performance.now(), velocity: 0, moved: false, pointerId: e.pointerId };
     canvas.setPointerCapture(e.pointerId);
-    canvas.style.cursor = "grabbing";
   }
 
   function onPointerMove(e: PointerEvent): void {
     if (!dragging) {
+      if (e.pointerType !== "mouse") return;
       const target = hit(e.clientX, e.clientY);
       if (target !== hovered) {
         hovered = target;
@@ -468,13 +637,14 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
     const dy = e.clientY - dragging.startY;
     if (!dragging.moved && Math.hypot(dx, dy) > 6) {
       dragging.moved = true;
+      canvas.style.cursor = "grabbing";
       if (dragging.kind === "rack") store.unsettle();
     }
     if (!dragging.moved) return;
     const now = performance.now();
     if (dragging.kind === "rack") {
       const slots = -dx / pxPerSlot();
-      const next = dragging.startPos + slots;
+      const next = clamp(dragging.startPos + slots, -0.6, Math.max(0, order.length - 1) + 0.6);
       const dt = Math.max(1, now - dragging.lastT) / 1000;
       dragging.velocity = (next - pos.x) / dt;
       pos.x = next;
@@ -484,7 +654,6 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
       inspectYaw.target = clamp(dx / 260, -0.9, 0.9);
       inspectPitch.target = clamp(dy / 320, -0.5, 0.5);
     }
-    dragging.lastX = e.clientX;
     dragging.lastT = now;
     dirty = true;
   }
@@ -493,10 +662,11 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
     if (!dragging) return;
     const d = dragging;
     dragging = null;
-    canvas.releasePointerCapture(d.pointerId);
+    if (canvas.hasPointerCapture(d.pointerId)) canvas.releasePointerCapture(d.pointerId);
     canvas.style.cursor = "grab";
     if (!d.moved) {
-      // A tap: open the current case, or select the tapped one.
+      if (e.type === "pointercancel") return;
+      // A tap: open the presented case, or select the tapped one.
       const target = hit(e.clientX, e.clientY);
       if (target && target === currentNode) {
         if (store.state.mode === "settled") store.open();
@@ -523,18 +693,23 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
   function onKey(e: KeyboardEvent): void {
     const t = e.target as HTMLElement | null;
     if (t && (t.tagName === "INPUT" || t.tagName === "SELECT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+    if (t && t.closest("[data-list]")) return; // the tracklist handles its own keys
     const mode = store.state.mode;
     if (mode === "loading" || mode === "failed") return;
     switch (e.key) {
       case "ArrowRight":
-      case "ArrowDown":
         e.preventDefault();
         store.step(1, "keys");
         break;
       case "ArrowLeft":
-      case "ArrowUp":
         e.preventDefault();
         store.step(-1, "keys");
+        break;
+      case "ArrowDown":
+      case "ArrowUp":
+        if (!layout.wide) return; // narrow pages scroll
+        e.preventDefault();
+        store.step(e.key === "ArrowDown" ? 1 : -1, "keys");
         break;
       case "Home":
         e.preventDefault();
@@ -578,68 +753,59 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
     reduced = state.motion === "reduced";
     if (state.visible !== previous.visible || state.all !== previous.all) syncCatalogue(state);
     if (state.current !== previous.current || state.selectionTick !== previous.selectionTick || state.visible !== previous.visible) {
-      pos.target = Math.max(0, state.current);
-      if (state.via === "init" && previous.mode === "loading") {
-        // Arrival: start a few slots away and turn into place once.
-        pos.x = reduced ? pos.target : pos.target + THREE.MathUtils.degToRad(70) / geo.step;
-        pos.v = 0;
-      }
+      if (!reflow) pos.target = Math.max(0, state.current);
       if (reduced) pos.snap(pos.target);
       settledFor = -1;
       const next = state.current >= 0 ? nodes.get(state.visible[state.current]?.name) ?? null : null;
       if (next !== currentNode) {
-        if (currentNode) dropHero(currentNode);
+        // The old case keeps its springs and runs its own way home; nothing is reset here.
         currentNode = next;
-        extract.x = 0;
-        extract.v = 0;
-        openness.snap(0);
-        inspectYaw.snap(0);
-        inspectPitch.snap(0);
-      }
-    }
-    if (state.mode !== previous.mode) {
-      if (state.mode === "settled" && currentNode) {
-        extract.target = 1;
-        openness.target = 0;
-        camPush.target = 0;
-        void paintHero(currentNode);
-        if (reduced) extract.snap(1);
-      } else if (state.mode === "open" && currentNode) {
-        extract.target = 1;
-        openness.target = 1;
-        camPush.target = 1;
         inspectYaw.target = 0;
         inspectPitch.target = 0;
-        void paintHero(currentNode);
-        if (reduced) {
-          extract.snap(1);
-          openness.snap(1);
-          camPush.snap(1);
-        }
-      } else if (state.mode === "browsing") {
-        extract.target = 0;
-        openness.target = 0;
-        camPush.target = 0;
-        if (reduced) {
-          extract.snap(0);
-          openness.snap(0);
-          camPush.snap(0);
-        }
       }
     }
+    if (state.mode !== previous.mode && (state.mode === "settled" || state.mode === "open") && currentNode) void paintHero(currentNode);
     dirty = true;
   });
+
+  // ---------- gates ----------
+  function gate(node: CaseNode, mode: State["mode"]): void {
+    const out = node === currentNode && node.alive && !reflow && node.lift.x > 0.98 && (mode === "settled" || mode === "open");
+    let anotherTurned = false;
+    let anotherForward = false;
+    if (out && node.turn.target < 1)
+      for (const other of nodes.values()) {
+        if (other === node) continue;
+        if (other.turn.x > TURN_BLOCK) anotherTurned = true;
+        if (other.turn.x > FRONT_CLEAR) anotherForward = true;
+      }
+    gateCase(node, out, mode === "open", anotherTurned, anotherForward);
+  }
 
   // ---------- frame loop ----------
   let slowFrames = 0;
   let sampled = 0;
   let renderedLastFrame = false;
+  let calloutOn = false;
+  function applyQuality(): void {
+    renderer.setPixelRatio(quality === "low" ? 1 : Math.min(devicePixelRatio || 1, small ? 1.5 : 2));
+    renderer.shadowMap.enabled = quality === "high";
+    for (const n of nodes.values()) for (const m of n.materials) m.needsUpdate = true;
+    resize();
+  }
+
+  /** Review only: a frozen clock advanced in fixed steps, so sequences can be sampled exactly. */
+  let frozen = false;
   function tick(now: number): void {
     if (disposed) return;
     frame = requestAnimationFrame(tick);
     const rawDt = (now - lastTime) / 1000;
-    const dt = Math.min(0.05, rawDt);
     lastTime = now;
+    if (frozen) return;
+    advance(Math.min(0.05, rawDt), rawDt);
+  }
+
+  function advance(dt: number, rawDt: number, draw = true): void {
     // Degraded-condition detection: sustained slow frames while rendering drop to the low tier once.
     if (quality === "high" && renderedLastFrame) {
       sampled++;
@@ -655,55 +821,110 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
     }
     renderedLastFrame = false;
 
+    const state = store.state;
     let moving = false;
     if (!dragging || dragging.kind !== "rack") {
       pos.step(dt);
       if (!pos.settled(0.0015, 0.004)) moving = true;
     } else moving = true;
-    for (const s of [extract, openness, camPush, inspectYaw, inspectPitch]) {
+    for (const s of [inspectYaw, inspectPitch]) {
       s.step(dt);
       if (!s.settled(0.001, 0.003)) moving = true;
     }
+
+    // Reflow sequencing.
+    if (reflow?.phase === "sink") {
+      let down = true;
+      for (const n of nodes.values()) if (n.lift.x > 0.02 && n.group.visible) down = false;
+      if (down) completeReflow();
+      moving = true;
+    } else if (reflow?.phase === "rise") {
+      let up = true;
+      for (const n of nodes.values()) {
+        if (!n.alive) continue;
+        if (n.liftDelay > 0) {
+          n.liftDelay -= dt;
+          up = false;
+        } else n.lift.target = 1;
+        if (n.lift.x < 0.98) up = false;
+      }
+      if (up) reflow = null;
+      moving = true;
+    }
+
     for (const n of nodes.values()) {
-      n.slot.step(dt);
-      n.presence.step(dt);
-      if (!n.slot.settled(0.001, 0.003) || !n.presence.settled(0.001, 0.003)) moving = true;
+      if (!reflow && n.alive) {
+        if (n.liftDelay > 0) {
+          n.liftDelay -= dt;
+          moving = true;
+        } else n.lift.target = 1;
+      }
+      // Under reduced motion the gate sequence resolves within the frame.
+      for (let pass = 0; pass < (reduced ? 4 : 1); pass++) {
+        gate(n, state.mode);
+        if (reduced) {
+          n.pull.snap();
+          n.turn.snap();
+          n.open.snap();
+          n.lift.snap();
+        }
+      }
+      for (const s of [n.pull, n.turn, n.open, n.lift]) {
+        s.step(dt);
+        if (!s.settled(0.001, 0.003)) moving = true;
+      }
     }
     if (arrivalT < 1) {
-      arrivalT = Math.min(1, arrivalT + dt / 1.1);
+      arrivalT = Math.min(1, arrivalT + dt / 1.4);
       moving = true;
     }
 
     // Settle detection: the rack has stopped on the committed case.
-    const state = store.state;
-    if (!dragging && state.mode === "browsing" && state.current >= 0 && pos.settled(0.004, 0.02) && settledFor !== state.selectionTick) {
+    if (!dragging && !reflow && state.mode === "browsing" && state.current >= 0 && pos.settled(0.004, 0.02) && settledFor !== state.selectionTick) {
       settledFor = state.selectionTick;
       store.settle();
     }
 
-    if (!moving && !dirty) return;
+    if ((!moving && !dirty) || !draw) return;
     dirty = false;
     renderedLastFrame = true;
 
     rack.rotation.y = -pos.x * geo.step;
     rack.position.y = -pos.x * geo.rise;
 
-    const arrival = easeOutCubic(arrivalT);
-    camera.position.set(camBase.x + openness.x * layout.openX, camBase.y + (1 - arrival) * 0.3, camBase.z + (1 - arrival) * 1.2 - camPush.x * 0.5);
-    camera.lookAt(lookAt.x + openness.x * layout.openX, lookAt.y + extract.x * 0.08, lookAt.z + extract.x * 1.2);
+    let openAmount = 0;
+    for (const n of nodes.values()) openAmount = Math.max(openAmount, n.open.x);
+    placeCamera(easeOutCubic(openAmount), easeOutCubic(arrivalT));
 
+    const shown = presented();
     for (const n of nodes.values()) {
-      const isCurrent = n === currentNode;
-      placeNode(n, isCurrent);
-      const hover = n === hovered && !isCurrent ? 0.07 : 0;
+      placeNode(n, n === shown);
+      const hover = n === hovered && n !== currentNode ? 0.06 : 0;
       if (n.spineMat.emissive.r !== hover) {
         n.spineMat.emissive.setScalar(hover);
         n.frontMat.emissive.setScalar(hover);
       }
     }
-    // The current case leaves the rack frame: keep the key light's shadow target on the drum.
-    key.target.position.set(layout.rackX, -pos.x * geo.rise + 0.2, 0);
+    key.target.position.set(0, -pos.x * geo.rise, 0);
     key.target.updateMatrixWorld();
+
+    // The callout follows the capsule code printed on the presented cover.
+    const wantCallout = Boolean(shown && shown.turn.x > 0.985 && shown.open.x < 0.02 && state.mode === "settled" && shown.pull.settled(0.01, 0.05));
+    if (shown && wantCallout) {
+      rack.updateMatrixWorld();
+      camera.updateMatrixWorld();
+      const [u, v] = CALLOUT_AT[shown.entry.layout];
+      tmp.set(-CASE_W / 2 + u * CASE_W, CASE_H / 2 - v * CASE_H, LEAF_D / 2).applyMatrix4(shown.front.matrixWorld).project(camera);
+      const w = field.clientWidth;
+      const h = field.clientHeight;
+      stageEl.style.setProperty("--ax", `${(((tmp.x + 1) / 2) * w).toFixed(1)}px`);
+      stageEl.style.setProperty("--ay", `${(((1 - tmp.y) / 2) * h).toFixed(1)}px`);
+      stageEl.dataset.calloutSide = u > 0.5 ? "right" : "left";
+    }
+    if (wantCallout !== calloutOn) {
+      calloutOn = wantCallout;
+      stageEl.dataset.callout = wantCallout ? "on" : "off";
+    }
 
     renderer.render(scene, camera);
   }
@@ -720,12 +941,26 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
 
   if (params.get("review")) {
     (window as unknown as { __rack: unknown }).__rack = {
+      freeze() {
+        frozen = true;
+      },
+      step(ms: number) {
+        const n = Math.max(1, Math.round(ms / (1000 / 60)));
+        for (let k = 0; k < n; k++) advance(1 / 60, 1 / 60, k === n - 1);
+      },
       snap() {
-        for (const sp of [pos, extract, openness, camPush, inspectYaw, inspectPitch]) sp.snap();
-        for (const n of nodes.values()) {
-          n.slot.snap();
-          n.presence.snap();
+        if (reflow?.phase === "sink") completeReflow();
+        reflow = null;
+        for (const sp of [pos, inspectYaw, inspectPitch]) sp.snap();
+        for (let pass = 0; pass < 4; pass++) {
+          for (const n of nodes.values()) {
+            n.liftDelay = 0;
+            if (n.alive) n.lift.target = 1;
+            gate(n, store.state.mode);
+            for (const s of [n.pull, n.turn, n.open, n.lift]) s.snap();
+          }
         }
+        if (store.state.mode === "browsing") store.settle();
         arrivalT = 1;
         dirty = true;
       },
@@ -734,8 +969,7 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
 
   syncCatalogue(store.state);
   if (store.state.current >= 0) {
-    pos.target = store.state.current;
-    pos.x = reduced ? pos.target : pos.target + THREE.MathUtils.degToRad(70) / geo.step;
+    pos.snap(store.state.current);
     currentNode = nodes.get(store.state.visible[store.state.current].name) ?? null;
   }
 

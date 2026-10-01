@@ -1,0 +1,1 @@
+{"_question": "Does the per-case turn spring (stiffness 150, critically damped) settle without overshoot, and how long does it take to reach one percent?", "mass": 1, "stiffness": 150, "damping": 24.495, "initial": 0, "target": 1, "velocity": 0, "duration": 1.5, "fps": 120, "settle_tolerance": 0.01}

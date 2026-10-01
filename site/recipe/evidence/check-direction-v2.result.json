@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "mode": "route-comparison",
+  "errors": [],
+  "warnings": [],
+  "note": "This checker tests record completeness; it does not approve aesthetic quality."
+}

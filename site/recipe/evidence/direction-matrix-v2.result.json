@@ -1,0 +1,158 @@
+{
+  "findings": [
+    {
+      "code": "judgement-boundary",
+      "level": "WARN",
+      "message": "candidate scoring reflects the supplied criteria/weights; use it to expose trade-offs, not replace art direction"
+    }
+  ],
+  "interpretation_boundary": "MCDA-style normalization is transparent bookkeeping. Criteria, weights and final creative selection remain human/design judgements.",
+  "ranking": [
+    {
+      "id": "A-heat-sheet",
+      "parts": {
+        "build_risk": {
+          "normalized": 0.0,
+          "raw": 3.0,
+          "weight": 1.0,
+          "weighted": 0.0
+        },
+        "coherence_of_synthesis": {
+          "normalized": 0.0,
+          "raw": 4.0,
+          "weight": 3.0,
+          "weighted": 0.0
+        },
+        "distinctiveness_after_effect_removal": {
+          "normalized": 1.0,
+          "raw": 4.0,
+          "weight": 2.0,
+          "weighted": 2.0
+        },
+        "fidelity_to_named_reference": {
+          "normalized": 1.0,
+          "raw": 5.0,
+          "weight": 3.0,
+          "weighted": 3.0
+        },
+        "finding_speed": {
+          "normalized": 0.0,
+          "raw": 4.0,
+          "weight": 2.0,
+          "weighted": 0.0
+        },
+        "reading_comfort": {
+          "normalized": 0.5,
+          "raw": 4.0,
+          "weight": 2.0,
+          "weighted": 1.0
+        },
+        "singular_selection": {
+          "normalized": 1.0,
+          "raw": 5.0,
+          "weight": 2.0,
+          "weighted": 2.0
+        }
+      },
+      "weighted_total": 8.0
+    },
+    {
+      "id": "C-monochrome-dossier",
+      "parts": {
+        "build_risk": {
+          "normalized": 1.0,
+          "raw": 2.0,
+          "weight": 1.0,
+          "weighted": 1.0
+        },
+        "coherence_of_synthesis": {
+          "normalized": 1.0,
+          "raw": 5.0,
+          "weight": 3.0,
+          "weighted": 3.0
+        },
+        "distinctiveness_after_effect_removal": {
+          "normalized": 0.5,
+          "raw": 3.0,
+          "weight": 2.0,
+          "weighted": 1.0
+        },
+        "fidelity_to_named_reference": {
+          "normalized": 0.0,
+          "raw": 1.0,
+          "weight": 3.0,
+          "weighted": 0.0
+        },
+        "finding_speed": {
+          "normalized": 0.0,
+          "raw": 4.0,
+          "weight": 2.0,
+          "weighted": 0.0
+        },
+        "reading_comfort": {
+          "normalized": 1.0,
+          "raw": 5.0,
+          "weight": 2.0,
+          "weighted": 2.0
+        },
+        "singular_selection": {
+          "normalized": 0.0,
+          "raw": 3.0,
+          "weight": 2.0,
+          "weighted": 0.0
+        }
+      },
+      "weighted_total": 7.0
+    },
+    {
+      "id": "B-cockpit-night",
+      "parts": {
+        "build_risk": {
+          "normalized": 1.0,
+          "raw": 2.0,
+          "weight": 1.0,
+          "weighted": 1.0
+        },
+        "coherence_of_synthesis": {
+          "normalized": 0.0,
+          "raw": 4.0,
+          "weight": 3.0,
+          "weighted": 0.0
+        },
+        "distinctiveness_after_effect_removal": {
+          "normalized": 0.0,
+          "raw": 2.0,
+          "weight": 2.0,
+          "weighted": 0.0
+        },
+        "fidelity_to_named_reference": {
+          "normalized": 0.5,
+          "raw": 3.0,
+          "weight": 3.0,
+          "weighted": 1.5
+        },
+        "finding_speed": {
+          "normalized": 1.0,
+          "raw": 5.0,
+          "weight": 2.0,
+          "weighted": 2.0
+        },
+        "reading_comfort": {
+          "normalized": 0.0,
+          "raw": 3.0,
+          "weight": 2.0,
+          "weighted": 0.0
+        },
+        "singular_selection": {
+          "normalized": 0.5,
+          "raw": 4.0,
+          "weight": 2.0,
+          "weighted": 1.0
+        }
+      },
+      "weighted_total": 5.5
+    }
+  ],
+  "status": "WARN",
+  "tool": "direction_matrix"
+}

@@ -1,0 +1,37 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cover sheet</title>
+<style>
+  body { margin: 0; background: #EFE3C1; padding: 24px; font: 11px/1.4 monospace; }
+  .grid { display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-end; }
+  figure { margin: 0; display: grid; gap: 6px; }
+  canvas { display: block; }
+  .row { display: flex; gap: 6px; align-items: flex-end; }
+</style>
+<div class="grid" id="g"></div>
+<script type="module">
+  import "/src/fonts.css";
+  import { toEntries, stressEntries } from "/src/catalogue.ts";
+  import { drawInsert, drawSpine, drawInsideLeft, drawInsideRight, ensureFonts } from "/src/covers.ts";
+  const repos = await (await fetch("/data/repos.json")).json();
+  const list = repos.repos ?? repos;
+  let entries = toEntries(list);
+  if (location.search.includes("stress")) entries = stressEntries(12);
+  await ensureFonts();
+  const g = document.getElementById("g");
+  for (const e of entries) {
+    const f = document.createElement("figure");
+    const row = document.createElement("div"); row.className = "row";
+    const c = drawInsert(e, 270); c.style.width = "180px";
+    const s = drawSpine(e, 30); s.style.height = c.style.height = ""; s.style.width = "20px";
+    row.append(s, c);
+    if (location.search.includes("inside")) {
+      const l = drawInsideLeft(e, 270); l.style.width = "180px";
+      const r = drawInsideRight(e, 270); r.style.width = "180px";
+      row.append(l, r);
+    }
+    const cap = document.createElement("figcaption"); cap.textContent = `${e.no} ${e.layout} ${e.name}`;
+    f.append(row, cap); g.append(f);
+  }
+  document.body.dataset.ready = "1";
+</script>

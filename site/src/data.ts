@@ -2,6 +2,7 @@ import { type Entry, type Repo, stressEntries, toEntries } from "./catalogue";
 
 export const OWNER = "povvo";
 const LIVE = `https://api.github.com/users/${OWNER}/repos?per_page=100&type=owner&sort=created&direction=asc`;
+const MAX_PAGES = 10;
 const CACHE_KEY = "barrett-catalogue:repos:v1";
 const CACHE_TTL = 60 * 60 * 1000;
 
@@ -68,13 +69,19 @@ async function fetchSnapshot(): Promise<Snapshot | null> {
   }
 }
 
+/** Reads every page of public repositories; a partial read is discarded rather than shown. */
 async function fetchLive(): Promise<Repo[] | null> {
   try {
-    const res = await fetch(LIVE, { headers: { Accept: "application/vnd.github+json" } });
-    if (!res.ok) return null;
-    const raw = (await res.json()) as Record<string, unknown>[];
-    if (!Array.isArray(raw) || raw.length === 0) return null;
-    return normalise(raw);
+    const all: Record<string, unknown>[] = [];
+    for (let page = 1; page <= MAX_PAGES; page++) {
+      const res = await fetch(`${LIVE}&page=${page}`, { headers: { Accept: "application/vnd.github+json" } });
+      if (!res.ok) return null;
+      const raw = (await res.json()) as Record<string, unknown>[];
+      if (!Array.isArray(raw)) return null;
+      all.push(...raw);
+      if (raw.length < 100) break;
+    }
+    return all.length ? normalise(all) : null;
   } catch {
     return null;
   }

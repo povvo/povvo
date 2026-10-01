@@ -1,240 +1,128 @@
 [
   {
-    "scene": "desktop-snapshot",
-    "shot": "arrival",
-    "file": "desktop-snapshot-01-arrival.png",
-    "state": "browsing",
-    "renderer": "webgl",
-    "motion": "full",
-    "caption": "",
-    "status": ""
-  },
-  {
-    "scene": "desktop-snapshot",
-    "shot": "settled",
-    "file": "desktop-snapshot-02-settled.png",
-    "state": "settled",
-    "renderer": "webgl",
-    "motion": "full",
-    "caption": "deepest research",
-    "status": "No. 011, deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python · 2026."
-  },
-  {
-    "scene": "desktop-snapshot",
-    "shot": "turning",
-    "file": "desktop-snapshot-03-turning.png",
+    "scene": "sequence-close-on-turn",
+    "shot": "t0150ms",
+    "file": "sequence-close-on-turn-01-t0150ms.png",
     "state": "browsing",
     "renderer": "webgl",
     "motion": "full",
     "caption": "deepest research",
-    "status": "No. 011, deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python · 2026."
+    "status": "11 / 11. deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python — Updated 05 SEPT 2026."
   },
   {
-    "scene": "desktop-snapshot",
-    "shot": "settled-after-keys",
-    "file": "desktop-snapshot-04-settled-after-keys.png",
-    "state": "settled",
-    "renderer": "webgl",
-    "motion": "full",
-    "caption": "personal dev env",
-    "status": "No. 008, personal dev env. Reusable Windows 11 and WSL2 development environment bootstrap with locked core tooling and optional profiles. PowerShell · 2026."
-  },
-  {
-    "scene": "desktop-snapshot",
-    "shot": "open",
-    "file": "desktop-snapshot-05-open.png",
-    "state": "open",
-    "renderer": "webgl",
-    "motion": "full",
-    "caption": "personal dev env",
-    "status": "No. 008, personal dev env. Reusable Windows 11 and WSL2 development environment bootstrap with locked core tooling and optional profiles. PowerShell · 2026."
-  },
-  {
-    "scene": "desktop-snapshot",
-    "shot": "open-readme",
-    "file": "desktop-snapshot-06-open-readme.png",
-    "state": "open",
-    "renderer": "webgl",
-    "motion": "full",
-    "caption": "personal dev env",
-    "status": "No. 008, personal dev env. Reusable Windows 11 and WSL2 development environment bootstrap with locked core tooling and optional profiles. PowerShell · 2026."
-  },
-  {
-    "scene": "desktop-snapshot",
-    "shot": "closed",
-    "file": "desktop-snapshot-07-closed.png",
-    "state": "settled",
-    "renderer": "webgl",
-    "motion": "full",
-    "caption": "personal dev env",
-    "status": "No. 008, personal dev env. Reusable Windows 11 and WSL2 development environment bootstrap with locked core tooling and optional profiles. PowerShell · 2026."
-  },
-  {
-    "scene": "desktop-shadows",
-    "shot": "settled-high",
-    "file": "desktop-shadows-01-settled-high.png",
-    "state": "settled",
-    "renderer": "webgl",
-    "motion": "full",
-    "caption": "deepest research",
-    "status": "No. 011, deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python · 2026."
-  },
-  {
-    "scene": "desktop-shadows",
-    "shot": "open-high",
-    "file": "desktop-shadows-02-open-high.png",
-    "state": "open",
-    "renderer": "webgl",
-    "motion": "full",
-    "caption": "deepest research",
-    "status": "No. 011, deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python · 2026."
-  },
-  {
-    "scene": "desktop-stress60",
-    "shot": "settled",
-    "file": "desktop-stress60-01-settled.png",
-    "state": "settled",
-    "renderer": "webgl",
-    "motion": "full",
-    "caption": "drum field 24",
-    "status": "No. 060, drum field 24. No description. PowerShell · 2026."
-  },
-  {
-    "scene": "desktop-stress60",
-    "probe": {
-      "frames": 19,
-      "avg": 79.48421052635508,
-      "max": 350
-    }
-  },
-  {
-    "scene": "desktop-stress60",
-    "shot": "wheel-turning",
-    "file": "desktop-stress60-02-wheel-turning.png",
-    "state": "settled",
-    "renderer": "webgl",
-    "motion": "full",
-    "caption": "margin quiet 22",
-    "status": "No. 050, margin quiet 22. A margin for quiet, with sources, a validator and a worked example. Rust · 2026."
-  },
-  {
-    "scene": "desktop-stress60",
-    "shot": "wheel-settled",
-    "file": "desktop-stress60-03-wheel-settled.png",
-    "state": "settled",
-    "renderer": "webgl",
-    "motion": "full",
-    "caption": "margin quiet 22",
-    "status": "No. 050, margin quiet 22. A margin for quiet, with sources, a validator and a worked example. Rust · 2026."
-  },
-  {
-    "scene": "desktop-stress60",
-    "shot": "drag-release",
-    "file": "desktop-stress60-04-drag-release.png",
+    "scene": "sequence-close-on-turn",
+    "shot": "t0300ms",
+    "file": "sequence-close-on-turn-02-t0300ms.png",
     "state": "browsing",
     "renderer": "webgl",
     "motion": "full",
-    "caption": "margin quiet 22",
-    "status": "No. 050, margin quiet 22. A margin for quiet, with sources, a validator and a worked example. Rust · 2026."
+    "caption": "deepest research",
+    "status": "11 / 11. deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python — Updated 05 SEPT 2026."
   },
   {
-    "scene": "desktop-stress60",
-    "shot": "drag-settled",
-    "file": "desktop-stress60-05-drag-settled.png",
+    "scene": "sequence-close-on-turn",
+    "shot": "t0450ms",
+    "file": "sequence-close-on-turn-03-t0450ms.png",
+    "state": "browsing",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "deepest research",
+    "status": "11 / 11. deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python — Updated 05 SEPT 2026."
+  },
+  {
+    "scene": "sequence-close-on-turn",
+    "shot": "t0600ms",
+    "file": "sequence-close-on-turn-04-t0600ms.png",
+    "state": "browsing",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "deepest research",
+    "status": "11 / 11. deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python — Updated 05 SEPT 2026."
+  },
+  {
+    "scene": "sequence-close-on-turn",
+    "shot": "t0750ms",
+    "file": "sequence-close-on-turn-05-t0750ms.png",
+    "state": "browsing",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "deepest research",
+    "status": "11 / 11. deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python — Updated 05 SEPT 2026."
+  },
+  {
+    "scene": "sequence-close-on-turn",
+    "shot": "t0900ms",
+    "file": "sequence-close-on-turn-06-t0900ms.png",
     "state": "settled",
     "renderer": "webgl",
     "motion": "full",
-    "caption": "field drum 45",
-    "status": "No. 044, field drum 45. No description. Lua · 2026."
+    "caption": "web mcp skills",
+    "status": "10 / 11. web mcp skills. Skills for building, validating, testing, and designing Web MCP integrations. Python — Updated 04 SEPT 2026."
   },
   {
-    "scene": "desktop-stress60",
-    "shot": "open",
-    "file": "desktop-stress60-06-open.png",
-    "state": "open",
-    "renderer": "webgl",
-    "motion": "full",
-    "caption": "field drum 45",
-    "status": "No. 044, field drum 45. No description. Lua · 2026."
-  },
-  {
-    "scene": "desktop-filter",
-    "shot": "filtered",
-    "file": "desktop-filter-01-filtered.png",
+    "scene": "sequence-close-on-turn",
+    "shot": "t1050ms",
+    "file": "sequence-close-on-turn-07-t1050ms.png",
     "state": "settled",
     "renderer": "webgl",
     "motion": "full",
-    "caption": "study signal orbit atlas 01",
-    "status": "No. 001, study signal orbit atlas 01. A study for signal, with sources, a validator and a worked example. Python · 2026."
+    "caption": "web mcp skills",
+    "status": "10 / 11. web mcp skills. Skills for building, validating, testing, and designing Web MCP integrations. Python — Updated 04 SEPT 2026."
   },
   {
-    "scene": "phone-stress60",
-    "shot": "settled",
-    "file": "phone-stress60-01-settled.png",
+    "scene": "sequence-close-on-turn",
+    "shot": "t1200ms",
+    "file": "sequence-close-on-turn-08-t1200ms.png",
     "state": "settled",
     "renderer": "webgl",
     "motion": "full",
-    "caption": "drum field 24",
-    "status": "No. 060, drum field 24. No description. PowerShell · 2026."
+    "caption": "web mcp skills",
+    "status": "10 / 11. web mcp skills. Skills for building, validating, testing, and designing Web MCP integrations. Python — Updated 04 SEPT 2026."
   },
   {
-    "scene": "phone-stress60",
-    "shot": "open",
-    "file": "phone-stress60-02-open.png",
-    "state": "open",
-    "renderer": "webgl",
-    "motion": "full",
-    "caption": "drum field 24",
-    "status": "No. 060, drum field 24. No description. PowerShell · 2026."
-  },
-  {
-    "scene": "reduced-motion",
-    "shot": "rest",
-    "file": "reduced-motion-01-rest.png",
+    "scene": "sequence-close-on-turn",
+    "shot": "t1350ms",
+    "file": "sequence-close-on-turn-09-t1350ms.png",
     "state": "settled",
     "renderer": "webgl",
-    "motion": "reduced",
-    "caption": "drum field 24",
-    "status": "No. 060, drum field 24. No description. PowerShell · 2026."
+    "motion": "full",
+    "caption": "web mcp skills",
+    "status": "10 / 11. web mcp skills. Skills for building, validating, testing, and designing Web MCP integrations. Python — Updated 04 SEPT 2026."
   },
   {
-    "scene": "reduced-motion",
-    "shot": "after-key",
-    "file": "reduced-motion-02-after-key.png",
+    "scene": "sequence-close-on-turn",
+    "shot": "t1500ms",
+    "file": "sequence-close-on-turn-10-t1500ms.png",
     "state": "settled",
     "renderer": "webgl",
-    "motion": "reduced",
-    "caption": "drum field 48",
-    "status": "No. 059, drum field 48. No description. PowerShell · 2026."
+    "motion": "full",
+    "caption": "web mcp skills",
+    "status": "10 / 11. web mcp skills. Skills for building, validating, testing, and designing Web MCP integrations. Python — Updated 04 SEPT 2026."
   },
   {
-    "scene": "reduced-motion",
-    "shot": "open",
-    "file": "reduced-motion-03-open.png",
-    "state": "open",
-    "renderer": "webgl",
-    "motion": "reduced",
-    "caption": "drum field 48",
-    "status": "No. 059, drum field 48. No description. PowerShell · 2026."
-  },
-  {
-    "scene": "flat-renderer",
-    "shot": "rest",
-    "file": "flat-renderer-01-rest.png",
+    "scene": "sequence-close-on-turn",
+    "shot": "t1650ms",
+    "file": "sequence-close-on-turn-11-t1650ms.png",
     "state": "settled",
-    "renderer": "flat",
+    "renderer": "webgl",
     "motion": "full",
-    "caption": "drum field 24",
-    "status": "No. 060, drum field 24. No description. PowerShell · 2026."
+    "caption": "web mcp skills",
+    "status": "10 / 11. web mcp skills. Skills for building, validating, testing, and designing Web MCP integrations. Python — Updated 04 SEPT 2026."
   },
   {
-    "scene": "flat-renderer",
-    "shot": "open",
-    "file": "flat-renderer-02-open.png",
-    "state": "open",
-    "renderer": "flat",
+    "scene": "sequence-close-on-turn",
+    "shot": "t1800ms",
+    "file": "sequence-close-on-turn-12-t1800ms.png",
+    "state": "settled",
+    "renderer": "webgl",
     "motion": "full",
-    "caption": "drum field 24",
-    "status": "No. 060, drum field 24. No description. PowerShell · 2026."
+    "caption": "web mcp skills",
+    "status": "10 / 11. web mcp skills. Skills for building, validating, testing, and designing Web MCP integrations. Python — Updated 04 SEPT 2026."
+  },
+  {
+    "scene": "sequence-close-on-turn",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 403 (Forbidden)"
+    ]
   }
 ]

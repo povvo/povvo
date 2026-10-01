@@ -1,4 +1,4 @@
-import { formatNo } from "./catalogue";
+import { position } from "./catalogue";
 import { drawInsert, drawSpine, ensureFonts } from "./covers";
 import type { State, Store } from "./state";
 
@@ -23,13 +23,13 @@ export function mountFlat(root: HTMLElement, store: Store): void {
   const style = document.createElement("style");
   style.textContent = `
     .flat { position: absolute; inset: 0; display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; }
-    .flat__turn { font-size: 20px; min-height: 44px; color: var(--ink-muted); }
+    .flat__turn { font: 500 18px/1 var(--mono); min-height: 44px; color: var(--ink-muted); }
     .flat__turn:hover { color: var(--ink); }
-    .flat__shelf { display: flex; align-items: center; justify-content: center; gap: 6px; height: 100%; padding: 24px 0 140px; }
+    .flat__shelf { display: flex; align-items: center; justify-content: center; gap: 6px; height: 100%; padding: 96px 0 220px; }
     .flat__spine { height: 52%; width: 22px; border-radius: 1px; cursor: pointer; border: 0; padding: 0; }
-    .flat__cover { height: 62%; aspect-ratio: 135 / 190; display: block; box-shadow: 0 18px 40px -22px rgba(34,31,28,.5); cursor: pointer; border: 0; padding: 0; background: none; margin: 0 10px; }
+    .flat__cover { height: 58%; aspect-ratio: 135 / 190; display: block; box-shadow: 0 22px 30px -18px rgba(58,42,18,.45); cursor: pointer; border: 0; padding: 0; background: none; margin: 0 10px; }
     .flat__cover canvas { width: 100%; height: 100%; display: block; }
-    @media (max-width: 1023px) { .flat__shelf { padding-bottom: 120px; } }
+    @media (max-width: 1023px) { .flat__shelf { padding: 96px 0 24px; } }
   `;
   root.appendChild(style);
 
@@ -45,7 +45,6 @@ export function mountFlat(root: HTMLElement, store: Store): void {
     painting = false;
     const state = store.state;
     const frag = document.createDocumentFragment();
-    const total = Math.max(1, state.all.length);
     const cur = state.current;
     const around = 4;
     for (let i = Math.max(0, cur - around); i <= Math.min(state.visible.length - 1, cur + around); i++) {
@@ -54,15 +53,15 @@ export function mountFlat(root: HTMLElement, store: Store): void {
         const btn = document.createElement("button");
         btn.className = "flat__cover";
         btn.type = "button";
-        btn.setAttribute("aria-label", `${formatNo(entry.no)} ${entry.title}: open the case`);
-        btn.appendChild(drawInsert(entry, total, 540));
+        btn.setAttribute("aria-label", `${position(i, state.visible.length)} ${entry.title}: open the case`);
+        btn.appendChild(drawInsert(entry, 540));
         btn.addEventListener("click", () => (state.mode === "open" ? store.close() : store.open()));
         frag.appendChild(btn);
       } else {
         const btn = document.createElement("button");
         btn.className = "flat__spine";
         btn.type = "button";
-        btn.setAttribute("aria-label", `${formatNo(entry.no)} ${entry.name}`);
+        btn.setAttribute("aria-label", `${position(i, state.visible.length)} ${entry.name}`);
         const c = drawSpine(entry, 44);
         c.style.cssText = "width:100%;height:100%;display:block";
         btn.appendChild(c);
