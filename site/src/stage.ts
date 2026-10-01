@@ -40,6 +40,25 @@ const WINDOW = THREE.MathUtils.degToRad(100); // cases beyond this angle from th
 const WINDOW_FADE = THREE.MathUtils.degToRad(12);
 const HINGE_OPEN = -2.55; // radians, how far the front leaf swings
 const REST_YAW = 0.14; // the presented case rests slightly turned so its spine edge catches the sun
+const RACK_TONE = 0.7; // cases on the rack are printed a little darker than the one in the light
+
+/** Material colours are base colour times a tone; the base changes when textures are painted. */
+function setBase(mat: THREE.MeshPhysicalMaterial, colour: THREE.ColorRepresentation): void {
+  const base = (mat.userData.base as THREE.Color | undefined) ?? new THREE.Color();
+  base.set(colour);
+  mat.userData.base = base;
+  mat.color.copy(base).multiplyScalar((mat.userData.tone as number | undefined) ?? 1);
+}
+function setTone(node: { materials: THREE.MeshPhysicalMaterial[]; tone: number }, k: number): void {
+  if (Math.abs(node.tone - k) < 0.004) return;
+  node.tone = k;
+  for (const m of node.materials) {
+    m.userData.tone = k;
+    const base = (m.userData.base as THREE.Color | undefined) ?? m.color.clone();
+    m.userData.base = base;
+    m.color.copy(base).multiplyScalar(k);
+  }
+}
 
 interface RackGeometry {
   step: number;
@@ -64,14 +83,6 @@ export function rackGeometry(count: number): RackGeometry {
   return { step, radius: inner + CASE_W + SPINE_T, rise: helix ? (CASE_H * 1.18) / perTurn : 0 };
 }
 
-/** Where the callout points on each cover layout, as fractions of the insert from its top left. */
-const CALLOUT_AT: Record<Entry["layout"], [number, number]> = {
-  quilt: [0.2, 0.928],
-  block: [0.2, 0.07],
-  horizon: [0.2, 0.735],
-  specimen: [0.79, 0.075],
-};
-
 interface CaseNode {
   entry: Entry;
   group: THREE.Group;
@@ -94,6 +105,7 @@ interface CaseNode {
   insideLeftMat: THREE.MeshPhysicalMaterial;
   insideRightMat: THREE.MeshPhysicalMaterial;
   hero: boolean;
+  tone: number;
 }
 
 export interface StageHandle {
@@ -212,6 +224,25 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
   floor.receiveShadow = true;
   scene.add(floor);
 
+  // Contact shadow: a soft ellipse under a floating case, fainter and wider the higher it is.
+  const blobCanvas = document.createElement("canvas");
+  blobCanvas.width = blobCanvas.height = 128;
+  const bctx = blobCanvas.getContext("2d")!;
+  const grad = bctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+  grad.addColorStop(0, "rgba(58,42,18,0.9)");
+  grad.addColorStop(0.5, "rgba(58,42,18,0.35)");
+  grad.addColorStop(1, "rgba(58,42,18,0)");
+  bctx.fillStyle = grad;
+  bctx.fillRect(0, 0, 128, 128);
+  const blob = new THREE.Mesh(
+    new THREE.PlaneGeometry(1, 1),
+    new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(blobCanvas), transparent: true, depthWrite: false, opacity: 0 }),
+  );
+  blob.rotation.x = -Math.PI / 2;
+  blob.visible = false;
+  blob.renderOrder = 1;
+  scene.add(blob);
+
   const rack = new THREE.Group();
   scene.add(rack);
 
@@ -297,6 +328,7 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
       insideLeftMat,
       insideRightMat,
       hero: false,
+      tone: 1,
     };
     for (const m of [front, back, spine]) m.userData.node = node;
     return node;
@@ -308,10 +340,10 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
     const insert = texture(drawInsert(node.entry, small ? 256 : 320), renderer);
     const spine = texture(drawSpine(node.entry, small ? 48 : 64), renderer);
     node.frontMat.map = insert;
-    node.frontMat.color.set(0xffffff);
+    setBase(node.frontMat, 0xffffff);
     node.frontMat.needsUpdate = true;
     node.spineMat.map = spine;
-    node.spineMat.color.set(0xffffff);
+    setBase(node.spineMat, 0xffffff);
     node.spineMat.needsUpdate = true;
     dirty = true;
   }
@@ -338,9 +370,9 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
     }
     node.frontMat.map = hero.front;
     node.insideLeftMat.map = hero.left;
-    node.insideLeftMat.color.set(0xffffff);
+    setBase(node.insideLeftMat, 0xffffff);
     node.insideRightMat.map = hero.right;
-    node.insideRightMat.color.set(0xffffff);
+    setBase(node.insideRightMat, 0xffffff);
     for (const m of [node.frontMat, node.insideLeftMat, node.insideRightMat]) m.needsUpdate = true;
     node.hero = true;
     dirty = true;
@@ -350,9 +382,9 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
     if (!node.hero) return;
     node.hero = false;
     node.insideLeftMat.map = null;
-    node.insideLeftMat.color.set(FIELD.bone);
+    setBase(node.insideLeftMat, FIELD.bone);
     node.insideRightMat.map = null;
-    node.insideRightMat.color.set(shellHex(node.entry));
+    setBase(node.insideRightMat, shellHex(node.entry));
     for (const m of [node.insideLeftMat, node.insideRightMat]) m.needsUpdate = true;
     // The rack-resolution insert is repainted lazily.
     void paintRackTextures(node);
@@ -515,18 +547,25 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
     layout.wide = matchMedia("(min-width: 1024px)").matches;
     const halfV = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
     const halfH = halfV * camera.aspect;
-    // Framing by proportion (direction-v2, composition): the presented case fills about two
-    // fifths of the stage height and the rack's front case a little over a quarter, so the rack
-    // reads as a band on the horizon and the presented case floats well in front of it.
-    const presentedShare = layout.wide ? 0.42 : 0.38;
-    const rackShare = layout.wide ? 0.27 : 0.25;
+    // Framing by proportion and position (recipe/critique-v2.md, composition rules): the rack is
+    // a band on the horizon, its front case about a fifth of the stage tall and centred at 45%;
+    // the presented case is about two fifths tall and centred at 38%, in the sky; the bottom of
+    // the stage is left to the title, which the rack never covers.
+    const presentedShare = layout.wide ? 0.42 : 0.4;
+    const rackShare = layout.wide ? 0.21 : 0.2;
+    const rackCentre = layout.wide ? 0.45 : 0.47;
+    const presentCentre = 0.38;
     const dPresent = CASE_H / (2 * halfV * presentedShare);
     const dRack = CASE_H / (2 * halfV * rackShare);
     camBase.z = geo.radius + dRack;
-    camBase.y = layout.wide ? 0.25 : 0.35;
-    lookAt.y = layout.wide ? 0.3 : 0.4;
+    camBase.y = layout.wide ? 0.5 : 0.55;
+    // The view axis drops from the camera to pass the rack's front at the height that puts the
+    // rack's centre at rackCentre; lookAt is that axis continued to the rack's own centre.
+    const axisAtRack = -(1 - 2 * rackCentre) * halfV * dRack;
+    const slope = (camBase.y - axisAtRack) / dRack;
+    lookAt.y = camBase.y - slope * camBase.z;
     layout.presentX = 0;
-    layout.presentY = layout.wide ? 0.62 : 0.72;
+    layout.presentY = camBase.y - slope * dPresent + (1 - 2 * presentCentre) * halfV * dPresent;
     layout.presentZ = Math.max(0, camBase.z - dPresent - (geo.radius + PULL_OUT));
     // Open: the spread covers the right of the viewport, so the opened case (whose front leaf
     // swings out to the left) is centred on what remains of the stage.
@@ -536,7 +575,7 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
     const centrePx = Math.max(0, visibleRight - rect.left) / 2;
     const ndcX = (centrePx / w) * 2 - 1;
     layout.openX = layout.wide ? ndcX * halfH * dPresent + CASE_W * 0.45 : 0;
-    layout.openY = layout.wide ? 0.42 : 0.6;
+    layout.openY = layout.presentY - 0.05;
     layout.push = 0;
     fog.near = camBase.z - geo.radius * 0.5;
     fog.far = camBase.z + geo.radius * 2 + 4;
@@ -546,20 +585,25 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
     // The page's horizon is the floor's vanishing line, so the printed field and the 3D floor agree.
     tmp.set(camera.position.x, camera.position.y, camera.position.z - 1000).project(camera);
     stageEl.style.setProperty("--horizon", `${(((1 - tmp.y) / 2) * h).toFixed(1)}px`);
-    // The giant title sits behind the presentation spot.
-    const presentZ = geo.radius + PULL_OUT + layout.presentZ;
-    tmp.set(layout.presentX, layout.presentY, presentZ).project(camera);
-    stageEl.style.setProperty("--hero-y", `${(((1 - tmp.y) / 2) * h).toFixed(1)}px`);
-    const top = tmp.clone().set(layout.presentX, layout.presentY + CASE_H / 2, presentZ).project(camera);
-    const bottom = tmp.clone().set(layout.presentX, layout.presentY - CASE_H / 2, presentZ).project(camera);
-    stageEl.style.setProperty("--case-h", `${(((top.y - bottom.y) / 2) * h).toFixed(1)}px`);
     dirty = true;
   }
 
+  // Pointer parallax: the camera leans a little toward the pointer (fine pointers, full motion).
+  const lean = { x: new Spring(0, { stiffness: 18, ratio: 1 }), y: new Spring(0, { stiffness: 18, ratio: 1 }) };
   function placeCamera(openAmount: number, arrival: number): void {
-    camera.position.set(camBase.x, camBase.y + (1 - arrival) * 0.25, camBase.z + (1 - arrival) * 0.9 - openAmount * layout.push);
+    const lx = lean.x.x * 0.35 * (1 - openAmount);
+    const ly = lean.y.x * 0.18 * (1 - openAmount);
+    camera.position.set(camBase.x + lx, camBase.y + ly + (1 - arrival) * 0.25, camBase.z + (1 - arrival) * 0.9 - openAmount * layout.push);
     camera.lookAt(lookAt.x + openAmount * layout.openX * 0.25, lookAt.y, lookAt.z);
   }
+  const finePointer = matchMedia("(pointer: fine)").matches;
+  function onLean(e: PointerEvent): void {
+    if (!finePointer || reduced || e.pointerType !== "mouse") return;
+    const r = canvas.getBoundingClientRect();
+    lean.x.target = clamp(((e.clientX - r.left) / r.width) * 2 - 1, -1, 1);
+    lean.y.target = clamp(-(((e.clientY - r.top) / r.height) * 2 - 1), -1, 1);
+  }
+  addEventListener("pointermove", onLean, { passive: true });
 
   const ro = new ResizeObserver(resize);
   ro.observe(field);
@@ -629,6 +673,7 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
       if (target !== hovered) {
         hovered = target;
         canvas.style.cursor = target ? "pointer" : "grab";
+        canvas.dataset.hover = target ? (target === currentNode ? "current" : "case") : "";
         dirty = true;
       }
       return;
@@ -694,6 +739,7 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
     const t = e.target as HTMLElement | null;
     if (t && (t.tagName === "INPUT" || t.tagName === "SELECT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
     if (t && t.closest("[data-list]")) return; // the tracklist handles its own keys
+    if (document.body.dataset.index === "open") return; // the index overlay owns the keyboard
     const mode = store.state.mode;
     if (mode === "loading" || mode === "failed") return;
     switch (e.key) {
@@ -747,6 +793,7 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
   });
   window.addEventListener("keydown", onKey);
   canvas.style.cursor = "grab";
+  canvas.dataset.hover = "";
 
   // ---------- state coupling ----------
   const unsubscribe = store.on((state, previous) => {
@@ -786,7 +833,6 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
   let slowFrames = 0;
   let sampled = 0;
   let renderedLastFrame = false;
-  let calloutOn = false;
   function applyQuality(): void {
     renderer.setPixelRatio(quality === "low" ? 1 : Math.min(devicePixelRatio || 1, small ? 1.5 : 2));
     renderer.shadowMap.enabled = quality === "high";
@@ -827,7 +873,7 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
       pos.step(dt);
       if (!pos.settled(0.0015, 0.004)) moving = true;
     } else moving = true;
-    for (const s of [inspectYaw, inspectPitch]) {
+    for (const s of [inspectYaw, inspectPitch, lean.x, lean.y]) {
       s.step(dt);
       if (!s.settled(0.001, 0.003)) moving = true;
     }
@@ -908,23 +954,23 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
     key.target.position.set(0, -pos.x * geo.rise, 0);
     key.target.updateMatrixWorld();
 
-    // The callout follows the capsule code printed on the presented cover.
-    const wantCallout = Boolean(shown && shown.turn.x > 0.985 && shown.open.x < 0.02 && state.mode === "settled" && shown.pull.settled(0.01, 0.05));
-    if (shown && wantCallout) {
+    // Light leads the eye: the presented case at full brightness, the rack toned down, and a
+    // soft contact shadow under whichever case is in the air.
+    let air: CaseNode | null = null;
+    for (const n of nodes.values()) {
+      setTone(n, RACK_TONE + (1 - RACK_TONE) * smoothstep(n.turn.x));
+      if (n.turn.x > 0.02 && (!air || n.turn.x > air.turn.x)) air = n;
+    }
+    if (air) {
       rack.updateMatrixWorld();
-      camera.updateMatrixWorld();
-      const [u, v] = CALLOUT_AT[shown.entry.layout];
-      tmp.set(-CASE_W / 2 + u * CASE_W, CASE_H / 2 - v * CASE_H, LEAF_D / 2).applyMatrix4(shown.front.matrixWorld).project(camera);
-      const w = field.clientWidth;
-      const h = field.clientHeight;
-      stageEl.style.setProperty("--ax", `${(((tmp.x + 1) / 2) * w).toFixed(1)}px`);
-      stageEl.style.setProperty("--ay", `${(((1 - tmp.y) / 2) * h).toFixed(1)}px`);
-      stageEl.dataset.calloutSide = u > 0.5 ? "right" : "left";
-    }
-    if (wantCallout !== calloutOn) {
-      calloutOn = wantCallout;
-      stageEl.dataset.callout = wantCallout ? "on" : "off";
-    }
+      air.group.getWorldPosition(tmp);
+      const height = Math.max(0, tmp.y - CASE_H / 2 - FLOOR_Y);
+      const k = smoothstep(air.turn.x);
+      blob.visible = true;
+      blob.position.set(tmp.x, FLOOR_Y + 0.004, tmp.z);
+      blob.scale.set(CASE_W * (1.5 + height * 0.5), CASE_W * (0.55 + height * 0.25), 1);
+      (blob.material as THREE.MeshBasicMaterial).opacity = k * clamp(0.5 - height * 0.12, 0.12, 0.5);
+    } else blob.visible = false;
 
     renderer.render(scene, camera);
   }
@@ -980,6 +1026,7 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
       unsubscribe();
       ro.disconnect();
       window.removeEventListener("keydown", onKey);
+      removeEventListener("pointermove", onLean);
       document.removeEventListener("visibilitychange", onVisibility);
       renderer.dispose();
     },

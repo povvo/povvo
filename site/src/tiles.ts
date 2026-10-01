@@ -3,7 +3,7 @@
  * the collision palette (solid, checker, stripes, arc, split, diamond, bar, numeral), composed
  * into quilts with diamonds laid across the grid. Everything is a deterministic function of a
  * seed, so a project's patchwork never changes between visits. Used by the covers, the disc
- * label, the spread slab, the arrival curtain and the small tile rails in the chrome.
+ * label, the spread slab and the arrival curtain.
  */
 
 /** The patchwork palette: saturated and unexpected in pairs (violet with aqua, magenta with sage, tan with indigo). */
@@ -250,24 +250,4 @@ export function drawTileCube(ctx: CanvasRenderingContext2D, r: Rand, cx: number,
     drawQuilt(ctx, r, 0, 0, 100, 100, { cols: 2, rows: 2, palette, numeral: r() < 0.4 ? "1" : undefined, numeralFont });
     ctx.restore();
   }
-}
-
-/** A horizontal strip of small tiles, returned as a canvas (for CSS backgrounds in the chrome). */
-export function tileStrip(seed: string, count: number, size: number, palette?: string[]): HTMLCanvasElement {
-  const r = rng(hashSeed(seed));
-  const pal = palette ?? subPalette(r, 6);
-  const c = document.createElement("canvas");
-  const dpr = Math.min(2, globalThis.devicePixelRatio || 1);
-  c.width = Math.round(count * size * dpr);
-  c.height = Math.round(size * dpr);
-  const ctx = c.getContext("2d")!;
-  ctx.scale(dpr, dpr);
-  let prev: string | undefined;
-  for (let i = 0; i < count; i++) {
-    const t = randomTile(r, pal, prev);
-    if (t.kind === "numeral") t.kind = "checker";
-    drawTile(ctx, t, i * size, 0, size);
-    prev = t.a;
-  }
-  return c;
 }

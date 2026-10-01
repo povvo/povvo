@@ -83,6 +83,16 @@ It is skipped under reduced motion. A tap or a key ends it at once, and it never
 
 ## Composition
 
+> **Superseded by the composition pass.** After Ethan's review ("there's like messy and then there's sort of all over"), the layout below was replaced by the rules in [`critique-v2.md`](critique-v2.md):
+> - one twelve-column grid;
+> - three layers, one each;
+> - the title anchored to the foot;
+> - the apparatus typeset, not boxed;
+> - the tracklist as a full-screen index;
+> - the callout, tick rail and protocol strip removed.
+>
+> The record below is the v2 layout, kept for history.
+
 **Wide (≥1024 px)**
 - **Stage, the left 70%.**
   - Heat field and grain.
@@ -116,12 +126,12 @@ It is skipped under reduced motion. A tap or a key ends it at once, and it never
    - Recurrence: one title, always the current case's.
    - Variation: one or two lines depending on length.
    - Failure: the title over the case, a second giant word, or giant type in the cockpit.
-2. **The registration stamp.**
+2. **The registration stamp** (v2.1: now a two-plate print, with the colour plate rising first and the ink landing on it, then the colour plate lifting away).
    - On settle, the title appears with a misregistered copy in the case colour offset by a few pixels for two frames, then registers.
    - Recurrence: once per settle.
    - Under reduced motion it is a plain swap.
    - Failure: looping glitch, chromatic aberration on body text, or the effect on every hover.
-3. **The callout.**
+3. **The callout** (removed in v2.1; the cover carries its own code).
    - A hairline circle drawn around the spine code of the case that is out, with a leader to a mono label.
    - Recurrence: only on the current case, only when settled.
    - Failure: callouts on several objects, or decorative circles with nothing inside.

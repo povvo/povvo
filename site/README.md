@@ -6,10 +6,10 @@ The design language is "Heat Sheet". It brings together Jonathan Zawada's *Hi Th
 - a sun-bleached heat field with the rack standing on its horizon;
 - glossy cases with generated patchwork covers;
 - each project's title set huge behind its case;
-- a dark tracklist cockpit;
-- small protocol apparatus around the edges.
+- a full-screen tracklist index;
+- everything set on one twelve-column grid.
 
-The records are in [`recipe/`](recipe/). Start with [`recipe/direction-v2.md`](recipe/direction-v2.md).
+The records are in [`recipe/`](recipe/). Start with [`recipe/direction-v2.md`](recipe/direction-v2.md), then [`recipe/critique-v2.md`](recipe/critique-v2.md) for the composition pass.
 
 ## Run
 
@@ -40,12 +40,13 @@ pnpm dev
 - The wheel and a sideways drag turn the rack.
 - Dragging the case that is out tilts it; tapping it opens it.
 
-**Tracklist**
-- The tracklist on the right is the same list as the rack.
-- Type to find a project, choose an order, or click a row.
+**Index**
+- Index in the header (or the `I` key) opens the full-screen tracklist, which is the same list as the rack.
+- Type to find a project, choose an order, or pick a row. On a mouse, a cover follows the pointer over each row.
+- Previous and Next in the right-hand column name the neighbouring projects.
 
 **Other**
-- The footer control reduces motion, and the system preference is honoured by default.
+- "Motion" in the header reduces motion, and the system preference is honoured by default. With a mouse and full motion, the cursor says what a press will do: Drag, Open or View.
 - On phones, the rack takes sideways swipes and the page scrolls vertically.
 
 ## Review
@@ -54,6 +55,7 @@ These need Playwright reachable through `NODE_PATH` or `node_modules`.
 
 - `node scripts/review.mjs` serves `dist/` and captures representative states. External reads are fetched through `curl` so that READMEs load in containers with an HTTP proxy.
 - `node scripts/contact-sheet.mjs` composes the frames into `recipe/evidence/contact-sheet.jpg`.
+- `node scripts/measure-layout.mjs <out.json>` records the settled view's chrome boxes for `infer_alignment_axes.py`.
 - `node --experimental-strip-types scripts/simulate-gates.ts` runs the stage's own springs and gates through interruption scenarios and checks clearance, exclusivity and order.
 
 Query parameters for review and weak devices:

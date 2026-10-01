@@ -1,126 +1,26 @@
 [
   {
-    "scene": "sequence-close-on-turn",
-    "shot": "t0150ms",
-    "file": "sequence-close-on-turn-01-t0150ms.png",
-    "state": "browsing",
+    "scene": "desktop-shadows",
+    "shot": "settled-high",
+    "file": "desktop-shadows-01-settled-high.png",
+    "state": "settled",
     "renderer": "webgl",
     "motion": "full",
     "caption": "deepest research",
     "status": "11 / 11. deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python — Updated 05 SEPT 2026."
   },
   {
-    "scene": "sequence-close-on-turn",
-    "shot": "t0300ms",
-    "file": "sequence-close-on-turn-02-t0300ms.png",
-    "state": "browsing",
+    "scene": "desktop-shadows",
+    "shot": "open-high",
+    "file": "desktop-shadows-02-open-high.png",
+    "state": "open",
     "renderer": "webgl",
     "motion": "full",
     "caption": "deepest research",
     "status": "11 / 11. deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python — Updated 05 SEPT 2026."
   },
   {
-    "scene": "sequence-close-on-turn",
-    "shot": "t0450ms",
-    "file": "sequence-close-on-turn-03-t0450ms.png",
-    "state": "browsing",
-    "renderer": "webgl",
-    "motion": "full",
-    "caption": "deepest research",
-    "status": "11 / 11. deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python — Updated 05 SEPT 2026."
-  },
-  {
-    "scene": "sequence-close-on-turn",
-    "shot": "t0600ms",
-    "file": "sequence-close-on-turn-04-t0600ms.png",
-    "state": "browsing",
-    "renderer": "webgl",
-    "motion": "full",
-    "caption": "deepest research",
-    "status": "11 / 11. deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python — Updated 05 SEPT 2026."
-  },
-  {
-    "scene": "sequence-close-on-turn",
-    "shot": "t0750ms",
-    "file": "sequence-close-on-turn-05-t0750ms.png",
-    "state": "browsing",
-    "renderer": "webgl",
-    "motion": "full",
-    "caption": "deepest research",
-    "status": "11 / 11. deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python — Updated 05 SEPT 2026."
-  },
-  {
-    "scene": "sequence-close-on-turn",
-    "shot": "t0900ms",
-    "file": "sequence-close-on-turn-06-t0900ms.png",
-    "state": "settled",
-    "renderer": "webgl",
-    "motion": "full",
-    "caption": "web mcp skills",
-    "status": "10 / 11. web mcp skills. Skills for building, validating, testing, and designing Web MCP integrations. Python — Updated 04 SEPT 2026."
-  },
-  {
-    "scene": "sequence-close-on-turn",
-    "shot": "t1050ms",
-    "file": "sequence-close-on-turn-07-t1050ms.png",
-    "state": "settled",
-    "renderer": "webgl",
-    "motion": "full",
-    "caption": "web mcp skills",
-    "status": "10 / 11. web mcp skills. Skills for building, validating, testing, and designing Web MCP integrations. Python — Updated 04 SEPT 2026."
-  },
-  {
-    "scene": "sequence-close-on-turn",
-    "shot": "t1200ms",
-    "file": "sequence-close-on-turn-08-t1200ms.png",
-    "state": "settled",
-    "renderer": "webgl",
-    "motion": "full",
-    "caption": "web mcp skills",
-    "status": "10 / 11. web mcp skills. Skills for building, validating, testing, and designing Web MCP integrations. Python — Updated 04 SEPT 2026."
-  },
-  {
-    "scene": "sequence-close-on-turn",
-    "shot": "t1350ms",
-    "file": "sequence-close-on-turn-09-t1350ms.png",
-    "state": "settled",
-    "renderer": "webgl",
-    "motion": "full",
-    "caption": "web mcp skills",
-    "status": "10 / 11. web mcp skills. Skills for building, validating, testing, and designing Web MCP integrations. Python — Updated 04 SEPT 2026."
-  },
-  {
-    "scene": "sequence-close-on-turn",
-    "shot": "t1500ms",
-    "file": "sequence-close-on-turn-10-t1500ms.png",
-    "state": "settled",
-    "renderer": "webgl",
-    "motion": "full",
-    "caption": "web mcp skills",
-    "status": "10 / 11. web mcp skills. Skills for building, validating, testing, and designing Web MCP integrations. Python — Updated 04 SEPT 2026."
-  },
-  {
-    "scene": "sequence-close-on-turn",
-    "shot": "t1650ms",
-    "file": "sequence-close-on-turn-11-t1650ms.png",
-    "state": "settled",
-    "renderer": "webgl",
-    "motion": "full",
-    "caption": "web mcp skills",
-    "status": "10 / 11. web mcp skills. Skills for building, validating, testing, and designing Web MCP integrations. Python — Updated 04 SEPT 2026."
-  },
-  {
-    "scene": "sequence-close-on-turn",
-    "shot": "t1800ms",
-    "file": "sequence-close-on-turn-12-t1800ms.png",
-    "state": "settled",
-    "renderer": "webgl",
-    "motion": "full",
-    "caption": "web mcp skills",
-    "status": "10 / 11. web mcp skills. Skills for building, validating, testing, and designing Web MCP integrations. Python — Updated 04 SEPT 2026."
-  },
-  {
-    "scene": "sequence-close-on-turn",
+    "scene": "desktop-shadows",
     "errors": [
       "error: Failed to load resource: the server responded with a status of 403 (Forbidden)"
     ]

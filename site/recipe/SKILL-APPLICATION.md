@@ -3,6 +3,39 @@
 The catalogue is one production that used the Motion Design Skills and the Good Fuckin Frontend skills by the decision being made, not by loading all of them. This map records which workflow references were actually read, which helpers were actually run on this project's inputs, and where each skill's contribution lives in the source. Helpers were run on authored contracts in `contracts/`; their results are in `evidence/`. A helper `PASS` is a mechanical fact about its contract and not an aesthetic verdict.
 
 
+## v2.1: the composition pass
+
+The composition pass responds to Ethan's review of v2: "there's like messy and then there's sort of all over".
+
+**UI art direction** (`critique-diagnosis-and-validation.md`) and **motion art direction** (`hierarchy-exclusion-and-restraint.md`).
+- Wrote a critique note to protocol in `critique-v2.md`:
+  - **Classification.** The failure is structural (hierarchy and composition), not finish. Polish was therefore not used to repair it.
+  - **Diagnosis.** About ten independent systems shared the settled view.
+- Set eight composition rules: one grid; three layers, one each; apparatus typeset, not boxed; removals; the index as a moment; the patchwork big or not at all; light leads the eye; finish only after structure.
+
+**UI layout and composition.**
+- `infer_alignment_axes.py` was run on chrome boxes measured from the built page (`scripts/measure-layout.mjs`), before and after:
+  - distinct left edges went from 12 to 7;
+  - the largest shared left axis went from 5 blocks to 8;
+  - unaligned blocks went from 1 to 0.
+- The page is now one twelve-column grid (`subgrid` for the bar), and the stage camera is framed by on-screen position targets so the rack never covers the title.
+
+**Look development** and **3D motion design**.
+- A lighting hierarchy: rack cases at 70% tone, the presented case at full brightness (`setTone`).
+- A soft contact shadow under the case in the air, scaled and faded with its height.
+- Pointer parallax on the camera, on fine pointers at full motion only.
+
+**Kinetic typography.**
+- The title is a two-plate print through line masks: the colour plate first, then the ink, then the colour plate lifts.
+- The caption rises in a 60 ms stagger.
+- The index rows are set in the display face.
+
+**Interactive and real-time motion**, **UI component design**.
+- The index is a modal dialog: focus moves to Find, Tab stays inside, Esc closes and returns focus, `I` opens it. It carries a pointer-following cover preview.
+- Previous and Next name the neighbours.
+- The cursor names what a press will do (Drag, Open, View) and steps aside on inputs and under reduced motion.
+- Reduced-motion map v2.1: `reduced_motion_state_map.py` returns PASS on `contracts/reduced-motion-map-v2.json`.
+
 ## v2: Heat Sheet (restyle and mechanism repair)
 
 The v2 pass answers two pieces of feedback:

@@ -61,18 +61,13 @@ Rules:
 
 ## Shape, edge and surface
 
-- **Panels** are square-cornered, with a 1 px ink rule. The caption is a specimen label: paper, rule, and a 4 px offset print shadow.
+- **Panels**: there are none on the stage. The chrome is typeset directly on the field with hairline rules. The spread is the only panel.
 - **Capsules** (999 px radius) are used only for codes.
-- **Edge rails**:
-  - tile strips on the protocol strip and the cockpit foot;
-  - the numbered tick rail on the stage;
-  - the tile rail along the foot of horizon covers.
-
-  All are cropped at the edges, so they read as found rather than ornamental.
+- **Edge rails** live on the covers only: the tile rail along the foot of horizon covers, cropped at the edges. The v2 chrome rails, the protocol strip and the tick rail were removed in the composition pass.
 - **The patchwork** (`src/tiles.ts`): flat, hard-edged tiles with no strokes, gradients or rounded corners.
   - Eight kinds: solid, checker, stripes, arc, split, diamond, bar and numeral.
   - Diamonds cross the grid at its intersections.
-  - It is the collision: covers, spine heads, the disc label, the spread slab, the arrival curtain and the chrome rails.
+  - It is the collision: covers, spine heads, the disc label, the spread slab, the arrival curtain and the index preview. It appears big, or not at all.
 - **Grain**: a static SVG noise tile at 9% multiply over the field, the giant title and the 3D objects. It is never applied to the chrome text or the spread.
 - **Halftone** stays contained, inside the specimen cover's sphere.
 
@@ -93,27 +88,31 @@ Other faces of the case:
 - **Disc**: black vinyl with grooves and a band of sun sheen. Its label is an isometric cube faced with the case's patchwork.
 - **Volume numeral**: the accession number, the order in which the work was started. It is printed only on covers, the disc and the callout ("Vol. 07").
 
-## Layout
+## Layout (v2.1, the composition pass in `critique-v2.md`)
 
-**Wide (1024 px and up)**
-- The stage takes the remaining width and the cockpit takes `clamp(330px, 28vw, 430px)`.
-- On the stage:
-  - masthead top left;
-  - protocol strip top right;
-  - tick rail on the right edge;
-  - specimen label bottom left;
-  - colophon along the foot;
-  - the giant title centred on the presentation spot (`--hero-y`, set by the stage).
-- The spread covers the right `min(760px, 54vw)`. The label and rail step out while it is open.
-- The spread's slab:
-  - the case's patchwork, revealed in six hard steps;
-  - the capsule code, position and Close on solid shell blocks;
-  - the title on a solid shell block that clones across line breaks.
+**One grid.** Twelve columns, with `--margin` `clamp(16px, 2.25vw, 32px)` and `--gutter` `clamp(12px, 1.7vw, 24px)`; four columns below 1024 px. The stage is the grid container, and the bar uses `subgrid`.
+
+**Wide**
+- **The bar** is one row with a hairline under it:
+  - columns 1 to 3: the wordmark;
+  - columns 4 to 6: "Public work, N projects";
+  - columns 7 to 9: the turn hint;
+  - columns 10 to 12, right-aligned: Index (N), Motion and GitHub.
+- **The caption** sits on columns 1 to 3 in the sky: the position and capsule code, the Bodoni standfirst (up to four lines), the meta, and "Open the case" as an underlined text action. It has no box.
+- **The neighbours** sit on columns 10 to 12, right-aligned: Previous and Next, each with its project's name.
+- **The object** is centred. The presented case is about two fifths of the stage tall, centred at 38% in the sky. The rack is a band on the horizon, its front case about a fifth tall and centred at 45%, at 70% tone.
+- **The word** is the title, anchored to the foot of the stage on column one at a near-constant size: one line where it fits, two for long names. The rack never covers it.
+- **The spread** covers the right `min(760px, 54vw)`. The caption and neighbours step out while it is open.
+
+**The index** is a full-screen petrol dialog on the same twelve columns:
+- a sticky head: title, tally, find, order and Close;
+- rows: number on column 1, the name in Anybody at `clamp(30px, 4.2vw, 68px)` on columns 2 to 9, code and year right-aligned on 10 to 12;
+- a cover preview that follows the pointer.
 
 **Narrow**
-- The stage field is `max(540px, 72svh)` tall. The label and colophon flow beneath it, and the cockpit follows as a full-width band.
-- The canvas takes horizontal swipes and leaves vertical scroll to the page (`touch-action: pan-y`). Vertical wheel and arrow keys scroll the page.
-- The callout is hidden below 700 px, where its label would leave the stage.
+- The field is `max(520px, 74svh)` tall, with the bar inside it and the title at its foot.
+- The caption and the neighbours flow beneath it.
+- The canvas takes horizontal swipes only.
 
 ## Look development
 

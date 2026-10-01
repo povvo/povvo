@@ -75,17 +75,21 @@ export function mountCurtain(store: Store): void {
   function cut(): void {
     if (started) return;
     started = true;
+    // Batches are timed against the clock, not counted per frame: on a slow device the cut
+    // skips ahead and still ends on time instead of stalling half-cut.
     const batches = 12;
     const per = Math.ceil(cells.length / batches);
-    let b = 0;
-    const step = (): void => {
-      for (const k of cells.slice(b * per, (b + 1) * per)) gone.add(k);
-      b++;
-      redraw();
-      if (b < batches) window.setTimeout(step, 42);
-      else canvas.remove();
+    const start = performance.now();
+    let done = 0;
+    const step = (now: number): void => {
+      const due = Math.min(batches, Math.floor((now - start) / 42) + 1);
+      for (; done < due; done++) for (const k of cells.slice(done * per, (done + 1) * per)) gone.add(k);
+      if (done < batches) {
+        redraw();
+        requestAnimationFrame(step);
+      } else canvas.remove();
     };
-    step();
+    requestAnimationFrame(step);
   }
 
   const off = store.on((state, previous) => {

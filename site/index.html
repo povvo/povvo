@@ -13,80 +13,66 @@
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
   </head>
   <body data-state="loading" data-motion="full" data-renderer="pending">
-    <a class="skip" href="#index">Skip to the tracklist</a>
+    <a class="skip" href="#index-open">Skip to the index</a>
 
-    <div class="sheet">
-      <main class="stage" aria-labelledby="stage-title" data-callout="off">
-        <h2 id="stage-title" class="sr-only">The rack</h2>
+    <main class="stage" aria-labelledby="stage-title">
+      <h2 id="stage-title" class="sr-only">The rack</h2>
 
-        <p class="hero" aria-hidden="true" data-hero data-state="off"><span class="hero__ghost" data-hero-ghost></span><span class="hero__ink" data-hero-ink></span></p>
+      <p class="hero" aria-hidden="true" data-hero data-state="off"><span class="hero__plate hero__plate--ghost" data-hero-ghost></span><span class="hero__plate hero__plate--ink" data-hero-ink></span></p>
 
-        <div class="stage__field" data-field>
-          <canvas id="rack" class="stage__canvas" aria-hidden="true"></canvas>
-          <div class="stage__flat" data-flat hidden aria-hidden="true"></div>
-        </div>
-        <div class="grain" aria-hidden="true"></div>
+      <div class="stage__field" data-field>
+        <canvas id="rack" class="stage__canvas" aria-hidden="true"></canvas>
+        <div class="stage__flat" data-flat hidden aria-hidden="true"></div>
+      </div>
+      <div class="grain" aria-hidden="true"></div>
 
-        <header class="masthead">
-          <h1 class="masthead__name">Ethan Lee Barrett</h1>
-          <p class="masthead__sub">Public work, in a revolving rack</p>
+      <header class="bar">
+        <h1 class="bar__name">Ethan Lee Barrett</h1>
+        <p class="bar__line">Public work, <span data-count>—</span></p>
+        <p class="bar__hint"><span class="bar__hint--keys">Drag, scroll or <kbd>←</kbd> <kbd>→</kbd> to turn</span><span class="bar__hint--touch">Swipe sideways to turn</span></p>
+        <nav class="bar__nav" aria-label="Site">
+          <button class="bar__link" type="button" id="index-open" data-index-open aria-haspopup="dialog" aria-controls="index">Index <span class="bar__count" data-tally></span></button>
+          <button class="bar__link" type="button" data-motion-toggle aria-pressed="false">Motion on</button>
+          <a class="bar__link" href="https://github.com/povvo" rel="me">GitHub <span aria-hidden="true">↗</span></a>
+        </nav>
+      </header>
+
+      <section class="caption" data-caption aria-label="The case out of the rack">
+        <p class="caption__no"><span data-no>&nbsp;</span><span class="caption__code" data-code></span></p>
+        <h3 class="caption__title sr-only" data-title>Loading the catalogue</h3>
+        <p class="caption__desc" data-desc>Loading the catalogue</p>
+        <p class="caption__meta" data-meta></p>
+        <button class="caption__open" type="button" data-open hidden>Open the case <span aria-hidden="true">↵</span></button>
+      </section>
+
+      <nav class="turn" aria-label="Neighbouring projects" data-turn>
+        <button class="turn__btn" type="button" data-prev><span class="turn__dir">Previous</span><span class="turn__name" data-prev-name></span></button>
+        <button class="turn__btn" type="button" data-next><span class="turn__dir">Next</span><span class="turn__name" data-next-name></span></button>
+      </nav>
+
+      <p class="stage__status sr-only" role="status" aria-live="polite" data-status></p>
+    </main>
+
+    <section class="index" id="index" role="dialog" aria-modal="true" aria-labelledby="index-title" data-index hidden>
+      <div class="index__sheet">
+        <header class="index__head">
+          <h2 id="index-title" class="index__title">Index</h2>
+          <p class="index__tally" data-index-tally></p>
+          <label class="index__find"><span class="sr-only">Find a project</span><input type="search" data-find placeholder="Find a project" autocomplete="off" spellcheck="false" /></label>
+          <div class="index__order" role="group" aria-label="Order">
+            <button type="button" data-order-value="accession" aria-pressed="true">Oldest</button>
+            <button type="button" data-order-value="updated" aria-pressed="false">Updated</button>
+            <button type="button" data-order-value="name" aria-pressed="false">A–Z</button>
+            <button type="button" data-order-value="stars" aria-pressed="false">Stars</button>
+          </div>
+          <button class="index__close" type="button" data-index-close>Close <kbd>Esc</kbd></button>
         </header>
-
-        <div class="protocol" aria-label="Catalogue">
-          <p class="protocol__cell"><span class="protocol__key">Cat.</span> ELB/PUB</p>
-          <p class="protocol__cell"><span class="protocol__key">Holdings</span> <span data-count>—</span></p>
-          <p class="protocol__cell protocol__cell--source"><span class="protocol__key">Index</span> <span data-source>—</span></p>
-          <a class="protocol__link" href="https://github.com/povvo" rel="me">GitHub <span aria-hidden="true">↗</span></a>
-          <span class="protocol__tiles" aria-hidden="true" data-tiles="protocol"></span>
-        </div>
-
-        <ol class="rail" data-rail aria-hidden="true"></ol>
-
-        <div class="callout" aria-hidden="true">
-          <svg class="callout__mark" viewBox="-60 -60 120 120" width="120" height="120">
-            <circle class="callout__ring" cx="0" cy="0" r="27" pathLength="100" />
-            <path class="callout__leader" d="M -27 0 L -58 0" pathLength="100" />
-          </svg>
-          <p class="callout__label" data-callout-label></p>
-        </div>
-
-        <section class="caption" data-caption aria-label="The case out of the rack">
-          <p class="caption__line"><span class="capsule" data-code>ELB</span><span class="caption__no" data-no>&nbsp;</span></p>
-          <h3 class="caption__title sr-only" data-title>Loading the catalogue</h3>
-          <p class="caption__desc" data-desc>Loading the catalogue</p>
-          <p class="caption__meta" data-meta></p>
-          <button class="caption__open" type="button" data-open hidden>Open the case <span aria-hidden="true">↵</span></button>
-        </section>
-        <p class="stage__status sr-only" role="status" aria-live="polite" data-status></p>
-
-        <footer class="colophon">
-          <p class="colophon__hint colophon__hint--keys">Drag, scroll or <kbd>←</kbd><kbd>→</kbd> to turn · <kbd>↵</kbd> open · <kbd>Esc</kbd> close</p>
-          <p class="colophon__hint colophon__hint--touch">Swipe the rack sideways to turn · tap the case to open</p>
-          <button class="colophon__motion" type="button" data-motion-toggle aria-pressed="false">Reduce motion</button>
-        </footer>
-      </main>
-
-      <aside class="cockpit" id="index" aria-labelledby="index-title">
-        <header class="cockpit__head">
-          <h2 id="index-title" class="cockpit__title">Tracklist</h2>
-          <p class="cockpit__tally" data-tally></p>
-        </header>
-        <div class="cockpit__tools">
-          <label class="cockpit__find"><span class="sr-only">Find a project</span><input type="search" data-find placeholder="Find a project" autocomplete="off" spellcheck="false" /></label>
-          <label class="cockpit__order"><span class="cockpit__key">Order</span>
-            <select data-order>
-              <option value="accession">Oldest first</option>
-              <option value="updated">Recently updated</option>
-              <option value="name">A to Z</option>
-              <option value="stars">Most stars</option>
-            </select>
-          </label>
-        </div>
         <ul class="tracklist" role="listbox" aria-label="Projects" tabindex="0" data-list></ul>
-        <p class="cockpit__empty" data-empty hidden>Nothing in the catalogue matches that.</p>
-        <footer class="cockpit__foot"><span class="cockpit__tiles" aria-hidden="true" data-tiles="cockpit"></span><span>ELB — Public work — github.com/povvo</span></footer>
-      </aside>
-    </div>
+        <p class="index__empty" data-empty hidden>Nothing in the catalogue matches that.</p>
+        <footer class="index__foot"><span data-source></span><span>ELB — Public work — github.com/povvo</span></footer>
+      </div>
+      <div class="index__preview" aria-hidden="true" data-preview></div>
+    </section>
 
     <section class="spread" role="dialog" aria-modal="false" aria-labelledby="spread-title" data-booklet hidden>
       <div class="spread__sheet" data-booklet-sheet>
@@ -107,6 +93,8 @@
         </div>
       </div>
     </section>
+
+    <div class="cursor" aria-hidden="true" data-cursor><span class="cursor__ring"></span><span class="cursor__label" data-cursor-label></span><span class="cursor__dot"></span></div>
 
     <noscript>
       <div class="noscript">

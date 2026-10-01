@@ -80,6 +80,7 @@ export function mountFlat(root: HTMLElement, store: Store): void {
   window.addEventListener("keydown", (e) => {
     const t = e.target as HTMLElement | null;
     if (t && (t.tagName === "INPUT" || t.tagName === "SELECT")) return;
+    if (document.body.dataset.index === "open") return;
     if (e.key === "ArrowRight") store.step(1, "keys");
     else if (e.key === "ArrowLeft") store.step(-1, "keys");
     else if (e.key === "Enter" && !(t && t.tagName === "BUTTON")) store.open();

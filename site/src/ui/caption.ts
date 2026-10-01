@@ -2,22 +2,39 @@ import { metaLine, position } from "../catalogue";
 import type { State, Store } from "../state";
 
 /**
- * The caption is the case out of the rack, set as a specimen label. Feedback and result are
- * separate moments: the position updates as soon as the selection moves; the capsule code,
- * standfirst and meta scan in once the rack has settled and the case is out. Under reduced
- * motion both are immediate. The status region announces the settled case.
- * The callout label decodes the capsule code printed on the cover.
+ * The caption is the case out of the rack, typeset on the grid with no box around it. Feedback
+ * and result are separate moments: the position updates as soon as the selection moves; the
+ * code, standfirst and meta rise into place once the rack has settled and the case is out.
+ * Under reduced motion both are immediate. The status region announces the settled case.
+ * The right-hand column names the neighbours and turns to them.
  */
-export function mountCaption(root: HTMLElement, status: HTMLElement, calloutLabel: HTMLElement, store: Store): void {
+export function mountCaption(root: HTMLElement, turn: HTMLElement, status: HTMLElement, store: Store): void {
   const no = root.querySelector<HTMLElement>("[data-no]")!;
   const code = root.querySelector<HTMLElement>("[data-code]")!;
   const title = root.querySelector<HTMLElement>("[data-title]")!;
   const desc = root.querySelector<HTMLElement>("[data-desc]")!;
   const meta = root.querySelector<HTMLElement>("[data-meta]")!;
   const open = root.querySelector<HTMLButtonElement>("[data-open]")!;
+  const prev = turn.querySelector<HTMLButtonElement>("[data-prev]")!;
+  const next = turn.querySelector<HTMLButtonElement>("[data-next]")!;
+  const prevName = turn.querySelector<HTMLElement>("[data-prev-name]")!;
+  const nextName = turn.querySelector<HTMLElement>("[data-next-name]")!;
   let shownName: string | null = null;
 
   open.addEventListener("click", () => (store.state.mode === "open" ? store.close() : store.open()));
+  prev.addEventListener("click", () => store.step(-1, "keys"));
+  next.addEventListener("click", () => store.step(1, "keys"));
+
+  function neighbours(state: State): void {
+    const before = state.current > 0 ? state.visible[state.current - 1] : null;
+    const after = state.current >= 0 && state.current < state.visible.length - 1 ? state.visible[state.current + 1] : null;
+    prev.hidden = !before;
+    next.hidden = !after;
+    prevName.textContent = before?.title ?? "";
+    nextName.textContent = after?.title ?? "";
+    prev.setAttribute("aria-label", before ? `Previous: ${before.title}` : "Previous");
+    next.setAttribute("aria-label", after ? `Next: ${after.title}` : "Next");
+  }
 
   function swap(state: State): void {
     const entry = state.current >= 0 ? state.visible[state.current] : null;
@@ -30,8 +47,6 @@ export function mountCaption(root: HTMLElement, status: HTMLElement, calloutLabe
     title.textContent = entry.title;
     desc.textContent = entry.description?.trim() || "No description on GitHub yet. The README is inside.";
     meta.textContent = metaLine(entry);
-    const [, lang, year] = entry.capsule.split("-");
-    calloutLabel.innerHTML = `<span>${entry.capsule} · Vol. ${String(entry.no).padStart(2, "0")}</span><span>${lang === "DOC" ? "Documents" : entry.language ?? lang} · 20${year}</span>`;
     root.dataset.swap = "off";
     void root.offsetWidth;
     root.dataset.swap = "in";
@@ -40,6 +55,7 @@ export function mountCaption(root: HTMLElement, status: HTMLElement, calloutLabe
 
   function render(state: State, previous: State): void {
     const entry = state.current >= 0 ? state.visible[state.current] : null;
+    neighbours(state);
     if (state.mode === "loading") {
       no.textContent = "";
       desc.textContent = "Loading the catalogue";
@@ -48,7 +64,7 @@ export function mountCaption(root: HTMLElement, status: HTMLElement, calloutLabe
     }
     if (state.mode === "failed" || !entry) {
       no.textContent = "";
-      code.textContent = "ELB";
+      code.textContent = "";
       title.textContent = state.mode === "failed" ? "The catalogue could not be reached" : "Nothing matches";
       desc.textContent = state.mode === "failed" ? "GitHub did not answer and no snapshot was available. The repositories are still at github.com/povvo." : "Nothing in the catalogue matches that search.";
       meta.textContent = "";
@@ -64,7 +80,7 @@ export function mountCaption(root: HTMLElement, status: HTMLElement, calloutLabe
     const immediate = state.motion === "reduced" || state.renderer === "flat";
     if (immediate || state.mode === "settled" || state.mode === "open") swap(state);
     else if (state.current !== previous.current || state.selectionTick !== previous.selectionTick) {
-      // The rack is moving: the old label steps aside until the new case is out.
+      // The rack is moving: the old words step down out of sight until the new case is out.
       if (shownName !== null) root.dataset.swap = "out";
       shownName = null;
     }

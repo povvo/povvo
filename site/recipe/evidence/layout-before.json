@@ -1,0 +1,174 @@
+{
+  "tolerance": 3,
+  "minimum_support": 2,
+  "nodes": [
+    {
+      "id": "p.hero#0",
+      "x": 0,
+      "y": 148,
+      "width": 1037,
+      "height": 468
+    },
+    {
+      "id": "span.hero__line#1",
+      "x": 0,
+      "y": 148,
+      "width": 1037,
+      "height": 234
+    },
+    {
+      "id": "span.hero__line#2",
+      "x": 0,
+      "y": 382,
+      "width": 1037,
+      "height": 234
+    },
+    {
+      "id": "span.hero__line#3",
+      "x": 0,
+      "y": 148,
+      "width": 1037,
+      "height": 234
+    },
+    {
+      "id": "span.hero__line#4",
+      "x": 0,
+      "y": 382,
+      "width": 1037,
+      "height": 234
+    },
+    {
+      "id": "h1.masthead__name#5",
+      "x": 32,
+      "y": 32,
+      "width": 374,
+      "height": 46
+    },
+    {
+      "id": "p.masthead__sub#6",
+      "x": 32,
+      "y": 86,
+      "width": 374,
+      "height": 14
+    },
+    {
+      "id": "p.protocol__cell#7",
+      "x": 514,
+      "y": 33,
+      "width": 71,
+      "height": 34
+    },
+    {
+      "id": "p.protocol__cell#8",
+      "x": 597,
+      "y": 33,
+      "width": 104,
+      "height": 34
+    },
+    {
+      "id": "p.protocol__cell#9",
+      "x": 714,
+      "y": 33,
+      "width": 179,
+      "height": 34
+    },
+    {
+      "id": "a.protocol__link#10",
+      "x": 905,
+      "y": 33,
+      "width": 64,
+      "height": 34
+    },
+    {
+      "id": "p.callout__label#11",
+      "x": 219,
+      "y": 457,
+      "width": 154,
+      "height": 38
+    },
+    {
+      "id": "p.caption__line#12",
+      "x": 47,
+      "y": 635,
+      "width": 370,
+      "height": 33
+    },
+    {
+      "id": "span.capsule#13",
+      "x": 47,
+      "y": 635,
+      "width": 96,
+      "height": 22
+    },
+    {
+      "id": "p.caption__desc#14",
+      "x": 47,
+      "y": 678,
+      "width": 370,
+      "height": 71
+    },
+    {
+      "id": "p.caption__meta#15",
+      "x": 47,
+      "y": 757,
+      "width": 370,
+      "height": 15
+    },
+    {
+      "id": "button.caption__open#16",
+      "x": 47,
+      "y": 783,
+      "width": 370,
+      "height": 44
+    },
+    {
+      "id": "p.colophon__hint#17",
+      "x": 32,
+      "y": 872,
+      "width": 347,
+      "height": 13
+    },
+    {
+      "id": "button.colophon__motion#18",
+      "x": 864,
+      "y": 866,
+      "width": 105,
+      "height": 24
+    },
+    {
+      "id": "h2.cockpit__title#19",
+      "x": 1069,
+      "y": 32,
+      "width": 135,
+      "height": 38
+    },
+    {
+      "id": "p.cockpit__tally#20",
+      "x": 1316,
+      "y": 59,
+      "width": 93,
+      "height": 11
+    },
+    {
+      "id": "label.cockpit__find#21",
+      "x": 1038,
+      "y": 84,
+      "width": 402,
+      "height": 46
+    },
+    {
+      "id": "label.cockpit__order#22",
+      "x": 1038,
+      "y": 130,
+      "width": 402,
+      "height": 40
+    },
+    {
+      "id": "li.track#23",
+      "x": 1038,
+      "y": 177,
+      "width": 402,
+      "height": 51
+    }
+  ]
+}

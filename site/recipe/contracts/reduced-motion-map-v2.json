@@ -1,85 +1,99 @@
 {
-  "_question": "Heat Sheet (v2): does each essential state change keep an equivalent non-motion communication under reduced motion? Mappings are from the full-motion carrier to the reduced carrier.",
+  "_question": "Heat Sheet (v2.1 composition pass): does each essential state change keep an equivalent non-motion communication under reduced motion? Mappings are from the full-motion carrier to the reduced carrier.",
   "start": "arrival-curtain",
   "states": [
     "arrival-curtain",
     "rack-turns",
-    "title-cuts",
+    "title-drops",
     "case-presents",
-    "title-stamps",
-    "caption-scans",
-    "callout-draws",
+    "title-prints",
+    "caption-rises",
     "case-opens",
     "spread-slides",
+    "index-opens",
+    "index-preview",
     "reflow-lifts",
-    "rail-marker"
+    "cursor-label",
+    "camera-lean"
   ],
   "mappings": [
     {
       "from": "arrival-curtain",
       "to": "rack-turns",
-      "full": "a full-bleed patchwork title card with the project count is cut away tile by tile in about half a second, once per session",
-      "reduced": "not shown; the page and the count in the protocol strip appear directly"
+      "full": "a full-bleed patchwork title card with the project count, cut away tile by tile, once per session",
+      "reduced": "not shown; the page and the count in the bar appear directly"
     },
     {
       "from": "rack-turns",
-      "to": "title-cuts",
-      "full": "spring rotation of the rack; the giant title clips away upward in 120 ms",
-      "reduced": "instant reposition; the title is replaced at once; the position number and tracklist row change immediately"
+      "to": "title-drops",
+      "full": "spring rotation of the rack; the title's lines drop out of their masks in 200 ms",
+      "reduced": "instant reposition; the title is replaced at once; the position number and index row change immediately"
     },
     {
-      "from": "title-cuts",
+      "from": "title-drops",
       "to": "case-presents",
       "full": "the case pulls straight out, turns and floats to the presentation spot (gated springs)",
       "reduced": "the gate sequence resolves within one frame; the case is shown presented"
     },
     {
       "from": "case-presents",
-      "to": "title-stamps",
-      "full": "title stamps in with a two-frame misregistered copy in the case colour",
-      "reduced": "title shown at once; no misregistered copy is drawn"
+      "to": "title-prints",
+      "full": "two-plate print: the shell-colour plate rises through the line masks, the ink plate lands on it, the colour plate lifts",
+      "reduced": "the ink title is shown at once; the colour plate is not drawn"
     },
     {
-      "from": "title-stamps",
-      "to": "caption-scans",
-      "full": "capsule code, standfirst and meta uncover left to right over 220 ms",
-      "reduced": "label text appears at once; the status region announces the case in both modes"
+      "from": "title-prints",
+      "to": "caption-rises",
+      "full": "position, standfirst and meta rise into place in a 60 ms stagger",
+      "reduced": "caption text appears at once; the status region announces the case in both modes"
     },
     {
-      "from": "caption-scans",
-      "to": "callout-draws",
-      "full": "ring and leader draw on over 300 ms, then the label appears",
-      "reduced": "ring, leader and label shown complete"
-    },
-    {
-      "from": "callout-draws",
+      "from": "caption-rises",
       "to": "case-opens",
-      "full": "front leaf swings on its hinge and the case moves beside the spread",
+      "full": "front leaf swings on its hinge beside the spread",
       "reduced": "case shown open beside the spread"
     },
     {
       "from": "case-opens",
       "to": "spread-slides",
-      "full": "spread slides in from the right over 420 ms; title stamps",
-      "reduced": "spread shown without the slide; focus moves to Close"
+      "full": "spread slides in from the right; the quilt is revealed in six steps; the title rises",
+      "reduced": "spread shown without movement; focus moves to Close"
     },
     {
       "from": "spread-slides",
+      "to": "index-opens",
+      "full": "the index wipes down over the page in 460 ms",
+      "reduced": "the index appears at once; focus moves to Find"
+    },
+    {
+      "from": "index-opens",
+      "to": "index-preview",
+      "full": "a cover follows the pointer over the row it is on, with a slight lean",
+      "reduced": "the cover sits at the pointer without lag or lean"
+    },
+    {
+      "from": "index-preview",
       "to": "reflow-lifts",
       "full": "on filter or sort, cases sink through the floor, re-slot unseen and rise from the front out",
-      "reduced": "slots change in place at once; the tracklist shows the new order"
+      "reduced": "slots change in place at once; the index shows the new order"
     },
     {
       "from": "reflow-lifts",
-      "to": "rail-marker",
-      "full": "edge rail marker snaps in 100 ms",
-      "reduced": "marker moves at once; the label number is the same"
+      "to": "cursor-label",
+      "full": "a labelled cursor (Drag, Open, View) follows on a short spring",
+      "reduced": "the system cursor; the hint in the bar names the gestures"
     },
     {
-      "from": "rail-marker",
+      "from": "cursor-label",
+      "to": "camera-lean",
+      "full": "the camera leans a little toward the pointer",
+      "reduced": "no lean; the view is fixed"
+    },
+    {
+      "from": "camera-lean",
       "to": "rack-turns",
-      "full": "tracklist scrolls smoothly to the current row",
-      "reduced": "tracklist jumps to the current row"
+      "full": "index scrolls smoothly to the current row",
+      "reduced": "index jumps to the current row"
     }
   ],
   "require_reverse": false

@@ -1,0 +1,104 @@
+{
+  "tolerance": 3,
+  "minimum_support": 2,
+  "nodes": [
+    {
+      "id": "p.hero#0",
+      "x": 32,
+      "y": 686,
+      "width": 1376,
+      "height": 204
+    },
+    {
+      "id": "span.hero__line#1",
+      "x": 32,
+      "y": 669,
+      "width": 1405,
+      "height": 221
+    },
+    {
+      "id": "span.hero__line#2",
+      "x": 32,
+      "y": 669,
+      "width": 1405,
+      "height": 221
+    },
+    {
+      "id": "h1.bar__name#3",
+      "x": 32,
+      "y": 27,
+      "width": 326,
+      "height": 27
+    },
+    {
+      "id": "p.bar__line#4",
+      "x": 382,
+      "y": 39,
+      "width": 326,
+      "height": 14
+    },
+    {
+      "id": "p.bar__hint#5",
+      "x": 732,
+      "y": 39,
+      "width": 326,
+      "height": 14
+    },
+    {
+      "id": "button.bar__link#6",
+      "x": 1136,
+      "y": 34,
+      "width": 84,
+      "height": 24
+    },
+    {
+      "id": "button.bar__link#7",
+      "x": 1243,
+      "y": 34,
+      "width": 76,
+      "height": 24
+    },
+    {
+      "id": "a.bar__link#8",
+      "x": 1342,
+      "y": 34,
+      "width": 66,
+      "height": 24
+    },
+    {
+      "id": "p.caption__no#9",
+      "x": 32,
+      "y": 161,
+      "width": 270,
+      "height": 14
+    },
+    {
+      "id": "p.caption__desc#10",
+      "x": 32,
+      "y": 189,
+      "width": 270,
+      "height": 104
+    },
+    {
+      "id": "p.caption__meta#11",
+      "x": 32,
+      "y": 304,
+      "width": 270,
+      "height": 15
+    },
+    {
+      "id": "button.caption__open#12",
+      "x": 32,
+      "y": 326,
+      "width": 130,
+      "height": 44
+    },
+    {
+      "id": "button.turn__btn#13",
+      "x": 1311,
+      "y": 161,
+      "width": 97,
+      "height": 44
+    }
+  ]
+}

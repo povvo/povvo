@@ -1,5 +1,42 @@
 # Review record
 
+## v2.1: the composition pass
+
+**Reviewed candidate:** the built site at the commit that carries this file.
+
+**Conditions:** as for v2, plus an index scene (open with `I`, hover a row, choose it). The diagnosis and rules are in `critique-v2.md`. Frames are in `evidence/contact-sheet.jpg`.
+
+| Condition | Observation | Action |
+|---|---|---|
+| Settled, wide | Reads in order: the case in the sky, then the word at the foot, then the typeset columns (caption on 1 to 3, neighbours on 10 to 12). The rack is a toned band on the horizon. The title is clear of the rack, and a soft contact shadow sits between case and word | kept |
+| Turning | The word drops out of its masks. The field holds only the rack and the columns | kept |
+| Index | A full-screen petrol tracklist. Rows are set in the display face, the current row has a lime number, and a cover follows the pointer. Searching starts the list from the top | kept after one fix (the list kept its old scroll position after a search) |
+| Open | The spread is unchanged from v2. The caption and neighbours step out | kept |
+| Two-line title | The case floats just over the first line's top edge, as the rules intend | kept |
+| Sixty cases | The rack is a dense toned band. The case and the word lead | kept |
+| Phone | The bar holds the wordmark, Index and GitHub. Field, case and two-line title come first, then caption and neighbours | kept after one fix (the wordmark touched Index) |
+| Reduced motion | No curtain, plate lift, lean or labelled cursor. States change at once | kept |
+| No WebGL | The flat rack on the same grid, with the word at the foot | kept |
+
+**Defects found and repaired**
+1. The neighbours column stretched to the caption's height, splitting each label from its name.
+2. The horizon hairline crowded the caption's underline. It was removed; the colour step marks the horizon.
+3. The arrival curtain was stepped by timers. Under the software renderer's slow frames it stalled half-cut and left tiles over the page. It is now timed against the clock and ends on time on slow devices.
+4. The cursor label was not centred in its ring.
+
+**Checks**
+- **Alignment.** `infer_alignment_axes.py` on the measured chrome:
+  - distinct left edges: 12 before, 7 after;
+  - largest shared axis: 5 blocks before, 8 after;
+  - unaligned blocks: 1 before, 0 after.
+- `reduced_motion_state_map.py` on the v2.1 map: PASS.
+- The gate simulation still passes.
+- Type check and build are clean.
+
+**Not run:** real-GPU playback, real phones, and assistive-technology sessions, as in v2.
+
+---
+
 ## v2: Heat Sheet
 
 **Reviewed candidate:** the built site at the commit that carries this file.

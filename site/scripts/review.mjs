@@ -83,6 +83,7 @@ async function scene(name, { viewport, query = "", reducedMotion = "no-preferenc
   for (const step of steps) {
     if (step.key) await page.keyboard.press(step.key);
     if (step.click) await page.click(step.click);
+    if (step.hover) await page.hover(step.hover);
     if (step.wheel) { await page.mouse.move(step.at?.[0] ?? 480, step.at?.[1] ?? 420); await page.mouse.wheel(0, step.wheel); }
     if (step.type) await page.keyboard.type(step.type, { delay: 40 });
     if (step.select) await page.selectOption(step.select[0], step.select[1]);
@@ -146,8 +147,13 @@ await scene("desktop-stress60", { viewport: desktop, query: "?stress=60&quality=
   { key: "Enter" }, { until: "open" }, { snap: true }, { shot: "open" },
   { key: "Escape" }, { until: "settled" }, { snap: true },
 ] });
+await scene("desktop-index", { viewport: desktop, query: "?quality=low&review=1", steps: [
+  { snap: true }, { until: "settled" }, { snap: true },
+  { key: "i" }, { wait: 700 }, { hover: ".track:nth-child(4) .track__name" }, { wait: 900, shot: "index-hover" },
+  { click: ".track:nth-child(4)" }, { until: "settled" }, { snap: true }, { shot: "after-choose" },
+] });
 await scene("desktop-filter", { viewport: desktop, query: "?stress=60&quality=low&review=1", steps: [
-  { snap: true }, { until: "settled" }, { click: "[data-find]" }, { type: "atlas" }, { wait: 400 }, { snap: true }, { until: "settled" }, { snap: true }, { shot: "filtered" },
+  { snap: true }, { until: "settled" }, { key: "i" }, { wait: 600 }, { type: "atlas" }, { wait: 400 }, { shot: "index-filtered" }, { click: "[data-index-close]" }, { wait: 400 }, { snap: true }, { until: "settled" }, { snap: true }, { shot: "filtered" },
 ] });
 // Motion sequences (no snapping): an open case turned away from, and a filter reflow.
 // SwiftShader runs slowly, so the springs advance in capped steps; the frames show order, not speed.
@@ -158,7 +164,7 @@ await scene("sequence-close-on-turn", { viewport: desktop, query: "?quality=low&
 ] });
 await scene("sequence-reflow", { viewport: desktop, query: "?stress=24&quality=low&review=1", steps: [
   { snap: true }, { until: "settled" }, { snap: true }, { freeze: true },
-  { select: ["[data-order]", "name"] },
+  { key: "i" }, { wait: 500 }, { click: "[data-order-value='name']" }, { key: "Escape" },
   ...Array.from({ length: 8 }, (_, k) => ({ advance: 100, shot: `t${String((k + 1) * 100).padStart(4, "0")}ms` })),
   { advance: 1200, shot: "t2000ms" },
 ] });
