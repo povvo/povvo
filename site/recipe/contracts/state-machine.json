@@ -1,0 +1,18 @@
+{
+  "_question": "Does every product mode have a path back, and is every transition in src/state.ts reachable from loading?",
+  "start": "loading",
+  "states": ["loading", "failed", "browsing", "settled", "open"],
+  "transitions": [
+    {"from": "loading", "to": "browsing", "event": "catalogue arrives"},
+    {"from": "loading", "to": "failed", "event": "no data"},
+    {"from": "failed", "to": "browsing", "event": "live data arrives later"},
+    {"from": "browsing", "to": "settled", "event": "rack spring settles (stage reports settle)"},
+    {"from": "settled", "to": "browsing", "event": "keys, wheel, drag, index, order or query"},
+    {"from": "settled", "to": "open", "event": "Enter, tap on the case, Open the case, index click on current"},
+    {"from": "open", "to": "settled", "event": "Esc, Close, Close the case"},
+    {"from": "open", "to": "browsing", "event": "any rotation input while open"},
+    {"from": "browsing", "to": "open", "event": "Enter during a turn: opens once settled"},
+    {"from": "browsing", "to": "browsing", "event": "retarget mid-turn (velocity preserved)"}
+  ],
+  "require_reverse": true
+}

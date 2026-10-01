@@ -1,0 +1,62 @@
+[
+  {
+    "scene": "wedge-coat-0.1",
+    "shot": "rest",
+    "file": "wedge-coat-0.1-01-rest.png",
+    "state": "settled",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "deepest research",
+    "status": "No. 011, deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python · 2026."
+  },
+  {
+    "scene": "wedge-coat-0.25",
+    "shot": "rest",
+    "file": "wedge-coat-0.25-01-rest.png",
+    "state": "settled",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "deepest research",
+    "status": "No. 011, deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python · 2026."
+  },
+  {
+    "scene": "wedge-coat-0.5",
+    "shot": "rest",
+    "file": "wedge-coat-0.5-01-rest.png",
+    "state": "settled",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "deepest research",
+    "status": "No. 011, deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python · 2026."
+  },
+  {
+    "scene": "wedge-key-1.8",
+    "shot": "rest",
+    "file": "wedge-key-1.8-01-rest.png",
+    "state": "settled",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "deepest research",
+    "status": "No. 011, deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python · 2026."
+  },
+  {
+    "scene": "wedge-key-2.4",
+    "shot": "rest",
+    "file": "wedge-key-2.4-01-rest.png",
+    "state": "settled",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "deepest research",
+    "status": "No. 011, deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python · 2026."
+  },
+  {
+    "scene": "wedge-key-3",
+    "shot": "rest",
+    "file": "wedge-key-3-01-rest.png",
+    "state": "settled",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "deepest research",
+    "status": "No. 011, deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python · 2026."
+  }
+]

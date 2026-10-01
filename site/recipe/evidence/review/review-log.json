@@ -1,0 +1,240 @@
+[
+  {
+    "scene": "desktop-snapshot",
+    "shot": "arrival",
+    "file": "desktop-snapshot-01-arrival.png",
+    "state": "browsing",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "",
+    "status": ""
+  },
+  {
+    "scene": "desktop-snapshot",
+    "shot": "settled",
+    "file": "desktop-snapshot-02-settled.png",
+    "state": "settled",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "deepest research",
+    "status": "No. 011, deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python · 2026."
+  },
+  {
+    "scene": "desktop-snapshot",
+    "shot": "turning",
+    "file": "desktop-snapshot-03-turning.png",
+    "state": "browsing",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "deepest research",
+    "status": "No. 011, deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python · 2026."
+  },
+  {
+    "scene": "desktop-snapshot",
+    "shot": "settled-after-keys",
+    "file": "desktop-snapshot-04-settled-after-keys.png",
+    "state": "settled",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "personal dev env",
+    "status": "No. 008, personal dev env. Reusable Windows 11 and WSL2 development environment bootstrap with locked core tooling and optional profiles. PowerShell · 2026."
+  },
+  {
+    "scene": "desktop-snapshot",
+    "shot": "open",
+    "file": "desktop-snapshot-05-open.png",
+    "state": "open",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "personal dev env",
+    "status": "No. 008, personal dev env. Reusable Windows 11 and WSL2 development environment bootstrap with locked core tooling and optional profiles. PowerShell · 2026."
+  },
+  {
+    "scene": "desktop-snapshot",
+    "shot": "open-readme",
+    "file": "desktop-snapshot-06-open-readme.png",
+    "state": "open",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "personal dev env",
+    "status": "No. 008, personal dev env. Reusable Windows 11 and WSL2 development environment bootstrap with locked core tooling and optional profiles. PowerShell · 2026."
+  },
+  {
+    "scene": "desktop-snapshot",
+    "shot": "closed",
+    "file": "desktop-snapshot-07-closed.png",
+    "state": "settled",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "personal dev env",
+    "status": "No. 008, personal dev env. Reusable Windows 11 and WSL2 development environment bootstrap with locked core tooling and optional profiles. PowerShell · 2026."
+  },
+  {
+    "scene": "desktop-shadows",
+    "shot": "settled-high",
+    "file": "desktop-shadows-01-settled-high.png",
+    "state": "settled",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "deepest research",
+    "status": "No. 011, deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python · 2026."
+  },
+  {
+    "scene": "desktop-shadows",
+    "shot": "open-high",
+    "file": "desktop-shadows-02-open-high.png",
+    "state": "open",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "deepest research",
+    "status": "No. 011, deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python · 2026."
+  },
+  {
+    "scene": "desktop-stress60",
+    "shot": "settled",
+    "file": "desktop-stress60-01-settled.png",
+    "state": "settled",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "drum field 24",
+    "status": "No. 060, drum field 24. No description. PowerShell · 2026."
+  },
+  {
+    "scene": "desktop-stress60",
+    "probe": {
+      "frames": 19,
+      "avg": 79.48421052635508,
+      "max": 350
+    }
+  },
+  {
+    "scene": "desktop-stress60",
+    "shot": "wheel-turning",
+    "file": "desktop-stress60-02-wheel-turning.png",
+    "state": "settled",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "margin quiet 22",
+    "status": "No. 050, margin quiet 22. A margin for quiet, with sources, a validator and a worked example. Rust · 2026."
+  },
+  {
+    "scene": "desktop-stress60",
+    "shot": "wheel-settled",
+    "file": "desktop-stress60-03-wheel-settled.png",
+    "state": "settled",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "margin quiet 22",
+    "status": "No. 050, margin quiet 22. A margin for quiet, with sources, a validator and a worked example. Rust · 2026."
+  },
+  {
+    "scene": "desktop-stress60",
+    "shot": "drag-release",
+    "file": "desktop-stress60-04-drag-release.png",
+    "state": "browsing",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "margin quiet 22",
+    "status": "No. 050, margin quiet 22. A margin for quiet, with sources, a validator and a worked example. Rust · 2026."
+  },
+  {
+    "scene": "desktop-stress60",
+    "shot": "drag-settled",
+    "file": "desktop-stress60-05-drag-settled.png",
+    "state": "settled",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "field drum 45",
+    "status": "No. 044, field drum 45. No description. Lua · 2026."
+  },
+  {
+    "scene": "desktop-stress60",
+    "shot": "open",
+    "file": "desktop-stress60-06-open.png",
+    "state": "open",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "field drum 45",
+    "status": "No. 044, field drum 45. No description. Lua · 2026."
+  },
+  {
+    "scene": "desktop-filter",
+    "shot": "filtered",
+    "file": "desktop-filter-01-filtered.png",
+    "state": "settled",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "study signal orbit atlas 01",
+    "status": "No. 001, study signal orbit atlas 01. A study for signal, with sources, a validator and a worked example. Python · 2026."
+  },
+  {
+    "scene": "phone-stress60",
+    "shot": "settled",
+    "file": "phone-stress60-01-settled.png",
+    "state": "settled",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "drum field 24",
+    "status": "No. 060, drum field 24. No description. PowerShell · 2026."
+  },
+  {
+    "scene": "phone-stress60",
+    "shot": "open",
+    "file": "phone-stress60-02-open.png",
+    "state": "open",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "drum field 24",
+    "status": "No. 060, drum field 24. No description. PowerShell · 2026."
+  },
+  {
+    "scene": "reduced-motion",
+    "shot": "rest",
+    "file": "reduced-motion-01-rest.png",
+    "state": "settled",
+    "renderer": "webgl",
+    "motion": "reduced",
+    "caption": "drum field 24",
+    "status": "No. 060, drum field 24. No description. PowerShell · 2026."
+  },
+  {
+    "scene": "reduced-motion",
+    "shot": "after-key",
+    "file": "reduced-motion-02-after-key.png",
+    "state": "settled",
+    "renderer": "webgl",
+    "motion": "reduced",
+    "caption": "drum field 48",
+    "status": "No. 059, drum field 48. No description. PowerShell · 2026."
+  },
+  {
+    "scene": "reduced-motion",
+    "shot": "open",
+    "file": "reduced-motion-03-open.png",
+    "state": "open",
+    "renderer": "webgl",
+    "motion": "reduced",
+    "caption": "drum field 48",
+    "status": "No. 059, drum field 48. No description. PowerShell · 2026."
+  },
+  {
+    "scene": "flat-renderer",
+    "shot": "rest",
+    "file": "flat-renderer-01-rest.png",
+    "state": "settled",
+    "renderer": "flat",
+    "motion": "full",
+    "caption": "drum field 24",
+    "status": "No. 060, drum field 24. No description. PowerShell · 2026."
+  },
+  {
+    "scene": "flat-renderer",
+    "shot": "open",
+    "file": "flat-renderer-02-open.png",
+    "state": "open",
+    "renderer": "flat",
+    "motion": "full",
+    "caption": "drum field 24",
+    "status": "No. 060, drum field 24. No description. PowerShell · 2026."
+  }
+]

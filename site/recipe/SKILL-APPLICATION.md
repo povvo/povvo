@@ -1,0 +1,64 @@
+# Skill application
+
+The catalogue is one production that used the Motion Design Skills and the Good Fuckin Frontend skills by the decision being made, not by loading all of them. This map records which workflow references were actually read, which helpers were actually run on this project's inputs, and where each skill's contribution lives in the source. Helpers were run on authored contracts in `contracts/`; their results are in `evidence/`. A helper `PASS` is a mechanical fact about its contract and not an aesthetic verdict.
+
+## Direction
+
+**Motion art direction** (`motion-design-skills/skills/motion-art-direction`). Reframed the brief into a motion thesis: the collection is one revolving object; turning selects; the chosen case leaves the rack; reading happens inside the object. Three structurally different routes were written and compared (the drum, the index, the shelf) and the drum was selected with the index locked as an invariant.
+Routed references: `brief-and-causal-concepting.md`, `hierarchy-exclusion-and-restraint.md`, `cross-domain-coherence.md` (decision sequence and case comparison), `critique-selection-and-convergence.md`, `production-feasibility-and-context.md`.
+Helpers: `direction_matrix.py` on `contracts/direction-matrix.json` (ranking in `evidence/direction-matrix.result.json`, status WARN by design: the tool flags that a score is bookkeeping, not a decision).
+Production locations: `direction.md`, the state model in `src/state.ts`.
+
+**UI art direction** (`good-fuckin-frontend/deliverables/skills/ui/ui-art-direction`). Wrote the causal visual thesis, six anti-targets with failure signatures, two signature patterns (the extraction; the catalogue number as key) and the specialist briefs.
+Routed references: `principles-to-visual-thesis.md`, `anti-targets-and-reference-research.md`, `route-generation-and-convergence.md`, `signature-patterns-and-rules.md`, `cross-medium-direction-briefs.md`, `critique-diagnosis-and-validation.md`.
+Helpers: `check_direction.py` on `contracts/art-direction-record.json` (PASS with one warning about unequal representative states, recorded in `evidence/check-direction.result.json`).
+
+## Visual system
+
+**UI typography**. Roles before families; candidates rendered at intended sizes with the installed Fontsource files (`studies/type-specimen.html`, `.png`). Fraunces chosen for its optical-size range so one serif does display and reading; Archivo for its width axis so one grotesk does index, labels and spines. Canvas text cannot set variation axes per call, so each printed role is a separate face with the axes fixed in its descriptor (`src/fonts.css`), verified in `studies/canvas-axes.html`.
+Routed references: `typeface-selection-and-voice.md`, `typography-as-form.md`.
+
+**UI colour**. Semantic roles with measured WCAG pairs (`studies/contrast.py`): ink on stock 13.1, accent on stock 6.8, muted on stock 4.6, ochre lifted so stock text clears 4.5 on every case ink. The accent is scarce: current line, focus ring, open affordance.
+Routed references: `semantic-roles-and-system-architecture.md`, `contrast-cvd-and-redundant-encoding.md`.
+
+**UI visual language** and **visual development for motion**. The case grammar card (mass, axis, subdivision, negative space, the one drawn mark, the stop rule) and the edge and surface roles are in `visual-system.md`. Detail concentrates on the extracted case; rack-resolution inserts are repainted at hero resolution only for the current case (`src/stage.ts: paintHero`).
+Routed references: `shape-grammar.md`, `edge-language.md`, `surface-material-and-depth.md`; visual development field references for shape language, silhouette hierarchy and detail hierarchy.
+
+**UI layout and composition**. Split field: stage left, index right, one hairline; phones stack. Invariants and transformations are in `visual-system.md` and `src/styles.css`.
+Routed references: `grid-systems-and-spatial-grammar.md`, `responsive-and-adaptive-composition.md`.
+
+**Look development for motion**. Look thesis: printed insert under a satin coat on seamless stock under one soft key. Wedges for coat roughness (0.1, 0.25, 0.5) and key intensity (1.8, 2.4, 3.0) were rendered (`evidence/wedges/`) but are not perceptibly different in the software renderer available here; the authored values stay and a wedge on a real GPU is NOT RUN.
+Routed references: look thesis and wedge plan (decision system and field reference), material vocabulary (decision system, core methods), light, colour and atmosphere.
+
+## Mechanism
+
+**Motion foundations**. Every continuous value is a spring so a retarget mid-flight keeps position and velocity; the rack is critically damped; nothing loops; the only one-way travel is the arrival. The caption separates feedback (the number) from result (the title).
+Routed references: timing, easing and springs; interruption, reversal and retargeting; attention and temporal hierarchy.
+Helpers: `spring_response.py` on `contracts/spring-rack.json`, `spring-extract.json`, `spring-open.json` (all PASS: no overshoot; settle to one percent at 0.64 s, 0.61 s and 0.92 s); `state_machine_lint.py` on `contracts/state-machine.json` (WARN: three transitions have no reverse, which is intended, since nothing returns to loading).
+Production locations: `src/motion.ts`, `src/stage.ts` (`pos`, `extract`, `openness`, `camPush`, inspect springs), `src/ui/caption.ts`.
+
+**Interactive and real-time motion**. The product state is owned by `src/state.ts`; the stage reports settle; drag keeps gesture velocity on release; wheel accumulates; taps open or select; README fetch is acknowledged in text, superseded by a newer open, and fails to a link. Degraded conditions drop to a low quality tier once; `?quality=low` forces it.
+Routed references: state model and feedback; direct manipulation; loading and perceived time; runtime performance, fallback and QA.
+Helpers: `reduced_motion_state_map.py` on `contracts/reduced-motion-map.json` (PASS).
+
+**Spatial and camera motion** and **3D motion design**. The coordinate contract, pivots and the hinge are documented at the top of `src/stage.ts`. One camera move exists: a short push on open, reversible. The rack is an arc at twelve degrees per case tightening to five, so sixty cases never wrap round to meet; beyond sixty it becomes a helix. Cases beyond one hundred degrees from the front are not drawn.
+Routed references: camera path and framing; transforms, pivots, hierarchies and coordinates; cloners, instancing and effectors; performance, LOD, instancing and memory.
+
+**Procedural motion**. Inserts, spines and the position mark are deterministic functions of the entry and the catalogue size (`src/covers.ts`); the ten inks are assigned by accession number so neighbours differ.
+Routed references: curves, easing, springs and dynamics (shared source with motion foundations).
+
+## Editorial
+
+**Kinetic typography** and **narrative and editorial motion**. The arrival is one finite sequence: the rack turns in while the name settles, then the subtitle and count, then the case comes out and the title appears. Line timing is a short offset rather than per-word choreography; the complete readable state is the default. The index does not stagger.
+Routed references: temporal reading and cue timing; beats, pivots and consequences (decision sequences).
+Production locations: `src/styles.css` (`settle-in`), `src/stage.ts` (`arrivalT`), `src/ui/caption.ts`.
+
+## Access
+
+**Accessible and inclusive motion**. Reduced motion is a second direction, not a deletion: positions snap, the booklet appears without sliding, the caption changes at once, the index scrolls without smoothing. The system preference is honoured and a visible control overrides it. The index is a listbox with arrow keys, Home, End and Enter; the status region announces the settled case; the booklet moves focus to Close and returns it. No flashing or luminance alternation exists. The no-WebGL path renders the same selection flat.
+Routed references: reduced motion and alternate communication; essential information, captions and actions (decision sequence); vestibular and spatial comfort (decision sequence).
+NOT RUN: screen-reader and switch-access sessions; a vestibular comfort review with people; a real-device phone test.
+
+## Review
+
+Frames in `evidence/contact-sheet.jpg`, captured by `scripts/review.mjs` from the built site in headless Chromium with SwiftShader at 1440 by 900 and 390 by 844, eleven and sixty cases, full and reduced motion, WebGL and flat. The software renderer runs at under fifteen frames a second, so end states were captured through a review-only snap hook and real-time playback is NOT RUN on a representative GPU.

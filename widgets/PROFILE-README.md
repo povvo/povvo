@@ -5,8 +5,8 @@
 <p align="center">
   <a href="https://povvo.github.io/povvo/">
     <picture>
-      <source media="(prefers-reduced-motion: reduce)" srcset="./poker/profile-strip.png">
-      <img src="./poker/profile-strip.gif" alt="Enter Povvo Poker, a one-on-one Kuhn Poker table against the Povvo DCFR policy" width="100%">
+      <source media="(prefers-reduced-motion: reduce)" srcset="./archive/poker/profile-strip.png">
+      <img src="./archive/poker/profile-strip.gif" alt="Open the catalogue of public work: every repository as a case on a revolving rack" width="100%">
     </picture>
   </a>
 </p>

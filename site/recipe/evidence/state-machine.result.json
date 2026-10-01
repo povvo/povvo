@@ -1,0 +1,44 @@
+{
+  "findings": [
+    {
+      "code": "reverse-missing",
+      "context": {
+        "pairs": [
+          [
+            "browsing",
+            "failed"
+          ],
+          [
+            "browsing",
+            "loading"
+          ],
+          [
+            "failed",
+            "loading"
+          ]
+        ]
+      },
+      "level": "WARN",
+      "message": "some transitions have no explicit reverse"
+    }
+  ],
+  "interpretation_boundary": "Graph reachability and missing edges are structural facts. Whether every transition should exist is a design decision.",
+  "reachable": [
+    "browsing",
+    "failed",
+    "loading",
+    "open",
+    "settled"
+  ],
+  "states": [
+    "loading",
+    "failed",
+    "browsing",
+    "settled",
+    "open"
+  ],
+  "status": "WARN",
+  "tool": "state_machine_lint",
+  "transition_count": 10,
+  "unreachable": []
+}

@@ -1,5 +1,7 @@
 # Povvo Poker
 
+> Archived. This game is no longer built or deployed; `povvo.github.io/povvo` now serves the catalogue in [`site/`](../../site/). The sources are kept here as they were.
+
 A compact 1v1 Kuhn Poker game played against a deterministic DCFR policy in the Povvo design language.
 
 ## Solver

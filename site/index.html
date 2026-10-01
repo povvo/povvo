@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#E9E5DD" />
+    <meta name="description" content="Ethan Lee Barrett. A catalogue of public work: every repository as a case on a revolving rack. Turn the rack, take a case out, open it to read." />
+    <meta property="og:title" content="Ethan Lee Barrett" />
+    <meta property="og:description" content="A catalogue of public work. Turn the rack, take a case out, open it to read." />
+    <meta property="og:type" content="website" />
+    <title>Ethan Lee Barrett</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+  </head>
+  <body data-state="loading" data-motion="full" data-renderer="pending">
+    <a class="skip" href="#index">Skip to the index</a>
+
+    <header class="masthead">
+      <h1 class="masthead__name">Ethan Lee Barrett</h1>
+      <p class="masthead__sub">A catalogue of public work</p>
+      <p class="masthead__count"><span data-count>&nbsp;</span> <a class="masthead__link" href="https://github.com/povvo" rel="me">GitHub</a></p>
+    </header>
+
+    <main class="catalogue">
+      <section class="stage" aria-labelledby="stage-title">
+        <h2 id="stage-title" class="sr-only">The rack</h2>
+        <div class="stage__field" data-field>
+          <canvas id="rack" class="stage__canvas" aria-hidden="true"></canvas>
+          <div class="stage__flat" data-flat hidden aria-hidden="true"></div>
+        </div>
+        <div class="caption" data-caption>
+          <p class="caption__no" data-no>&nbsp;</p>
+          <p class="caption__title" data-title>Loading the catalogue</p>
+          <p class="caption__desc" data-desc></p>
+          <p class="caption__meta" data-meta></p>
+          <button class="caption__open" type="button" data-open hidden>Open the case <span aria-hidden="true">↵</span></button>
+        </div>
+        <p class="stage__status sr-only" role="status" aria-live="polite" data-status></p>
+      </section>
+
+      <aside class="index" id="index" aria-labelledby="index-title">
+        <div class="index__head">
+          <h2 id="index-title" class="index__title">Index</h2>
+          <label class="index__find"><span class="sr-only">Find a project</span><input type="search" data-find placeholder="Find" autocomplete="off" spellcheck="false" /></label>
+          <label class="index__order"><span class="index__label">Order</span>
+            <select data-order>
+              <option value="accession">Accession</option>
+              <option value="updated">Updated</option>
+              <option value="name">Name</option>
+              <option value="stars">Stars</option>
+            </select>
+          </label>
+        </div>
+        <ul class="index__list" role="listbox" aria-label="Projects" tabindex="0" data-list></ul>
+        <p class="index__empty" data-empty hidden>Nothing in the catalogue matches that.</p>
+      </aside>
+    </main>
+
+    <footer class="colophon">
+      <p class="colophon__hint" data-hint><kbd>←</kbd> <kbd>→</kbd> turn the rack · <kbd>↵</kbd> open · <kbd>Esc</kbd> close</p>
+      <p class="colophon__source" data-source></p>
+      <button class="colophon__motion" type="button" data-motion-toggle aria-pressed="false">Reduce motion</button>
+    </footer>
+
+    <section class="booklet" role="dialog" aria-modal="false" aria-labelledby="booklet-title" data-booklet hidden>
+      <div class="booklet__sheet">
+        <header class="booklet__head">
+          <svg class="booklet__mark" viewBox="0 0 48 48" aria-hidden="true" data-mark><circle cx="24" cy="24" r="17" fill="none" stroke="currentColor" stroke-width="1.5"/><circle class="booklet__mark-dot" cx="24" cy="7" r="3.2" fill="currentColor"/></svg>
+          <p class="booklet__no" data-booklet-no></p>
+          <h2 class="booklet__title" id="booklet-title" data-booklet-title></h2>
+          <p class="booklet__desc" data-booklet-desc></p>
+          <p class="booklet__meta" data-booklet-meta></p>
+          <a class="booklet__link" data-booklet-link href="#" target="_blank" rel="noopener">Open on GitHub <span aria-hidden="true">↗</span></a>
+          <button class="booklet__close" type="button" data-booklet-close aria-label="Close the case">Close <span aria-hidden="true">Esc</span></button>
+        </header>
+        <div class="booklet__body" data-booklet-body tabindex="0">
+          <p class="booklet__loading" data-booklet-state>Fetching the README from GitHub</p>
+        </div>
+      </div>
+    </section>
+
+    <noscript>
+      <div class="noscript">
+        <p>The rack needs JavaScript. The projects live at <a href="https://github.com/povvo?tab=repositories">github.com/povvo</a>.</p>
+      </div>
+    </noscript>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
