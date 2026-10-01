@@ -23,13 +23,15 @@ export function mountFlat(root: HTMLElement, store: Store): void {
   const style = document.createElement("style");
   style.textContent = `
     .flat { position: absolute; inset: 0; display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; }
+    .flat__turn--next { grid-column: 3; }
     .flat__turn { font: 400 18px/1 var(--sans); min-height: 44px; color: var(--grey); }
     .flat__turn:hover { color: var(--ink); }
-    .flat__shelf { display: flex; align-items: center; justify-content: center; gap: 6px; height: 100%; padding: 96px 0 220px; }
-    .flat__spine { height: 52%; width: 22px; cursor: pointer; border: 1px solid var(--rule); padding: 0; }
-    .flat__cover { height: 58%; aspect-ratio: 135 / 190; display: block; box-shadow: 0 0 0 1px var(--rule), 0 18px 28px -18px rgba(0,0,0,.3); cursor: pointer; border: 0; padding: 0; background: none; margin: 0 10px; }
+    /* Below the logo, which holds the top of the stage. */
+    .flat__shelf { position: absolute; left: 44px; right: 44px; top: 37%; bottom: 13%; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .flat__spine { height: 84%; width: 22px; cursor: pointer; border: 1px solid var(--rule); padding: 0; background: #000; }
+    .flat__cover { height: 100%; aspect-ratio: 135 / 190; display: block; box-shadow: 0 0 0 1px var(--rule); cursor: pointer; border: 0; padding: 0; background: none; margin: 0 10px; }
     .flat__cover canvas { width: 100%; height: 100%; display: block; }
-    @media (max-width: 1023px) { .flat__shelf { padding: 96px 0 24px; } }
+    @media (max-width: 1023px) { .flat__shelf { top: 34%; bottom: 5%; } }
   `;
   root.appendChild(style);
 

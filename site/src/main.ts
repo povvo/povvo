@@ -7,6 +7,8 @@ import { createStage } from "./stage";
 import { Store } from "./state";
 import { mountBooklet } from "./ui/booklet";
 import { mountCaption } from "./ui/caption";
+import { mountFlicker } from "./ui/flicker";
+import { mountHero } from "./ui/hero";
 import { mountIndex } from "./ui/index-list";
 
 const $ = <T extends Element>(sel: string): T => {
@@ -56,6 +58,8 @@ reflectMotion();
 mountIndex($<HTMLElement>("[data-index]"), $<HTMLElement>("[data-index-open]"), store);
 mountCaption($<HTMLElement>("[data-caption]"), $<HTMLElement>("[data-turn]"), $<HTMLElement>("[data-status]"), store);
 mountBooklet($<HTMLElement>("[data-booklet]"), store);
+mountHero($<HTMLElement>("[data-hero]"), $<HTMLElement>(".stage"), store);
+mountFlicker(store);
 
 const canvas = $<HTMLCanvasElement>("#rack");
 const field = $<HTMLElement>("[data-field]");

@@ -1,20 +1,26 @@
-/* Baseline (recipe/baseline.md): black on white, one system sans at one weight, one grey for
-   secondary text, hairline rules. The grid, the structure and the behaviour are the site's;
-   the visual language is deliberately absent so it can be built back up on purpose. */
+/* Black metal and Helvetica (recipe/direction-v3.md). The page is night: white Helvetica on
+   black, on the same grid as before. The only expressive element is the drawn logo, at the
+   top of the stage, on the covers and down the index. An opened case is its insert, a white
+   photocopied sheet. Now and then the whole page flickers to its negative. */
 
 :root {
-  --ink: #000;
+  --page: #000;
+  --ink: #fff;
+  --grey: #8c8c8c;
+  --rule: #333;
+  --wash: #161616;
   --paper: #fff;
-  --grey: #767676;
-  --rule: #d9d9d9;
-  --wash: #f2f2f2;
+  --paper-ink: #000;
+  --paper-grey: #666;
+  --paper-rule: #d4d4d4;
+  --paper-wash: #f0f0f0;
 
-  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --sans: "Helvetica Neue", Helvetica, "Nimbus Sans", "Nimbus Sans L", FreeSans, Arial, sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
   --small: 13px;
   --body: 15px;
   --title: 20px;
-  --big: 32px;
+  --big: 28px;
 
   --fade: 160ms ease;
 
@@ -34,13 +40,20 @@
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  background: var(--page);
 }
 
 body {
   margin: 0;
-  background: var(--paper);
+  background: var(--page);
   color: var(--ink);
-  font: 400 var(--body) / 1.5 var(--sans);
+  font: 400 var(--body) / 1.45 var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--ink);
+  color: var(--page);
 }
 
 button,
@@ -63,7 +76,7 @@ a {
 
 kbd {
   font: 400 0.85em/1 var(--mono);
-  border: 1px solid var(--rule);
+  border: 1px solid #636363;
   border-radius: 3px;
   padding: 1px 4px;
 }
@@ -92,7 +105,7 @@ h3 {
   top: -60px;
   z-index: 50;
   background: var(--ink);
-  color: var(--paper);
+  color: var(--page);
   padding: 10px 14px;
   font-size: var(--small);
 }
@@ -103,6 +116,11 @@ h3 {
 :focus-visible {
   outline: 2px solid var(--ink);
   outline-offset: 2px;
+}
+
+/* The flicker (src/ui/flicker.ts): the whole page as its own negative, for a few frames. */
+html.is-inverted {
+  filter: invert(1);
 }
 
 /* ---------- stage ---------- */
@@ -121,16 +139,15 @@ h3 {
   isolation: isolate;
   display: grid;
   grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
-  grid-template-rows: auto auto 1fr;
+  grid-template-rows: auto 1fr auto;
   column-gap: var(--gutter);
-  align-content: start;
   padding: var(--margin);
 }
 
 .stage__field {
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 2;
 }
 .stage__canvas {
   display: block;
@@ -150,11 +167,48 @@ h3 {
   inset: 0;
 }
 
+/* ---------- the logo: across the top of the stage, behind the case ---------- */
+
+.hero {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 80px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  user-select: none;
+}
+.hero canvas {
+  display: block;
+}
+.hero[data-state="off"] canvas {
+  opacity: 0;
+}
+/* It opens from its centre line outward, along its own symmetry. */
+.hero[data-state="in"] canvas {
+  animation: logo-open 640ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.hero[data-state="out"] canvas {
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+@keyframes logo-open {
+  from {
+    clip-path: inset(0 50% 0 50%);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
 /* ---------- the bar ---------- */
 
 .bar {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   grid-column: 1 / -1;
   display: grid;
   grid-template-columns: subgrid;
@@ -167,6 +221,7 @@ h3 {
   grid-column: 1 / span 3;
   margin: 0;
   font-size: var(--small);
+  font-weight: 700;
   line-height: 1.3;
   white-space: nowrap;
 }
@@ -206,15 +261,15 @@ h3 {
   color: var(--grey);
 }
 
-/* ---------- the caption: columns one to three ---------- */
+/* ---------- the caption: columns one to four, at the foot ---------- */
 
 .caption {
   position: relative;
-  z-index: 2;
-  grid-row: 2;
-  grid-column: 1 / span 3;
-  margin-top: 48px;
-  max-width: 32ch;
+  z-index: 3;
+  grid-row: 3;
+  grid-column: 1 / span 4;
+  align-self: end;
+  max-width: 36ch;
 }
 .caption__no {
   margin: 0;
@@ -223,14 +278,16 @@ h3 {
   font-variant-numeric: tabular-nums;
 }
 .caption__title {
-  margin: 6px 0 0;
+  margin: 4px 0 0;
   font-size: var(--title);
-  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
 }
 .caption__desc {
-  margin: 8px 0;
+  margin: 6px 0;
   display: -webkit-box;
-  -webkit-line-clamp: 4;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -238,10 +295,10 @@ h3 {
   display: none;
 }
 .caption__meta {
-  margin: 0 0 8px;
+  margin: 0 0 4px;
   font-size: var(--small);
   color: var(--grey);
-  min-height: 1.5em;
+  min-height: 1.45em;
 }
 .caption__open {
   min-height: 44px;
@@ -267,18 +324,17 @@ h3 {
   }
 }
 
-/* ---------- neighbours: columns ten to twelve ---------- */
+/* ---------- neighbours: columns ten to twelve, at the foot ---------- */
 
 .turn {
   position: relative;
-  z-index: 2;
-  grid-row: 2;
+  z-index: 3;
+  grid-row: 3;
   grid-column: 10 / -1;
   justify-self: end;
-  align-self: start;
-  margin-top: 48px;
+  align-self: end;
   display: grid;
-  gap: 10px;
+  gap: 8px;
   text-align: right;
 }
 .turn__btn {
@@ -308,13 +364,13 @@ h3 {
   text-decoration: underline;
 }
 
-/* ---------- the index ---------- */
+/* ---------- the index: a tape trader's list ---------- */
 
 .index {
   position: fixed;
   inset: 0;
   z-index: 30;
-  background: var(--paper);
+  background: var(--page);
 }
 .index[data-phase="in"] {
   animation: fade-in var(--fade) both;
@@ -332,6 +388,7 @@ h3 {
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: 0 var(--margin) var(--margin);
+  scrollbar-color: var(--rule) var(--page);
 }
 .index__head {
   position: sticky;
@@ -342,7 +399,7 @@ h3 {
   column-gap: var(--gutter);
   align-items: center;
   padding: var(--margin) 0 12px;
-  background: var(--paper);
+  background: var(--page);
   border-bottom: 1px solid var(--ink);
   font-size: var(--small);
 }
@@ -350,7 +407,9 @@ h3 {
   grid-column: 1 / span 3;
   margin: 0;
   font-size: var(--title);
-  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
 }
 .index__tally {
   grid-column: 4 / span 2;
@@ -364,8 +423,8 @@ h3 {
   width: 100%;
   min-height: 36px;
   padding: 0 8px;
-  background: var(--paper);
-  border: 1px solid var(--rule);
+  background: var(--page);
+  border: 1px solid #636363;
   border-radius: 0;
 }
 .index__find input:focus {
@@ -414,8 +473,11 @@ h3 {
   display: grid;
   grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
   column-gap: var(--gutter);
-  align-items: baseline;
-  padding: 10px 0;
+  align-items: center;
+  min-height: 72px;
+  /* The row's ground runs a little past the text, so a selected row's negative has a margin. */
+  margin: 0 -10px;
+  padding: 10px;
   border-bottom: 1px solid var(--rule);
   cursor: pointer;
 }
@@ -425,8 +487,21 @@ h3 {
   color: var(--grey);
   font-variant-numeric: tabular-nums;
 }
+.track__logo {
+  grid-column: 2 / span 3;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+.track__logo canvas {
+  display: block;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: left center;
+}
 .track__name {
-  grid-column: 2 / span 8;
+  grid-column: 5 / span 5;
   overflow-wrap: anywhere;
 }
 .track__meta {
@@ -440,12 +515,16 @@ h3 {
 .track:hover .track__name {
   text-decoration: underline;
 }
+/* The current row is printed in negative. */
 .track[aria-selected="true"] {
-  background: var(--wash);
+  background: var(--ink);
+  color: var(--page);
 }
-/* Grey on the wash is under 4.5:1, so the selected row's small text goes to ink. */
 .track[aria-selected="true"] :is(.track__no, .track__meta) {
-  color: var(--ink);
+  color: var(--page);
+}
+.track[aria-selected="true"] .track__logo canvas {
+  filter: invert(1);
 }
 .index__empty {
   margin: 0;
@@ -461,7 +540,7 @@ h3 {
   color: var(--grey);
 }
 
-/* ---------- spread: the open case ---------- */
+/* ---------- spread: the open case's insert, a photocopied sheet ---------- */
 
 .spread {
   position: fixed;
@@ -471,7 +550,24 @@ h3 {
   bottom: 0;
   width: var(--spread-w);
   background: var(--paper);
-  border-left: 1px solid var(--ink);
+  color: var(--paper-ink);
+}
+/* Toner dust over the whole sheet. */
+.spread::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1.4 -.55'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+.spread ::selection {
+  background: var(--paper-ink);
+  color: var(--paper);
+}
+.spread :focus-visible {
+  outline-color: var(--paper-ink);
 }
 .spread[data-phase="in"] {
   animation: spread-in 220ms ease-out both;
@@ -490,6 +586,7 @@ h3 {
   }
 }
 .spread__sheet {
+  position: relative;
   height: 100%;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -497,7 +594,7 @@ h3 {
 }
 .spread__head {
   padding: var(--margin) 0 20px;
-  border-bottom: 1px solid var(--rule);
+  border-bottom: 1px solid var(--paper-rule);
 }
 .spread__bar {
   display: flex;
@@ -506,7 +603,7 @@ h3 {
   font-size: var(--small);
 }
 .spread__no {
-  color: var(--grey);
+  color: var(--paper-grey);
   font-variant-numeric: tabular-nums;
 }
 .spread__close {
@@ -516,10 +613,23 @@ h3 {
 .spread__close:hover {
   text-decoration: underline;
 }
+.spread__close kbd {
+  border-color: var(--paper-rule);
+}
+.spread__logo {
+  margin-top: 8px;
+  display: flex;
+  justify-content: center;
+}
+.spread__logo canvas {
+  display: block;
+}
 .spread__title {
-  margin: 16px 0 0;
+  margin: 18px 0 0;
   font-size: var(--big);
-  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.1;
   overflow-wrap: anywhere;
 }
 .spread__protocol {
@@ -528,11 +638,11 @@ h3 {
   gap: var(--gutter);
   margin: 0;
   padding: 14px 0;
-  border-bottom: 1px solid var(--rule);
+  border-bottom: 1px solid var(--paper-rule);
   font-size: var(--small);
 }
 .spread__protocol dt {
-  color: var(--grey);
+  color: var(--paper-grey);
 }
 .spread__protocol dd {
   margin: 2px 0 0;
@@ -541,12 +651,12 @@ h3 {
   margin: 20px 0 0;
   max-width: 60ch;
   font-size: 17px;
-  line-height: 1.45;
+  line-height: 1.4;
 }
 .spread__links {
   margin: 0;
   padding: 12px 0 20px;
-  border-bottom: 1px solid var(--rule);
+  border-bottom: 1px solid var(--paper-rule);
 }
 .spread__link {
   display: inline-block;
@@ -558,17 +668,17 @@ h3 {
 }
 .spread__state {
   margin: 0;
-  color: var(--grey);
+  color: var(--paper-grey);
 }
 .spread__state--error {
-  color: var(--ink);
+  color: var(--paper-ink);
 }
 
-/* README: plain reading text. */
+/* README: plain Helvetica reading text on the sheet. */
 .readme {
   max-width: 66ch;
   font-size: var(--body);
-  line-height: 1.6;
+  line-height: 1.55;
   overflow-wrap: break-word;
 }
 .readme > :first-child {
@@ -576,8 +686,9 @@ h3 {
 }
 .readme :is(h1, h2, h3, h4, h5, h6) {
   margin: 1.6em 0 0.5em;
-  font-weight: 600;
-  line-height: 1.3;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
 }
 .readme h1 {
   font-size: 24px;
@@ -608,14 +719,15 @@ h3 {
 }
 .readme code {
   font: 400 0.88em/1.4 var(--mono);
-  background: var(--wash);
+  background: var(--paper-wash);
   padding: 0.1em 0.3em;
 }
 .readme pre {
   margin: 0 0 1.2em;
   padding: 14px 16px;
   overflow-x: auto;
-  background: var(--wash);
+  background: var(--paper-ink);
+  color: var(--paper);
 }
 .readme pre code {
   background: none;
@@ -626,8 +738,7 @@ h3 {
 .readme blockquote {
   margin: 0 0 1em;
   padding-left: 14px;
-  border-left: 2px solid var(--rule);
-  color: var(--grey);
+  border-left: 2px solid var(--paper-ink);
 }
 .readme img {
   max-width: 100%;
@@ -635,7 +746,7 @@ h3 {
 }
 .readme hr {
   border: 0;
-  border-top: 1px solid var(--rule);
+  border-top: 1px solid var(--paper-rule);
   margin: 2em 0;
 }
 .readme table {
@@ -646,14 +757,14 @@ h3 {
   font-size: var(--small);
 }
 .readme :is(th, td) {
-  border-bottom: 1px solid var(--rule);
+  border-bottom: 1px solid var(--paper-rule);
   padding: 6px 12px 6px 0;
   text-align: left;
   vertical-align: top;
 }
 .readme th {
-  font-weight: 600;
-  border-bottom-color: var(--ink);
+  font-weight: 700;
+  border-bottom-color: var(--paper-ink);
 }
 
 .noscript {
@@ -663,7 +774,7 @@ h3 {
   display: grid;
   place-items: center;
   padding: var(--margin);
-  background: var(--paper);
+  background: var(--page);
 }
 
 /* While open, the spread carries the words; the caption and neighbours step out of the way. */
@@ -683,7 +794,7 @@ body[data-state="loading"] :is(.caption__open, .turn) {
 @media (max-width: 1023px) {
   :root {
     --cols: 4;
-    --field-h: max(520px, 74svh);
+    --field-h: max(540px, 76svh);
   }
   .stage {
     height: auto;
@@ -720,6 +831,7 @@ body[data-state="loading"] :is(.caption__open, .turn) {
   .caption {
     grid-row: 2;
     grid-column: 1 / -1;
+    align-self: start;
     max-width: none;
     margin-top: 16px;
   }
@@ -727,6 +839,7 @@ body[data-state="loading"] :is(.caption__open, .turn) {
     grid-row: 3;
     grid-column: 1 / -1;
     justify-self: stretch;
+    align-self: start;
     margin-top: 16px;
     padding-top: 12px;
     border-top: 1px solid var(--rule);
@@ -761,6 +874,12 @@ body[data-state="loading"] :is(.caption__open, .turn) {
   .index__order {
     justify-content: flex-start;
   }
+  .track {
+    row-gap: 4px;
+  }
+  .track__logo {
+    grid-column: 2 / -1;
+  }
   .track__name {
     grid-column: 2 / -1;
   }
@@ -770,10 +889,9 @@ body[data-state="loading"] :is(.caption__open, .turn) {
   }
   .spread {
     width: 100%;
-    border-left: 0;
   }
   .spread__title {
-    font-size: 26px;
+    font-size: 24px;
   }
   .spread__protocol {
     grid-template-columns: repeat(2, minmax(0, 1fr));

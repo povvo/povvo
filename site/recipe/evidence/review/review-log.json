@@ -115,8 +115,8 @@
     "scene": "desktop-stress60",
     "probe": {
       "frames": 23,
-      "avg": 55.29130434783015,
-      "max": 399.89999999999964
+      "avg": 58.88695652174319,
+      "max": 500
     }
   },
   {
@@ -143,11 +143,11 @@
     "scene": "desktop-stress60",
     "shot": "drag-release",
     "file": "desktop-stress60-04-drag-release.png",
-    "state": "settled",
+    "state": "browsing",
     "renderer": "webgl",
     "motion": "full",
-    "caption": "paper kitchen 08",
-    "status": "38 / 60. paper kitchen 08. No description. PowerShell, updated 8 Sept 2026."
+    "caption": "margin quiet 22",
+    "status": "50 / 60. margin quiet 22. A margin for quiet, with sources, a validator and a worked example. Rust, updated 22 Sept 2026."
   },
   {
     "scene": "desktop-stress60",
@@ -156,8 +156,8 @@
     "state": "settled",
     "renderer": "webgl",
     "motion": "full",
-    "caption": "paper kitchen 08",
-    "status": "38 / 60. paper kitchen 08. No description. PowerShell, updated 8 Sept 2026."
+    "caption": "paper kitchen 32",
+    "status": "37 / 60. paper kitchen 32. No description. PowerShell, updated 4 Sept 2026."
   },
   {
     "scene": "desktop-stress60",
@@ -166,8 +166,8 @@
     "state": "open",
     "renderer": "webgl",
     "motion": "full",
-    "caption": "paper kitchen 08",
-    "status": "38 / 60. paper kitchen 08. No description. PowerShell, updated 8 Sept 2026."
+    "caption": "paper kitchen 32",
+    "status": "37 / 60. paper kitchen 32. No description. PowerShell, updated 4 Sept 2026."
   },
   {
     "scene": "desktop-stress60",
@@ -209,11 +209,11 @@
     "scene": "desktop-filter",
     "shot": "index-filtered",
     "file": "desktop-filter-01-index-filtered.png",
-    "state": "settled",
+    "state": "browsing",
     "renderer": "webgl",
     "motion": "full",
-    "caption": "study signal orbit atlas 01",
-    "status": "01 / 12. study signal orbit atlas 01. A study for signal, with sources, a validator and a worked example. Python, updated 1 Sept 2026."
+    "caption": "drum field 24",
+    "status": "60 / 60. drum field 24. No description. PowerShell, updated 24 Sept 2026."
   },
   {
     "scene": "desktop-filter",

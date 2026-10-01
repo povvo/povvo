@@ -1,11 +1,12 @@
 import { dateLine, position } from "../catalogue";
+import { fitLogo } from "../logo";
 import { fetchReadme, renderReadme } from "../readme";
 import type { State, Store } from "../state";
 
 /**
- * The spread: the open case as a panel, with the README as real text. A header carries the
- * position and the title; a row of facts and the description follow, then the README.
- * Focus moves to Close and returns on close.
+ * The spread: the open case as its insert, a photocopied white sheet (recipe/direction-v3.md).
+ * The logo in black heads it, the readable name in Helvetica under it, then a row of facts,
+ * the description and the README. Focus moves to Close and returns on close.
  */
 export function mountBooklet(root: HTMLElement, store: Store): void {
   const sheet = root.querySelector<HTMLElement>("[data-booklet-sheet]")!;
@@ -16,6 +17,7 @@ export function mountBooklet(root: HTMLElement, store: Store): void {
   const link = root.querySelector<HTMLAnchorElement>("[data-booklet-link]")!;
   const close = root.querySelector<HTMLButtonElement>("[data-booklet-close]")!;
   const body = root.querySelector<HTMLElement>("[data-booklet-body]")!;
+  const logoSlot = root.querySelector<HTMLElement>("[data-booklet-logo]")!;
   let returnFocus: HTMLElement | null = null;
   let token = 0;
   let leaving = 0;
@@ -70,6 +72,19 @@ export function mountBooklet(root: HTMLElement, store: Store): void {
     link.href = entry.html_url;
     if (root.hidden) returnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     root.hidden = false;
+    // The logo is sized to the sheet, so it is drawn once the sheet is showing.
+    const dpr = Math.min(2, devicePixelRatio || 1);
+    const box = logoSlot.getBoundingClientRect();
+    const maxH = Math.min(220, innerHeight * 0.24);
+    const logo = fitLogo(entry.title, Math.max(200, box.width) * dpr, maxH * dpr, "#000");
+    const k = Math.min(Math.max(200, box.width) / logo.width, maxH / logo.height);
+    const c = document.createElement("canvas");
+    c.width = logo.width;
+    c.height = logo.height;
+    c.getContext("2d")!.drawImage(logo, 0, 0);
+    c.style.width = `${(logo.width * k).toFixed(1)}px`;
+    c.style.height = `${(logo.height * k).toFixed(1)}px`;
+    logoSlot.replaceChildren(c);
     root.dataset.phase = "in";
     sheet.scrollTop = 0;
     void load(state);

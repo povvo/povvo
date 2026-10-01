@@ -1,10 +1,12 @@
 import { type Entry, type Order, pad2 } from "../catalogue";
+import { logoCanvas } from "../logo";
 import type { State, Store } from "../state";
 
 /**
- * The index: the tracklist as a full-screen list. It is the
- * same list as the rack and drives the same selection. Opened from the header or with `I`;
- * a modal dialog with focus kept inside; Esc closes and focus returns.
+ * The index: the catalogue as a tape trader's list (recipe/direction-v3.md), every project's
+ * logo beside its name in Helvetica. It is the same list as the rack and drives the same
+ * selection. Opened from the header or with `I`; a modal dialog with focus kept inside; Esc
+ * closes and focus returns. Logos are drawn as their rows scroll into view.
  */
 export function mountIndex(root: HTMLElement, opener: HTMLElement, store: Store): void {
   const list = root.querySelector<HTMLUListElement>("[data-list]")!;
@@ -15,6 +17,27 @@ export function mountIndex(root: HTMLElement, opener: HTMLElement, store: Store)
   const orderButtons = [...root.querySelectorAll<HTMLButtonElement>("[data-order-value]")];
   const items = new Map<string, HTMLLIElement>();
   let returnFocus: HTMLElement | null = null;
+  const sheet = root.querySelector<HTMLElement>(".index__sheet")!;
+  const logos = new IntersectionObserver(
+    (seen) => {
+      const dpr = Math.min(2, devicePixelRatio || 1);
+      for (const e of seen) {
+        if (!e.isIntersecting) continue;
+        const li = e.target as HTMLElement;
+        logos.unobserve(li);
+        const slot = li.querySelector<HTMLElement>(".track__logo")!;
+        const logo = logoCanvas(li.dataset.title ?? "", 52 * dpr, "#fff");
+        const c = document.createElement("canvas");
+        c.width = logo.width;
+        c.height = logo.height;
+        c.getContext("2d")!.drawImage(logo, 0, 0);
+        c.style.height = "52px";
+        c.style.width = `${(logo.width / logo.height) * 52}px`;
+        slot.replaceChildren(c);
+      }
+    },
+    { root: sheet, rootMargin: "200px 0px" },
+  );
   let closing = 0;
 
   // ---------- rows ----------
@@ -30,7 +53,9 @@ export function mountIndex(root: HTMLElement, opener: HTMLElement, store: Store)
         li.className = "track";
         li.setAttribute("role", "option");
         li.dataset.name = entry.name;
-        li.innerHTML = `<span class="track__no"></span><span class="track__name"></span><span class="track__meta"><span class="track__code"></span><span class="track__year"></span></span>`;
+        li.innerHTML = `<span class="track__no"></span><span class="track__logo" aria-hidden="true"></span><span class="track__name"></span><span class="track__meta"><span class="track__code"></span><span class="track__year"></span></span>`;
+        li.dataset.title = entry.title;
+        logos.observe(li);
         li.addEventListener("click", () => choose(entry));
         items.set(entry.name, li);
       }
@@ -46,6 +71,7 @@ export function mountIndex(root: HTMLElement, opener: HTMLElement, store: Store)
     for (const [name, li] of items) {
       if (!names.has(name)) {
         li.remove();
+        logos.unobserve(li);
         items.delete(name);
       }
     }

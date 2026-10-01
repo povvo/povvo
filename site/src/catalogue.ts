@@ -28,12 +28,6 @@ export interface Entry extends Repo {
   code: string;
 }
 
-/** The whole palette (recipe/baseline.md): black, white and one grey for secondary text. */
-export const INK = "#000000";
-export const PAPER = "#FFFFFF";
-/** 4.5:1 on white. */
-export const GREY = "#767676";
-
 /** Repositories that are infrastructure for the profile rather than work. */
 export const META_REPOS = new Set([".github", "povvo"]);
 

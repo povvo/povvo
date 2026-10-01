@@ -1,7 +1,6 @@
 import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import type { Entry } from "./catalogue";
-import { PAPER } from "./catalogue";
 import { drawInsert, drawInsideLeft, drawInsideRight, drawSpine, edgeColour, ensureFonts } from "./covers";
 import { FRONT_CLEAR, TURN_BLOCK, gateCase } from "./gates";
 import { Spring, clamp, easeOutCubic, smoothstep } from "./motion";
@@ -10,7 +9,7 @@ import type { State, Store } from "./state";
 /**
  * The rack. Coordinate contract (3d-motion-design: transforms and pivots):
  *   world: right-handed, +y up, +z toward the viewer, units of ten centimetres. The floor is
- *     the plane y = FLOOR_Y; it only receives shadows, the white page shows through it.
+ *     the plane y = FLOOR_Y; it only receives shadows, the black page shows through it.
  *   rack group: rotates about +y and translates along y; a case's slot i sits at angle
  *     i * step around the axis and height i * rise. Slot 0 is at the front (+z).
  *   case group: local +x is the case's outward normal while it is on the rack (its spine
@@ -41,7 +40,7 @@ const WINDOW = THREE.MathUtils.degToRad(100); // cases beyond this angle from th
 const WINDOW_FADE = THREE.MathUtils.degToRad(12);
 const HINGE_OPEN = -2.55; // radians, how far the front leaf swings
 const REST_YAW = 0.14; // the presented case rests slightly turned so its spine edge catches the light
-const RACK_TONE = 0.7; // cases on the rack are printed a little darker than the one in the light
+const RACK_TONE = 0.62; // cases on the rack sit in the dark; the one taken out is in the light
 
 /** Material colours are base colour times a tone; the base changes when textures are painted. */
 function setBase(mat: THREE.MeshPhysicalMaterial, colour: THREE.ColorRepresentation): void {
@@ -122,17 +121,19 @@ function texture(canvas: HTMLCanvasElement, renderer: THREE.WebGLRenderer): THRE
   return t;
 }
 
-/** Plain, nearly matte card (recipe/baseline.md): no clearcoat, no coloured reflections. */
+/** Black plastic (recipe/direction-v3.md, cases): a glossy coat over whatever is printed beneath it. */
 function physical(opts: THREE.MeshPhysicalMaterialParameters): THREE.MeshPhysicalMaterial {
   return new THREE.MeshPhysicalMaterial({
-    roughness: 0.72,
+    roughness: 0.45,
     metalness: 0,
+    clearcoat: 1,
+    clearcoatRoughness: 0.12,
     envMapIntensity: 1,
     ...opts,
   });
 }
 
-/** A neutral grey room for the cases to reflect, so no colour enters the scene. */
+/** A neutral grey room for the gloss to reflect: highlights only, no colour. */
 function neutralEnvironment(renderer: THREE.WebGLRenderer): THREE.Texture {
   const pmrem = new THREE.PMREMGenerator(renderer);
   const tex = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
@@ -162,16 +163,16 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
 
   const scene = new THREE.Scene();
   scene.environment = neutralEnvironment(renderer);
-  scene.environmentIntensity = 0.55;
+  scene.environmentIntensity = 0.42;
 
   const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 80);
   const camBase = new THREE.Vector3(0, 0.2, 10);
   camera.position.copy(camBase);
   const lookAt = new THREE.Vector3(0, 0.35, 0);
 
-  // Light rig: one white key from nearly overhead with soft shadows, a grey fill. Overhead, the
-  // floating case's shadow lands under it rather than as a slab across the floor.
-  const key = new THREE.DirectionalLight(0xffffff, 1.9);
+  // Light rig: a cold key from high in front, a rim from high behind so the black cases keep
+  // their edges against the black page, and almost no fill. Night, not studio.
+  const key = new THREE.DirectionalLight(0xe9eefa, 2.3);
   key.position.set(-1.6, 10, 3.2);
   key.castShadow = true;
   key.shadow.mapSize.set(2048, 2048);
@@ -186,7 +187,10 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
   key.shadow.radius = 4;
   scene.add(key);
   scene.add(key.target);
-  const fill = new THREE.HemisphereLight(0xffffff, 0xbfbfbf, 0.7);
+  const rim = new THREE.DirectionalLight(0xffffff, 1.4);
+  rim.position.set(3, 6, -7);
+  scene.add(rim);
+  const fill = new THREE.HemisphereLight(0x9ea6b4, 0x000000, 0.3);
   scene.add(fill);
 
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.ShadowMaterial({ color: 0x000000, opacity: 0.08 }));
@@ -200,9 +204,10 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
   blobCanvas.width = blobCanvas.height = 128;
   const bctx = blobCanvas.getContext("2d")!;
   const grad = bctx.createRadialGradient(64, 64, 0, 64, 64, 64);
-  grad.addColorStop(0, "rgba(0,0,0,0.7)");
-  grad.addColorStop(0.5, "rgba(0,0,0,0.25)");
-  grad.addColorStop(1, "rgba(0,0,0,0)");
+  // On a black floor a shadow cannot show; a faint pool of light under the case does the job.
+  grad.addColorStop(0, "rgba(255,255,255,0.22)");
+  grad.addColorStop(0.5, "rgba(255,255,255,0.07)");
+  grad.addColorStop(1, "rgba(255,255,255,0)");
   bctx.fillStyle = grad;
   bctx.fillRect(0, 0, 128, 128);
   const blob = new THREE.Mesh(
@@ -217,8 +222,8 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
   const rack = new THREE.Group();
   scene.add(rack);
 
-  // Far cases fade into the page's white. Range set on resize.
-  const fog = new THREE.Fog(PAPER, 9, 16);
+  // Far cases fade into the dark. Range set on resize.
+  const fog = new THREE.Fog(0x000000, 9, 16);
   scene.fog = fog;
 
   const leafGeo = new THREE.BoxGeometry(CASE_W, CASE_H, LEAF_D);
@@ -248,16 +253,16 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
   const heroCache = new Map<string, { front: THREE.CanvasTexture; left: THREE.CanvasTexture; right: THREE.CanvasTexture }>();
 
   function buildNode(entry: Entry): CaseNode {
-    const card = new THREE.Color(PAPER);
     const edge = new THREE.Color(edgeColour());
     const clip = new THREE.Plane(new THREE.Vector3(0, 1, 0), 1000);
     const clippingPlanes = [clip];
-    const frontMat = physical({ color: card, clippingPlanes });
-    const insideLeftMat = physical({ color: card, roughness: 0.85, clippingPlanes });
+    const frontMat = physical({ color: edge, clippingPlanes });
+    // The inside sheet is paper: matte, under no coat.
+    const insideLeftMat = physical({ color: 0xffffff, roughness: 0.9, clearcoat: 0, clippingPlanes });
     const insideRightMat = physical({ color: edge, clippingPlanes });
-    const backMat = physical({ color: card, clippingPlanes });
-    const spineMat = physical({ color: card, clippingPlanes });
-    const edgeMat = physical({ color: edge, roughness: 0.6, clippingPlanes });
+    const backMat = physical({ color: edge, clippingPlanes });
+    const spineMat = physical({ color: edge, clippingPlanes });
+    const edgeMat = physical({ color: edge, roughness: 0.3, clippingPlanes });
 
     // Box material order: +x, -x, +y, -y, +z, -z
     const front = new THREE.Mesh(leafGeo, [edgeMat, edgeMat, edgeMat, edgeMat, frontMat, insideLeftMat]);
@@ -353,7 +358,7 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
     if (!node.hero) return;
     node.hero = false;
     node.insideLeftMat.map = null;
-    setBase(node.insideLeftMat, PAPER);
+    setBase(node.insideLeftMat, 0xffffff);
     node.insideRightMat.map = null;
     setBase(node.insideRightMat, edgeColour());
     for (const m of [node.insideLeftMat, node.insideRightMat]) m.needsUpdate = true;
@@ -518,13 +523,14 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
     layout.wide = matchMedia("(min-width: 1024px)").matches;
     const halfV = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
     const halfH = halfV * camera.aspect;
-    // Framing by proportion and position: the rack is a band across the stage, its front case
-    // about a fifth of the stage tall and centred at half height; the presented case is about
-    // two fifths tall, centred a little above it.
-    const presentedShare = layout.wide ? 0.42 : 0.4;
-    const rackShare = layout.wide ? 0.21 : 0.2;
-    const rackCentre = layout.wide ? 0.5 : 0.54;
-    const presentCentre = layout.wide ? 0.43 : 0.45;
+    // Framing by proportion and position (recipe/direction-v3.md, composition): the logo holds
+    // the top of the stage, so the rack is a band below the middle, its front case a fifth of
+    // the stage tall, and the presented case, two fifths tall, stands just under the logo and
+    // overlaps its foot, the way a figure stands in front of a band's name on a cover.
+    const presentedShare = layout.wide ? 0.4 : 0.36;
+    const rackShare = layout.wide ? 0.2 : 0.19;
+    const rackCentre = layout.wide ? 0.63 : 0.66;
+    const presentCentre = layout.wide ? 0.57 : 0.61;
     const dPresent = CASE_H / (2 * halfV * presentedShare);
     const dRack = CASE_H / (2 * halfV * rackShare);
     camBase.z = geo.radius + dRack;
@@ -924,7 +930,7 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
       blob.visible = true;
       blob.position.set(tmp.x, FLOOR_Y + 0.004, tmp.z);
       blob.scale.set(CASE_W * (1.5 + height * 0.5), CASE_W * (0.55 + height * 0.25), 1);
-      (blob.material as THREE.MeshBasicMaterial).opacity = k * clamp(0.5 - height * 0.12, 0.12, 0.5);
+      (blob.material as THREE.MeshBasicMaterial).opacity = k * clamp(0.7 - height * 0.15, 0.2, 0.7);
     } else blob.visible = false;
 
     renderer.render(scene, camera);

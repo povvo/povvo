@@ -13,6 +13,9 @@ of this is built or type-checked; it is kept so that pieces can be brought back 
 - `type/*.css` — the five type systems compared in recipe/studies/type-systems.png and
   type-metal.png (geometric, swiss, wide, editorial, metal).
 - `ui/hero.ts` — the giant title at the foot of the stage, with its two-plate print.
-- `ui/curtain.ts`, `ui/cursor.ts`, `ui/flicker.ts` — arrival curtain, labelled cursor, page flicker.
+- `ui/curtain.ts`, `ui/cursor.ts` — arrival curtain, labelled cursor.
+
+The page flicker came back for v3 and lives in `src/ui/flicker.ts`. `metal.ts` is the font-based
+logo that read as cartoonish; v3 draws its logos without a font, in `src/logo.ts`.
 
 Font packages they used were removed from package.json; reinstall the ones a piece needs.

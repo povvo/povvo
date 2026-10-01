@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="color-scheme" content="light" />
-    <meta name="theme-color" content="#FFFFFF" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#000000" />
     <meta name="description" content="Ethan Lee Barrett. Public work: every repository as a case on a revolving rack. Turn the rack, take a case out, open it to read." />
     <meta property="og:title" content="Ethan Lee Barrett — public work" />
     <meta property="og:description" content="Every repository as a case on a revolving rack. Turn the rack, take a case out, open it to read." />
@@ -17,6 +17,8 @@
 
     <main class="stage" aria-labelledby="stage-title">
       <h2 id="stage-title" class="sr-only">The rack</h2>
+
+      <div class="hero" aria-hidden="true" data-hero data-state="off"></div>
 
       <div class="stage__field" data-field>
         <canvas id="rack" class="stage__canvas" aria-hidden="true"></canvas>
@@ -77,6 +79,7 @@
             <span class="spread__no" data-booklet-no></span>
             <button class="spread__close" type="button" data-booklet-close aria-label="Close the case">Close <kbd>Esc</kbd></button>
           </div>
+          <div class="spread__logo" data-booklet-logo aria-hidden="true"></div>
           <h2 class="spread__title" id="spread-title" data-booklet-title></h2>
         </header>
         <dl class="spread__protocol" data-booklet-meta></dl>

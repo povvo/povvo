@@ -1,22 +1,28 @@
-import { type Entry, GREY, INK, PAPER } from "./catalogue";
+import type { Entry } from "./catalogue";
+import { paintLogo } from "./logo";
+import { hashSeed } from "./random";
+import { SCENES, type Scene, paperGrain, photograph } from "./xerox";
 
 /**
- * The printed matter, plain (recipe/baseline.md): front insert, spine, inside sheet and disc,
- * drawn to canvas in black and grey on white, in the system sans at one weight. Nothing here is
- * decoration; each sheet carries the project's name and its facts. Everything is a deterministic
- * function of the entry.
+ * The printed matter (recipe/direction-v3.md, covers), as a demo tape would have it:
+ *   front   a photocopied night photograph, the logo in white across the top, the facts at the
+ *           foot in small Helvetica; one case in five is the logo alone on black
+ *   spine   black, the logo running down it, the language code at the foot
+ *   inside  left, a white photocopied sheet: the logo in black, the name, the description;
+ *           right, a black tray holding a black disc with the logo printed on it
+ * Everything is a deterministic function of the entry.
  */
 
 export const INSERT_ASPECT = 190 / 135;
 export const SPINE_ASPECT = 190 / 15;
 
-const SANS = 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
-const TRAY = "#F2F2F2";
-const DISC = "#DCDCDC";
-const EDGE = "#E4E4E4";
+const SANS = '"Helvetica Neue", Helvetica, "Nimbus Sans", FreeSans, Arial, sans-serif';
+const BLACK = "#000";
+const WHITE = "#fff";
+const EDGE = "#0c0c0c";
 
-function font(size: number): string {
-  return `400 ${size.toFixed(1)}px ${SANS}`;
+function font(size: number, weight = 400): string {
+  return `${weight} ${size.toFixed(1)}px ${SANS}`;
 }
 
 /** System faces need no loading; kept so callers can await type before drawing. */
@@ -34,27 +40,36 @@ function makeCanvas(w: number, h: number): [HTMLCanvasElement, CanvasRenderingCo
   return [c, ctx];
 }
 
+type Layout = Scene | "void";
+
+/** One case in five is the logo alone; the rest carry a photograph. */
+export function layoutOf(entry: Entry): Layout {
+  const h = hashSeed(`cover:${entry.name}`);
+  return h % 5 === 0 ? "void" : SCENES[(h >>> 3) % SCENES.length];
+}
+
 /** Greedy word wrap to `maxW`, at most `maxLines`; the last line ends in an ellipsis if cut. */
 function wrap(ctx: CanvasRenderingContext2D, text: string, maxW: number, maxLines: number): string[] {
   const words = text.split(/\s+/).filter(Boolean);
   const lines: string[] = [];
   let line = "";
-  for (let i = 0; i < words.length; i++) {
-    const next = line ? `${line} ${words[i]}` : words[i];
+  let used = 0;
+  for (const word of words) {
+    const next = line ? `${line} ${word}` : word;
     if (ctx.measureText(next).width <= maxW || !line) {
       line = next;
+      used++;
       continue;
     }
     lines.push(line);
-    line = words[i];
     if (lines.length === maxLines) {
       line = "";
       break;
     }
+    line = word;
+    used++;
   }
   if (line) lines.push(line);
-  if (lines.length > maxLines) lines.length = maxLines;
-  const used = lines.join(" ").split(/\s+/).filter(Boolean).length;
   if (used < words.length && lines.length) {
     let last = lines[lines.length - 1];
     while (last.length > 1 && ctx.measureText(`${last}…`).width > maxW) last = last.slice(0, -1);
@@ -63,138 +78,137 @@ function wrap(ctx: CanvasRenderingContext2D, text: string, maxW: number, maxLine
   return lines;
 }
 
-/** One line, shrunk to fit `maxW` down to `minSize`, then truncated. */
-function fitLine(ctx: CanvasRenderingContext2D, text: string, size: number, minSize: number, maxW: number): [string, number] {
-  ctx.font = font(size);
-  const width = ctx.measureText(text).width;
-  if (width <= maxW) return [text, size];
-  const s = Math.max(minSize, size * (maxW / width));
-  ctx.font = font(s);
-  let t = text;
-  while (t.length > 1 && ctx.measureText(t).width > maxW) t = t.slice(0, -1);
-  return [t === text ? t : `${t.trimEnd()}…`, s];
-}
-
-/** The project title, wrapped from the top-left of a box; returns the y below it. */
-function title(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, maxW: number, size: number, maxLines: number): number {
-  ctx.font = font(size);
-  // A single word wider than the box shrinks instead of breaking.
-  const longest = Math.max(...text.split(/\s+/).map((w) => ctx.measureText(w).width));
-  if (longest > maxW) {
-    size *= maxW / longest;
-    ctx.font = font(size);
-  }
-  ctx.fillStyle = INK;
-  ctx.textBaseline = "alphabetic";
-  const lead = size * 1.15;
-  let at = y + size;
-  for (const line of wrap(ctx, text, maxW, maxLines)) {
-    ctx.fillText(line, x, at);
-    at += lead;
-  }
-  return at - lead + size * 0.3;
-}
-
 function details(entry: Entry): string {
-  return [entry.language ?? "No language", entry.born].join(", ");
+  return [entry.language ?? "No language", entry.born].join(" ");
 }
 
-/** Front insert: the title at the top left, the author and facts at the foot. */
+/** Front insert. `w` sets resolution; the layout is proportional. */
 export function drawInsert(entry: Entry, w: number): HTMLCanvasElement {
   const h = Math.round(w * INSERT_ASPECT);
   const [canvas, ctx] = makeCanvas(w, h);
-  ctx.fillStyle = PAPER;
+  ctx.fillStyle = BLACK;
   ctx.fillRect(0, 0, w, h);
-  const m = w * 0.08;
-  title(ctx, entry.title, m, m, w - 2 * m, w * 0.09, 4);
-  const small = w * 0.04;
-  ctx.font = font(small);
-  ctx.fillStyle = INK;
-  ctx.fillText("Ethan Lee Barrett", m, h - m - small * 1.35);
-  ctx.fillStyle = GREY;
-  ctx.fillText(details(entry), m, h - m);
+  const layout = layoutOf(entry);
+  const dpr = w / 540;
+  if (layout === "void") {
+    paintLogo(ctx, entry.title, w * 0.07, h * 0.28, w * 0.86, h * 0.34, WHITE);
+  } else {
+    ctx.drawImage(photograph(entry.name, layout, w, h), 0, 0);
+    // The top falls to black so the logo reads over the sky; the foot does the same for the facts.
+    const top = ctx.createLinearGradient(0, 0, 0, h * 0.42);
+    top.addColorStop(0, "rgba(0,0,0,0.92)");
+    top.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = top;
+    ctx.fillRect(0, 0, w, h * 0.42);
+    const foot = ctx.createLinearGradient(0, h * 0.84, 0, h);
+    foot.addColorStop(0, "rgba(0,0,0,0)");
+    foot.addColorStop(1, "rgba(0,0,0,0.85)");
+    ctx.fillStyle = foot;
+    ctx.fillRect(0, h * 0.84, w, h * 0.16);
+    paintLogo(ctx, entry.title, w * 0.06, h * 0.035, w * 0.88, h * 0.27, WHITE);
+  }
+  const m = w * 0.065;
+  ctx.font = font(13 * dpr);
+  ctx.fillStyle = WHITE;
+  ctx.textBaseline = "alphabetic";
+  ctx.fillText("Ethan Lee Barrett", m, h - m);
+  ctx.textAlign = "right";
+  ctx.fillText(details(entry), w - m, h - m);
+  ctx.textAlign = "left";
   return canvas;
 }
 
-/** Spine: the title runs top to bottom, the language code sits at the foot. */
+/** Spine: black, the logo running top to bottom, the language code at the foot. */
 export function drawSpine(entry: Entry, w: number): HTMLCanvasElement {
   const h = Math.round(w * SPINE_ASPECT);
   const [canvas, ctx] = makeCanvas(w, h);
-  ctx.fillStyle = PAPER;
+  ctx.fillStyle = BLACK;
   ctx.fillRect(0, 0, w, h);
   ctx.save();
   ctx.translate(w, 0);
   ctx.rotate(Math.PI / 2);
   // Now x runs down the spine (0..h) and y across it (0..w).
+  const pad = w * 0.5;
+  ctx.font = font(w * 0.28, 700);
+  ctx.fillStyle = WHITE;
   ctx.textBaseline = "middle";
-  const mid = w * 0.52;
-  const pad = w * 0.6;
-  ctx.font = font(w * 0.3);
-  ctx.fillStyle = GREY;
   const code = entry.code === "—" ? "" : entry.code;
-  const codeWidth = ctx.measureText(code).width;
-  ctx.fillText(code, h - pad - codeWidth, mid);
-  const [text, size] = fitLine(ctx, entry.title, w * 0.42, w * 0.32, h - pad * 2 - codeWidth - w);
-  ctx.font = font(size);
-  ctx.fillStyle = INK;
-  ctx.fillText(text, pad, mid);
+  const codeW = ctx.measureText(code).width;
+  ctx.fillText(code, h - pad - codeW, w * 0.52);
+  // The logo takes the spine's whole width; long logos shrink along it.
+  paintLogo(ctx, entry.title, pad, w * 0.06, h - pad * 2 - codeW - w * 0.8, w * 0.88, WHITE);
   ctx.restore();
   return canvas;
 }
 
-/** Inside left: the liner sheet with the description. */
+/** Inside left: the photocopied sheet. */
 export function drawInsideLeft(entry: Entry, w: number): HTMLCanvasElement {
   const h = Math.round(w * INSERT_ASPECT);
   const [canvas, ctx] = makeCanvas(w, h);
-  ctx.fillStyle = PAPER;
+  ctx.fillStyle = WHITE;
   ctx.fillRect(0, 0, w, h);
-  const m = w * 0.1;
-  let y = title(ctx, entry.title, m, m, w - 2 * m, w * 0.07, 3);
-  const size = w * 0.045;
-  ctx.font = font(size);
-  ctx.fillStyle = INK;
+  const dpr = w / 540;
+  const m = w * 0.09;
+  paintLogo(ctx, entry.title, m, h * 0.05, w - 2 * m, h * 0.2, BLACK);
+  let y = h * 0.32;
+  ctx.fillStyle = BLACK;
+  ctx.textBaseline = "alphabetic";
+  ctx.font = font(26 * dpr, 700);
+  for (const line of wrap(ctx, entry.title, w - 2 * m, 2)) {
+    ctx.fillText(line, m, y);
+    y += 30 * dpr;
+  }
+  y += 14 * dpr;
+  ctx.font = font(19 * dpr);
   const desc = entry.description?.trim() || "No description on GitHub yet.";
-  y += size * 1.6;
   for (const line of wrap(ctx, desc, w - 2 * m, 9)) {
     ctx.fillText(line, m, y);
-    y += size * 1.45;
+    y += 26 * dpr;
   }
-  ctx.font = font(w * 0.036);
-  ctx.fillStyle = GREY;
+  ctx.font = font(14 * dpr);
   ctx.fillText(`Ethan Lee Barrett, ${entry.born}`, m, h - m);
+  ctx.textAlign = "right";
+  ctx.fillText(entry.language ?? "No language", w - m, h - m);
+  ctx.textAlign = "left";
+  paperGrain(ctx, w, h, entry.name);
   return canvas;
 }
 
-/** Inside right: a pale tray holding a plain grey disc with the name on it. */
+/** Inside right: the tray and the disc, black, with the logo printed on the disc. */
 export function drawInsideRight(entry: Entry, w: number): HTMLCanvasElement {
   const h = Math.round(w * INSERT_ASPECT);
   const [canvas, ctx] = makeCanvas(w, h);
-  ctx.fillStyle = TRAY;
+  ctx.fillStyle = "#050505";
   ctx.fillRect(0, 0, w, h);
   const cx = w * 0.5;
   const cy = h * 0.47;
   const R = w * 0.41;
-  ctx.fillStyle = DISC;
+  ctx.fillStyle = "#141414";
   ctx.beginPath();
   ctx.arc(cx, cy, R, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = TRAY;
+  ctx.strokeStyle = "rgba(255,255,255,0.06)";
+  ctx.lineWidth = Math.max(1, w * 0.003);
+  for (const k of [0.98, 0.36, 0.3]) {
+    ctx.beginPath();
+    ctx.arc(cx, cy, R * k, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  paintLogo(ctx, entry.title, cx - R * 0.78, cy - R * 0.86, R * 1.56, R * 0.6, WHITE);
+  ctx.fillStyle = "#050505";
   ctx.beginPath();
-  ctx.arc(cx, cy, R * 0.09, 0, Math.PI * 2);
+  ctx.arc(cx, cy, R * 0.1, 0, Math.PI * 2);
   ctx.fill();
+  const dpr = w / 540;
+  ctx.font = font(13 * dpr);
+  ctx.fillStyle = WHITE;
   ctx.textAlign = "center";
-  ctx.textBaseline = "alphabetic";
-  const [text, size] = fitLine(ctx, entry.title, w * 0.045, w * 0.03, R * 1.3);
-  ctx.font = font(size);
-  ctx.fillStyle = INK;
-  ctx.fillText(text, cx, cy - R * 0.32);
-  ctx.font = font(w * 0.03);
-  ctx.fillText(details(entry), cx, cy + R * 0.42);
+  ctx.fillText(details(entry), cx, cy + R * 0.62);
   ctx.textAlign = "left";
   return canvas;
 }
 
-/** Colour of the case's sides and of an unprinted face. */
+/** Colour of the case's sides: black plastic. */
 export function edgeColour(): string {
   return EDGE;
 }

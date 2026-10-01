@@ -1,7 +1,7 @@
 import type { Store } from "../state";
 
 /**
- * The flicker (metal only): every so often the whole page goes photo-negative for a few frames.
+ * The flicker (recipe/direction-v3.md): every so often the whole page goes photo-negative for a few frames.
  * Kept inside the general flash threshold (WCAG 2.3.1, no more than three flashes in any
  * second): one burst is at most two flashes within about 170 ms, bursts are at least 15 s
  * apart, and none comes in the first 8 s. It never runs under reduced motion, while a case is

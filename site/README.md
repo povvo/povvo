@@ -2,12 +2,14 @@
 
 The site at [povvo.github.io/povvo](https://povvo.github.io/povvo/) shows every public repository as a case on a revolving rack. Turn the rack, take a case out, and open it to read its README.
 
-The site is currently a deliberately plain baseline, to be built up again one layer at a time:
-- black and white with one grey;
-- one system sans at one weight;
-- white cases with plain black type.
+The look is black metal and Helvetica:
+- every project gets a hand-drawn black metal logo, generated from its name with no font underneath;
+- covers are photocopied night photographs, as on a demo tape;
+- everything readable is set in Helvetica, white on a black page;
+- an opened case is its insert, a white photocopied sheet carrying the README;
+- now and then the whole page flickers to its negative.
 
-The rack, the case mechanics, the grid, the index and the open spread are all kept. The baseline is recorded in [`recipe/baseline.md`](recipe/baseline.md). The earlier "Heat Sheet" language is recorded in [`recipe/direction-v2.md`](recipe/direction-v2.md) and [`recipe/critique-v2.md`](recipe/critique-v2.md), and its code is set aside in [`parked/`](parked/).
+The direction is recorded in [`recipe/direction-v3.md`](recipe/direction-v3.md). The plain baseline it was built from is in [`recipe/baseline.md`](recipe/baseline.md). The earlier "Heat Sheet" language is in [`recipe/direction-v2.md`](recipe/direction-v2.md), with its code set aside in [`parked/`](parked/).
 
 ## Run
 
@@ -24,7 +26,7 @@ pnpm dev
 
 - **No manual updates.** The committed snapshot paints first. The browser then reads every page of public repositories for `povvo` from the GitHub API, caches the result for an hour, and replaces the snapshot. The weekly deploy also refreshes the snapshot. A repository appears on the rack as soon as it is public. Forks and the profile repositories (`.github`, `povvo`) are excluded.
 - **Numbers.** The caption, the spread and the index number cases by position in the current order. The default order is the order in which the work was started.
-- **Covers.** Covers, spines, inside sheets and discs are drawn to canvas from the repository data in `src/covers.ts`, so there is no artwork to maintain.
+- **Logos and covers.** Each project's logo is grown from its name by `src/logo.ts`. Covers, spines, inside sheets and discs are drawn to canvas by `src/covers.ts`, with photographs from `src/xerox.ts`. The same project always gets the same logo and cover, and there is no artwork to maintain.
 - **READMEs.** A README is fetched from `raw.githubusercontent.com` when a case opens. It is rendered with `marked` and sanitised with DOMPurify, with repository-relative links and images resolved to GitHub.
 
 ## Controls
@@ -39,12 +41,12 @@ pnpm dev
 - Dragging the case that is out tilts it; tapping it opens it.
 
 **Index**
-- Index in the header (or the `I` key) opens the full-screen list, which is the same list as the rack.
+- Index in the header (or the `I` key) opens the full-screen list of logos, which is the same list as the rack.
 - Type to find a project, choose an order, or pick a row.
 - Previous and Next in the right-hand column name the neighbouring projects.
 
 **Other**
-- "Motion" in the header reduces motion, and the system preference is honoured by default.
+- "Motion" in the header reduces motion and stops the flicker. The system preference is honoured by default.
 - On phones, the rack takes sideways swipes and the page scrolls vertically.
 
 ## Review

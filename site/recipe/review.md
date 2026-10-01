@@ -1,8 +1,12 @@
 # Review record
 
+## v3: black metal and Helvetica
+
+The review, its defects and its checks are recorded in `direction-v3.md`.
+
 ## Baseline: black and white
 
-The site was stripped to a plain black-and-white baseline. The review, its defects and its checks are recorded in `baseline.md`. The v2.1 and v2 records below describe the visual language that is now parked in `../parked/`.
+The site was stripped to a plain black-and-white baseline before v3. The review, its defects and its checks are recorded in `baseline.md`. The v2.1 and v2 records below describe the visual language that is now parked in `../parked/`.
 
 ---
 
