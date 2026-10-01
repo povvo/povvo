@@ -39,7 +39,7 @@ Overall: **PASS**
 | GIF disposal: contribution-scan.gif | PASS | disposal methods [1] |
 | GIF size: contribution-scan.gif | PASS | 93.2 KiB |
 | GIF loop seam: contribution-scan.gif | PASS | maximum channel RMS 0.000 |
-| GIF bounded motion: contribution-scan.gif | PASS | median 0.39%, maximum 0.78% pixels changed |
+| GIF bounded motion: contribution-scan.gif | PASS | median 0.37%, maximum 0.77% pixels changed |
 | GIF static-field stability: contribution-scan.gif | PASS | unchanged calibration field |
 | GIF dimensions: focus-board.gif | PASS | 900 x 220 |
 | GIF cadence: focus-board.gif | PASS | 49 encoded frames, 7200ms loop, delays [40, 680, 1570, 3110] |
@@ -51,23 +51,23 @@ Overall: **PASS**
 | GIF dimensions: repository-index.gif | PASS | 900 x 220 |
 | GIF cadence: repository-index.gif | PASS | 50 encoded frames, 7200ms loop, delays [40, 880, 1520, 2920] |
 | GIF disposal: repository-index.gif | PASS | disposal methods [1] |
-| GIF size: repository-index.gif | PASS | 103.3 KiB |
+| GIF size: repository-index.gif | PASS | 103.1 KiB |
 | GIF loop seam: repository-index.gif | PASS | maximum channel RMS 0.000 |
 | GIF bounded motion: repository-index.gif | PASS | median 0.55%, maximum 2.59% pixels changed |
 | GIF static-field stability: repository-index.gif | PASS | unchanged calibration field |
 | GIF dimensions: event-rail.gif | PASS | 900 x 220 |
 | GIF cadence: event-rail.gif | PASS | 50 encoded frames, 7200ms loop, delays [40, 1080, 1460, 2780] |
 | GIF disposal: event-rail.gif | PASS | disposal methods [1] |
-| GIF size: event-rail.gif | PASS | 98.6 KiB |
+| GIF size: event-rail.gif | PASS | 97.1 KiB |
 | GIF loop seam: event-rail.gif | PASS | maximum channel RMS 0.000 |
 | GIF bounded motion: event-rail.gif | PASS | median 0.61%, maximum 0.97% pixels changed |
 | GIF static-field stability: event-rail.gif | PASS | unchanged calibration field |
 | GIF dimensions: code-spectrum.gif | PASS | 900 x 220 |
 | GIF cadence: code-spectrum.gif | PASS | 50 encoded frames, 7200ms loop, delays [40, 1280, 1400, 2640] |
 | GIF disposal: code-spectrum.gif | PASS | disposal methods [1] |
-| GIF size: code-spectrum.gif | PASS | 96.1 KiB |
+| GIF size: code-spectrum.gif | PASS | 96.3 KiB |
 | GIF loop seam: code-spectrum.gif | PASS | maximum channel RMS 0.000 |
-| GIF bounded motion: code-spectrum.gif | PASS | median 0.63%, maximum 1.94% pixels changed |
+| GIF bounded motion: code-spectrum.gif | PASS | median 0.61%, maximum 2.13% pixels changed |
 | GIF static-field stability: code-spectrum.gif | PASS | unchanged calibration field |
 | GIF dimensions: repository-signal.gif | PASS | 900 x 220 |
 | GIF cadence: repository-signal.gif | PASS | 50 encoded frames, 7200ms loop, delays [40, 1340, 1480, 2500] |
@@ -76,27 +76,27 @@ Overall: **PASS**
 | GIF loop seam: repository-signal.gif | PASS | maximum channel RMS 0.000 |
 | GIF bounded motion: repository-signal.gif | PASS | median 0.76%, maximum 2.18% pixels changed |
 | GIF static-field stability: repository-signal.gif | PASS | unchanged calibration field |
-| aggregate GIF budget | PASS | 635.0 KiB across 6 animations |
+| aggregate GIF budget | PASS | 633.5 KiB across 6 animations |
 | telemetry reel dimensions | PASS | 900 x 220 |
 | telemetry reel cadence | PASS | 44 frames, 13680ms, loop=0 |
 | telemetry reel disposal | PASS | disposal methods [1] |
-| telemetry reel size | PASS | 332.1 KiB |
-| telemetry reel loop seam | PASS | maximum channel RMS 0.325 |
+| telemetry reel size | PASS | 328.0 KiB |
+| telemetry reel loop seam | PASS | maximum channel RMS 0.326 |
 | preview dimensions: contribution-scan.png | PASS | 900 x 220 |
-| black/off-white dominance: contribution-scan.png | PASS | 88.35% |
+| black/off-white dominance: contribution-scan.png | PASS | 88.31% |
 | cyan subordination: contribution-scan.png | PASS | 0.018% |
 | preview dimensions: focus-board.png | PASS | 900 x 220 |
 | black/off-white dominance: focus-board.png | PASS | 85.80% |
 | cyan subordination: focus-board.png | PASS | 0.002% |
 | preview dimensions: repository-index.png | PASS | 900 x 220 |
-| black/off-white dominance: repository-index.png | PASS | 93.87% |
+| black/off-white dominance: repository-index.png | PASS | 93.86% |
 | cyan subordination: repository-index.png | PASS | 0.018% |
 | preview dimensions: event-rail.png | PASS | 900 x 220 |
-| black/off-white dominance: event-rail.png | PASS | 95.71% |
+| black/off-white dominance: event-rail.png | PASS | 95.88% |
 | cyan subordination: event-rail.png | PASS | 0.002% |
 | preview dimensions: code-spectrum.png | PASS | 900 x 220 |
-| black/off-white dominance: code-spectrum.png | PASS | 86.48% |
-| cyan subordination: code-spectrum.png | PASS | 0.024% |
+| black/off-white dominance: code-spectrum.png | PASS | 86.47% |
+| cyan subordination: code-spectrum.png | PASS | 0.008% |
 | preview dimensions: repository-signal.png | PASS | 900 x 220 |
 | black/off-white dominance: repository-signal.png | PASS | 92.20% |
 | cyan subordination: repository-signal.png | PASS | 0.002% |
