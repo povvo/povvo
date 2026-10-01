@@ -10,7 +10,6 @@
 </style>
 <div class="grid" id="g"></div>
 <script type="module">
-  import "/src/fonts.css";
   import { toEntries, stressEntries } from "/src/catalogue.ts";
   import { drawInsert, drawSpine, drawInsideLeft, drawInsideRight, ensureFonts } from "/src/covers.ts";
   const repos = await (await fetch("/data/repos.json")).json();
@@ -30,7 +29,7 @@
       const r = drawInsideRight(e, 270); r.style.width = "180px";
       row.append(l, r);
     }
-    const cap = document.createElement("figcaption"); cap.textContent = `${e.no} ${e.layout} ${e.name}`;
+    const cap = document.createElement("figcaption"); cap.textContent = `${e.no} ${e.name}`;
     f.append(row, cap); g.append(f);
   }
   document.body.dataset.ready = "1";

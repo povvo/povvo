@@ -1,7 +1,8 @@
 import * as THREE from "three";
+import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import type { Entry } from "./catalogue";
-import { FIELD } from "./catalogue";
-import { drawInsert, drawInsideLeft, drawInsideRight, drawSpine, edgeColour, ensureFonts, shellHex } from "./covers";
+import { PAPER } from "./catalogue";
+import { drawInsert, drawInsideLeft, drawInsideRight, drawSpine, edgeColour, ensureFonts } from "./covers";
 import { FRONT_CLEAR, TURN_BLOCK, gateCase } from "./gates";
 import { Spring, clamp, easeOutCubic, smoothstep } from "./motion";
 import type { State, Store } from "./state";
@@ -9,7 +10,7 @@ import type { State, Store } from "./state";
 /**
  * The rack. Coordinate contract (3d-motion-design: transforms and pivots):
  *   world: right-handed, +y up, +z toward the viewer, units of ten centimetres. The floor is
- *     the plane y = FLOOR_Y; it only receives shadows, the heat field behind is the page.
+ *     the plane y = FLOOR_Y; it only receives shadows, the white page shows through it.
  *   rack group: rotates about +y and translates along y; a case's slot i sits at angle
  *     i * step around the axis and height i * rise. Slot 0 is at the front (+z).
  *   case group: local +x is the case's outward normal while it is on the rack (its spine
@@ -39,7 +40,7 @@ const SINK = CASE_H + 0.15;
 const WINDOW = THREE.MathUtils.degToRad(100); // cases beyond this angle from the front are not drawn
 const WINDOW_FADE = THREE.MathUtils.degToRad(12);
 const HINGE_OPEN = -2.55; // radians, how far the front leaf swings
-const REST_YAW = 0.14; // the presented case rests slightly turned so its spine edge catches the sun
+const REST_YAW = 0.14; // the presented case rests slightly turned so its spine edge catches the light
 const RACK_TONE = 0.7; // cases on the rack are printed a little darker than the one in the light
 
 /** Material colours are base colour times a tone; the base changes when textures are painted. */
@@ -121,46 +122,20 @@ function texture(canvas: HTMLCanvasElement, renderer: THREE.WebGLRenderer): THRE
   return t;
 }
 
-let coatRoughness = 0.16;
+/** Plain, nearly matte card (recipe/baseline.md): no clearcoat, no coloured reflections. */
 function physical(opts: THREE.MeshPhysicalMaterialParameters): THREE.MeshPhysicalMaterial {
   return new THREE.MeshPhysicalMaterial({
-    roughness: 0.55,
+    roughness: 0.72,
     metalness: 0,
-    clearcoat: 1,
-    clearcoatRoughness: coatRoughness,
     envMapIntensity: 1,
     ...opts,
   });
 }
 
-/**
- * The environment the gloss reflects: a sky-to-sand dome with a low sun, so the cases
- * pick up the same heat field the page is printed on (look development: environment).
- */
-function heatEnvironment(renderer: THREE.WebGLRenderer): THREE.Texture {
-  const env = new THREE.Scene();
-  const dome = new THREE.Mesh(
-    new THREE.SphereGeometry(20, 48, 24),
-    new THREE.ShaderMaterial({
-      side: THREE.BackSide,
-      depthWrite: false,
-      uniforms: {
-        sky: { value: new THREE.Color(FIELD.sky) },
-        haze: { value: new THREE.Color(FIELD.paper) },
-        sand: { value: new THREE.Color(FIELD.dust) },
-      },
-      vertexShader: "varying vec3 vDir; void main(){ vDir = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
-      fragmentShader:
-        "uniform vec3 sky; uniform vec3 haze; uniform vec3 sand; varying vec3 vDir;" +
-        "void main(){ float y = vDir.y; vec3 c = y > 0.0 ? mix(haze, sky, smoothstep(0.0, 0.55, y)) : mix(haze, sand, smoothstep(0.0, 0.25, -y)); gl_FragColor = vec4(c, 1.0); }",
-    }),
-  );
-  env.add(dome);
-  const sun = new THREE.Mesh(new THREE.SphereGeometry(1.4, 16, 8), new THREE.MeshBasicMaterial({ color: new THREE.Color(6, 5.6, 5) }));
-  sun.position.set(-9, 11, 9);
-  env.add(sun);
+/** A neutral grey room for the cases to reflect, so no colour enters the scene. */
+function neutralEnvironment(renderer: THREE.WebGLRenderer): THREE.Texture {
   const pmrem = new THREE.PMREMGenerator(renderer);
-  const tex = pmrem.fromScene(env, 0.02).texture;
+  const tex = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
   pmrem.dispose();
   return tex;
 }
@@ -172,17 +147,12 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
   } catch {
     return null;
   }
-  const stageEl = field.closest<HTMLElement>(".stage") ?? field;
   const small = Math.min(innerWidth, innerHeight) < 700;
   const params = new URLSearchParams(location.search);
   let quality: "high" | "low" = params.get("quality") === "low" ? "low" : "high";
-  // Look wedges (review only): ?key=<intensity> and ?coat=<clearcoat roughness>.
-  const wedgeKey = Number(params.get("key"));
-  const wedgeCoat = Number(params.get("coat"));
-  if (wedgeCoat > 0) coatRoughness = wedgeCoat;
   renderer.setPixelRatio(quality === "low" ? 1 : Math.min(devicePixelRatio || 1, small ? 1.5 : 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
-  // Neutral keeps the shells' hues where the direction measured them; ACES shifts orange to yellow.
+  // Neutral tone mapping keeps white white.
   renderer.toneMapping = THREE.NeutralToneMapping;
   renderer.toneMappingExposure = 1.0;
   renderer.shadowMap.enabled = quality === "high";
@@ -191,17 +161,18 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
   renderer.setClearColor(0x000000, 0);
 
   const scene = new THREE.Scene();
-  scene.environment = heatEnvironment(renderer);
-  scene.environmentIntensity = 0.7;
+  scene.environment = neutralEnvironment(renderer);
+  scene.environmentIntensity = 0.55;
 
   const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 80);
   const camBase = new THREE.Vector3(0, 0.2, 10);
   camera.position.copy(camBase);
   const lookAt = new THREE.Vector3(0, 0.35, 0);
 
-  // Light rig: one hot sun from high front left with hard-ish shadows, a cool sky fill.
-  const key = new THREE.DirectionalLight(0xfff1dc, wedgeKey > 0 ? wedgeKey : 2.6);
-  key.position.set(-4.2, 6.5, 5.2);
+  // Light rig: one white key from nearly overhead with soft shadows, a grey fill. Overhead, the
+  // floating case's shadow lands under it rather than as a slab across the floor.
+  const key = new THREE.DirectionalLight(0xffffff, 1.9);
+  key.position.set(-1.6, 10, 3.2);
   key.castShadow = true;
   key.shadow.mapSize.set(2048, 2048);
   key.shadow.camera.near = 1;
@@ -212,13 +183,13 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
   key.shadow.camera.bottom = -7;
   key.shadow.bias = -0.0005;
   key.shadow.normalBias = 0.02;
-  key.shadow.radius = 2;
+  key.shadow.radius = 4;
   scene.add(key);
   scene.add(key.target);
-  const fill = new THREE.HemisphereLight(0xcfe6df, 0xd8be83, 0.5);
+  const fill = new THREE.HemisphereLight(0xffffff, 0xbfbfbf, 0.7);
   scene.add(fill);
 
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.ShadowMaterial({ color: 0x3a2a12, opacity: 0.22 }));
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.ShadowMaterial({ color: 0x000000, opacity: 0.08 }));
   floor.rotation.x = -Math.PI / 2;
   floor.position.y = FLOOR_Y - 0.002;
   floor.receiveShadow = true;
@@ -229,9 +200,9 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
   blobCanvas.width = blobCanvas.height = 128;
   const bctx = blobCanvas.getContext("2d")!;
   const grad = bctx.createRadialGradient(64, 64, 0, 64, 64, 64);
-  grad.addColorStop(0, "rgba(58,42,18,0.9)");
-  grad.addColorStop(0.5, "rgba(58,42,18,0.35)");
-  grad.addColorStop(1, "rgba(58,42,18,0)");
+  grad.addColorStop(0, "rgba(0,0,0,0.7)");
+  grad.addColorStop(0.5, "rgba(0,0,0,0.25)");
+  grad.addColorStop(1, "rgba(0,0,0,0)");
   bctx.fillStyle = grad;
   bctx.fillRect(0, 0, 128, 128);
   const blob = new THREE.Mesh(
@@ -246,8 +217,8 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
   const rack = new THREE.Group();
   scene.add(rack);
 
-  // Heat haze: far cases fade into the field's off-white. Range set on resize.
-  const fog = new THREE.Fog(0xf4ecd6, 9, 16);
+  // Far cases fade into the page's white. Range set on resize.
+  const fog = new THREE.Fog(PAPER, 9, 16);
   scene.fog = fog;
 
   const leafGeo = new THREE.BoxGeometry(CASE_W, CASE_H, LEAF_D);
@@ -277,16 +248,16 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
   const heroCache = new Map<string, { front: THREE.CanvasTexture; left: THREE.CanvasTexture; right: THREE.CanvasTexture }>();
 
   function buildNode(entry: Entry): CaseNode {
-    const shell = new THREE.Color(shellHex(entry));
-    const edge = new THREE.Color(edgeColour(entry));
+    const card = new THREE.Color(PAPER);
+    const edge = new THREE.Color(edgeColour());
     const clip = new THREE.Plane(new THREE.Vector3(0, 1, 0), 1000);
     const clippingPlanes = [clip];
-    const frontMat = physical({ color: shell, clippingPlanes });
-    const insideLeftMat = physical({ color: FIELD.bone, clearcoat: 0.2, roughness: 0.85, clippingPlanes });
-    const insideRightMat = physical({ color: shell, clearcoat: 0.6, clippingPlanes });
-    const backMat = physical({ color: shell, clippingPlanes });
-    const spineMat = physical({ color: shell, clippingPlanes });
-    const edgeMat = physical({ color: edge, clearcoat: 0.8, roughness: 0.45, clippingPlanes });
+    const frontMat = physical({ color: card, clippingPlanes });
+    const insideLeftMat = physical({ color: card, roughness: 0.85, clippingPlanes });
+    const insideRightMat = physical({ color: edge, clippingPlanes });
+    const backMat = physical({ color: card, clippingPlanes });
+    const spineMat = physical({ color: card, clippingPlanes });
+    const edgeMat = physical({ color: edge, roughness: 0.6, clippingPlanes });
 
     // Box material order: +x, -x, +y, -y, +z, -z
     const front = new THREE.Mesh(leafGeo, [edgeMat, edgeMat, edgeMat, edgeMat, frontMat, insideLeftMat]);
@@ -382,9 +353,9 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
     if (!node.hero) return;
     node.hero = false;
     node.insideLeftMat.map = null;
-    setBase(node.insideLeftMat, FIELD.bone);
+    setBase(node.insideLeftMat, PAPER);
     node.insideRightMat.map = null;
-    setBase(node.insideRightMat, shellHex(node.entry));
+    setBase(node.insideRightMat, edgeColour());
     for (const m of [node.insideLeftMat, node.insideRightMat]) m.needsUpdate = true;
     // The rack-resolution insert is repainted lazily.
     void paintRackTextures(node);
@@ -547,14 +518,13 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
     layout.wide = matchMedia("(min-width: 1024px)").matches;
     const halfV = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
     const halfH = halfV * camera.aspect;
-    // Framing by proportion and position (recipe/critique-v2.md, composition rules): the rack is
-    // a band on the horizon, its front case about a fifth of the stage tall and centred at 45%;
-    // the presented case is about two fifths tall and centred at 38%, in the sky; the bottom of
-    // the stage is left to the title, which the rack never covers.
+    // Framing by proportion and position: the rack is a band across the stage, its front case
+    // about a fifth of the stage tall and centred at half height; the presented case is about
+    // two fifths tall, centred a little above it.
     const presentedShare = layout.wide ? 0.42 : 0.4;
     const rackShare = layout.wide ? 0.21 : 0.2;
-    const rackCentre = layout.wide ? 0.45 : 0.47;
-    const presentCentre = 0.38;
+    const rackCentre = layout.wide ? 0.5 : 0.54;
+    const presentCentre = layout.wide ? 0.43 : 0.45;
     const dPresent = CASE_H / (2 * halfV * presentedShare);
     const dRack = CASE_H / (2 * halfV * rackShare);
     camBase.z = geo.radius + dRack;
@@ -582,28 +552,13 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
     camera.updateProjectionMatrix();
     placeCamera(0, 1);
     camera.updateMatrixWorld();
-    // The page's horizon is the floor's vanishing line, so the printed field and the 3D floor agree.
-    tmp.set(camera.position.x, camera.position.y, camera.position.z - 1000).project(camera);
-    stageEl.style.setProperty("--horizon", `${(((1 - tmp.y) / 2) * h).toFixed(1)}px`);
     dirty = true;
   }
 
-  // Pointer parallax: the camera leans a little toward the pointer (fine pointers, full motion).
-  const lean = { x: new Spring(0, { stiffness: 18, ratio: 1 }), y: new Spring(0, { stiffness: 18, ratio: 1 }) };
   function placeCamera(openAmount: number, arrival: number): void {
-    const lx = lean.x.x * 0.35 * (1 - openAmount);
-    const ly = lean.y.x * 0.18 * (1 - openAmount);
-    camera.position.set(camBase.x + lx, camBase.y + ly + (1 - arrival) * 0.25, camBase.z + (1 - arrival) * 0.9 - openAmount * layout.push);
+    camera.position.set(camBase.x, camBase.y + (1 - arrival) * 0.25, camBase.z + (1 - arrival) * 0.9 - openAmount * layout.push);
     camera.lookAt(lookAt.x + openAmount * layout.openX * 0.25, lookAt.y, lookAt.z);
   }
-  const finePointer = matchMedia("(pointer: fine)").matches;
-  function onLean(e: PointerEvent): void {
-    if (!finePointer || reduced || e.pointerType !== "mouse") return;
-    const r = canvas.getBoundingClientRect();
-    lean.x.target = clamp(((e.clientX - r.left) / r.width) * 2 - 1, -1, 1);
-    lean.y.target = clamp(-(((e.clientY - r.top) / r.height) * 2 - 1), -1, 1);
-  }
-  addEventListener("pointermove", onLean, { passive: true });
 
   const ro = new ResizeObserver(resize);
   ro.observe(field);
@@ -873,7 +828,7 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
       pos.step(dt);
       if (!pos.settled(0.0015, 0.004)) moving = true;
     } else moving = true;
-    for (const s of [inspectYaw, inspectPitch, lean.x, lean.y]) {
+    for (const s of [inspectYaw, inspectPitch]) {
       s.step(dt);
       if (!s.settled(0.001, 0.003)) moving = true;
     }
@@ -954,8 +909,8 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
     key.target.position.set(0, -pos.x * geo.rise, 0);
     key.target.updateMatrixWorld();
 
-    // Light leads the eye: the presented case at full brightness, the rack toned down, and a
-    // soft contact shadow under whichever case is in the air.
+    // The presented case at full brightness, the rack toned a little grey, and a soft contact
+    // shadow under whichever case is in the air.
     let air: CaseNode | null = null;
     for (const n of nodes.values()) {
       setTone(n, RACK_TONE + (1 - RACK_TONE) * smoothstep(n.turn.x));
@@ -1026,7 +981,6 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
       unsubscribe();
       ro.disconnect();
       window.removeEventListener("keydown", onKey);
-      removeEventListener("pointermove", onLean);
       document.removeEventListener("visibilitychange", onVisibility);
       renderer.dispose();
     },

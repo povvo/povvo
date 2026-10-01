@@ -1,0 +1,14 @@
+/* Editorial: one contemporary grotesk with optical sizes, set in mixed case.
+   Bricolage Grotesque (display opsz 96, voice opsz 36, text opsz 14), DM Mono (apparatus). */
+@font-face { font-family: "Type Display"; src: url("../../node_modules/@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-standard-normal.woff2") format("woff2-variations"); font-weight: 200 800; font-display: swap; font-variation-settings: "opsz" 96, "wdth" 100; }
+@font-face { font-family: "Type Voice"; src: url("../../node_modules/@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-standard-normal.woff2") format("woff2-variations"); font-weight: 200 800; font-display: swap; font-variation-settings: "opsz" 36, "wdth" 100; }
+@font-face { font-family: "Type Text"; src: url("../../node_modules/@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-standard-normal.woff2") format("woff2-variations"); font-weight: 200 800; font-display: swap; font-variation-settings: "opsz" 14, "wdth" 100; }
+@font-face { font-family: "Type Mono"; src: url("../../node_modules/@fontsource/dm-mono/files/dm-mono-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Type Mono"; src: url("../../node_modules/@fontsource/dm-mono/files/dm-mono-latin-500-normal.woff2") format("woff2"); font-weight: 500 700; font-display: swap; }
+:root {
+  --display: "Type Display", sans-serif; --display-weight: 700; --display-case: none; --display-track: -0.04em; --display-lh: 0.92; --display-descent: 0.2em;
+  --mark: "Type Voice", sans-serif; --mark-weight: 600; --mark-style: normal; --mark-track: -0.03em; --mark-size: 1.05;
+  --voice: "Type Voice", sans-serif; --voice-style: normal; --voice-weight: 300;
+  --mono: "Type Mono", monospace; --sans: "Type Text", sans-serif;
+  --face-display: "Type Display"; --face-mono: "Type Mono"; --face-narrow: "Type Mono"; --face-voice: "Type Voice";
+}

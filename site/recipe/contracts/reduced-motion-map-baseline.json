@@ -1,0 +1,51 @@
+{
+  "_question": "Baseline (black and white): does each essential state change keep an equivalent non-motion communication under reduced motion? Mappings are from the full-motion carrier to the reduced carrier.",
+  "start": "rack-turns",
+  "states": [
+    "rack-turns",
+    "caption-fades",
+    "case-presents",
+    "case-opens",
+    "spread-slides",
+    "index-opens",
+    "reflow-lifts"
+  ],
+  "mappings": [
+    {
+      "from": "rack-turns",
+      "to": "caption-fades",
+      "full": "spring rotation of the rack; the caption's title, description and meta fade out in 120 ms",
+      "reduced": "instant reposition; the position number and index row change immediately"
+    },
+    {
+      "from": "caption-fades",
+      "to": "case-presents",
+      "full": "the case pulls straight out, turns and floats to the presentation spot (gated springs); the caption fades in over 160 ms",
+      "reduced": "the gate sequence resolves within one frame; the case is shown presented and the caption appears at once; the status region announces the case in both modes"
+    },
+    {
+      "from": "case-presents",
+      "to": "case-opens",
+      "full": "front leaf swings on its hinge beside the spread",
+      "reduced": "case shown open beside the spread"
+    },
+    {
+      "from": "case-opens",
+      "to": "spread-slides",
+      "full": "spread slides in from the right in 220 ms",
+      "reduced": "spread shown without movement; focus moves to Close"
+    },
+    {
+      "from": "spread-slides",
+      "to": "index-opens",
+      "full": "the index fades in over the page in 160 ms",
+      "reduced": "the index appears at once; focus moves to Find"
+    },
+    {
+      "from": "index-opens",
+      "to": "reflow-lifts",
+      "full": "on filter or sort, cases sink through the floor, re-slot unseen and rise from the front out",
+      "reduced": "slots change in place at once; the index shows the new order"
+    }
+  ]
+}

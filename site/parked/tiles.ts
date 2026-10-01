@@ -44,6 +44,12 @@ export interface Tile {
 
 export type Rand = () => number;
 
+/** The numeral face, set by the cover system once the type roles are known. */
+let numeralFont = (size: number): string => `900 ${size}px "Heat Display"`;
+export function setNumeralFont(fn: (size: number) => string): void {
+  numeralFont = fn;
+}
+
 export function hashSeed(text: string): number {
   let h = 2166136261;
   for (let i = 0; i < text.length; i++) {
@@ -86,7 +92,7 @@ export function randomTile(r: Rand, palette: string[], avoid?: string): Tile {
 }
 
 /** Draw one tile into the square (x, y, s). */
-export function drawTile(ctx: CanvasRenderingContext2D, t: Tile, x: number, y: number, s: number, numeralFont?: string): void {
+export function drawTile(ctx: CanvasRenderingContext2D, t: Tile, x: number, y: number, s: number, numeralFontOverride?: string): void {
   ctx.save();
   ctx.beginPath();
   ctx.rect(x, y, s, s);
@@ -142,7 +148,7 @@ export function drawTile(ctx: CanvasRenderingContext2D, t: Tile, x: number, y: n
       break;
     }
     case "numeral": {
-      ctx.font = numeralFont ?? `900 ${s * 0.86}px "Heat Display"`;
+      ctx.font = numeralFontOverride ?? numeralFont(s * 0.86);
       ctx.letterSpacing = "0px";
       ctx.textAlign = "center";
       ctx.textBaseline = "alphabetic";

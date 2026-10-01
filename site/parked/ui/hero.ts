@@ -1,5 +1,5 @@
 import { SIGNAL, shellOf } from "../catalogue";
-import { ensureFonts, fitTitle } from "../covers";
+import { ensureFonts, fitTitle, metalMode, nameLogo } from "../covers";
 import type { State, Store } from "../state";
 
 /**
@@ -21,7 +21,39 @@ export function mountHero(root: HTMLElement, stage: HTMLElement, store: Store): 
     return parseFloat(getComputedStyle(stage).getPropertyValue("--margin")) || 32;
   }
 
-  function layout(text: string): void {
+  function layoutLogo(text: string, ghostColour: string): void {
+    // Metal: the name is a generated logo, centred at the foot like a band's on a flyer.
+    const w = stage.querySelector<HTMLElement>("[data-field]")!.clientWidth;
+    const h = stage.querySelector<HTMLElement>("[data-field]")!.clientHeight;
+    const m = margin();
+    const maxW = w - m * 2;
+    const maxH = h * (w < 700 ? 0.36 : 0.46);
+    const dpr = Math.min(2, devicePixelRatio || 1);
+    const inkLogo = nameLogo(text, Math.min(220, maxH * 0.42) * dpr, getComputedStyle(root).color || "#111719");
+    const ghostLogo = nameLogo(text, Math.min(220, maxH * 0.42) * dpr, ghostColour);
+    const k = Math.min(maxW / inkLogo.width, maxH / inkLogo.height);
+    root.style.fontSize = "";
+    root.dataset.logo = "true";
+    for (const [plate, logo] of [[ink, inkLogo], [ghost, ghostLogo]] as const) {
+      const line = document.createElement("span");
+      line.className = "hero__line hero__line--logo";
+      line.style.setProperty("--i", "0");
+      const inner = document.createElement("span");
+      const img = document.createElement("canvas");
+      img.width = logo.width;
+      img.height = logo.height;
+      img.getContext("2d")!.drawImage(logo, 0, 0);
+      img.style.width = `${(logo.width * k).toFixed(1)}px`;
+      img.style.height = `${(logo.height * k).toFixed(1)}px`;
+      inner.appendChild(img);
+      line.appendChild(inner);
+      plate.replaceChildren(line);
+    }
+  }
+
+  function layout(text: string, ghostColour = "#FF4B1F"): void {
+    if (metalMode()) return layoutLogo(text, ghostColour);
+    delete root.dataset.logo;
     const w = stage.querySelector<HTMLElement>("[data-field]")!.clientWidth;
     const h = stage.querySelector<HTMLElement>("[data-field]")!.clientHeight;
     const narrow = w < 700;
@@ -41,8 +73,9 @@ export function mountHero(root: HTMLElement, stage: HTMLElement, store: Store): 
     if (store.state.mode !== "settled") return;
     if (shown === entry.name && root.dataset.state === "in") return;
     shown = entry.name;
-    layout(entry.title);
-    root.style.setProperty("--ghost", entry.layout === "specimen" ? SIGNAL : shellOf(entry).hex);
+    const ghostColour = entry.layout === "specimen" ? SIGNAL : shellOf(entry).hex;
+    root.style.setProperty("--ghost", ghostColour);
+    layout(entry.title, ghostColour);
     root.dataset.state = "off";
     void root.offsetWidth;
     root.dataset.state = "in";
@@ -61,6 +94,6 @@ export function mountHero(root: HTMLElement, stage: HTMLElement, store: Store): 
 
   new ResizeObserver(() => {
     const entry = store.current;
-    if (entry && shown === entry.name) layout(entry.title);
+    if (entry && shown === entry.name) layout(entry.title, entry.layout === "specimen" ? SIGNAL : shellOf(entry).hex);
   }).observe(stage);
 }

@@ -182,20 +182,6 @@ await scene("flat-renderer", { viewport: desktop, query: "?stress=60&renderer=fl
   { key: "Enter" }, { wait: 1200, shot: "open" },
 ] });
 
-if (only === "wedge") {
-  // Look-development wedges: one variable per row, the extracted case at rest, full quality.
-  for (const coat of [0.1, 0.25, 0.5]) {
-    await scene(`wedge-coat-${coat}`, { viewport: { width: 960, height: 780 }, query: `?review=1&coat=${coat}`, steps: [
-      { snap: true }, { until: "settled" }, { snap: true }, { wait: 900, shot: "rest" },
-    ] });
-  }
-  for (const key of [1.8, 2.4, 3.0]) {
-    await scene(`wedge-key-${key}`, { viewport: { width: 960, height: 780 }, query: `?review=1&key=${key}`, steps: [
-      { snap: true }, { until: "settled" }, { snap: true }, { wait: 900, shot: "rest" },
-    ] });
-  }
-}
-
 await writeFile(path.join(outDir, "review-log.json"), JSON.stringify(log, null, 2));
 console.log(JSON.stringify(log, null, 2));
 await browser.close();

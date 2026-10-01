@@ -1,0 +1,24 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Metal logos</title>
+<style>
+  @font-face { font-family: "Base Cook"; src: url(/node_modules/@fontsource/unifrakturcook/files/unifrakturcook-latin-700-normal.woff2); font-weight: 700; }
+  @font-face { font-family: "Base Grenze"; src: url(/node_modules/@fontsource-variable/grenze-gotisch/files/grenze-gotisch-latin-wght-normal.woff2); font-weight: 100 900; }
+  @font-face { font-family: "Base Mania"; src: url(/node_modules/@fontsource/metal-mania/files/metal-mania-latin-400-normal.woff2); font-weight: 400; }
+  @font-face { font-family: "Base Pirata"; src: url(/node_modules/@fontsource/pirata-one/files/pirata-one-latin-400-normal.woff2); font-weight: 400; }
+  body { margin: 0; background: #EFE3C1; padding: 20px; font: 11px monospace; }
+  .g { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px 24px; align-items: center; }
+  .g h3 { margin: 0; font: 600 12px monospace; }
+  canvas { max-width: 100%; height: auto; display: block; }
+</style>
+<div class="g" id="g"></div>
+<script type="module">
+  import { metalLogo } from "/parked/metal.ts";
+  const bases = [["Base Cook", 700], ["Base Grenze", 900], ["Base Mania", 400], ["Base Pirata", 400]];
+  const names = ["deepest research", "sleuth", "claudikins kernel", "personal dev env", "web mcp skills", "advanced lyricism"];
+  await Promise.all(bases.map(([f, w]) => document.fonts.load(`${w} 40px "${f}"`)));
+  const g = document.getElementById("g");
+  for (const [f] of bases) { const h = document.createElement("h3"); h.textContent = f; g.append(h); }
+  for (const n of names) for (const [f, w] of bases) g.append(metalLogo(n, 90, { ink: "#111719", font: `"${f}"`, weight: w }));
+  document.body.dataset.ready = "1";
+</script>

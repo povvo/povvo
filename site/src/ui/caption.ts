@@ -10,7 +10,6 @@ import type { State, Store } from "../state";
  */
 export function mountCaption(root: HTMLElement, turn: HTMLElement, status: HTMLElement, store: Store): void {
   const no = root.querySelector<HTMLElement>("[data-no]")!;
-  const code = root.querySelector<HTMLElement>("[data-code]")!;
   const title = root.querySelector<HTMLElement>("[data-title]")!;
   const desc = root.querySelector<HTMLElement>("[data-desc]")!;
   const meta = root.querySelector<HTMLElement>("[data-meta]")!;
@@ -43,7 +42,6 @@ export function mountCaption(root: HTMLElement, turn: HTMLElement, status: HTMLE
       return;
     }
     shownName = entry.name;
-    code.textContent = entry.capsule;
     title.textContent = entry.title;
     desc.textContent = entry.description?.trim() || "No description on GitHub yet. The README is inside.";
     meta.textContent = metaLine(entry);
@@ -58,13 +56,13 @@ export function mountCaption(root: HTMLElement, turn: HTMLElement, status: HTMLE
     neighbours(state);
     if (state.mode === "loading") {
       no.textContent = "";
-      desc.textContent = "Loading the catalogue";
+      title.textContent = "Loading the catalogue";
+      desc.textContent = "";
       open.hidden = true;
       return;
     }
     if (state.mode === "failed" || !entry) {
       no.textContent = "";
-      code.textContent = "";
       title.textContent = state.mode === "failed" ? "The catalogue could not be reached" : "Nothing matches";
       desc.textContent = state.mode === "failed" ? "GitHub did not answer and no snapshot was available. The repositories are still at github.com/povvo." : "Nothing in the catalogue matches that search.";
       meta.textContent = "";
@@ -75,12 +73,12 @@ export function mountCaption(root: HTMLElement, turn: HTMLElement, status: HTMLE
     }
     no.textContent = position(state.current, state.visible.length);
     open.hidden = false;
-    open.innerHTML = state.mode === "open" ? 'Close the case <span aria-hidden="true">Esc</span>' : 'Open the case <span aria-hidden="true">↵</span>';
+    open.innerHTML = state.mode === "open" ? '<span class="caption__label">Close the case</span> <kbd aria-hidden="true">Esc</kbd>' : '<span class="caption__label">Open the case</span> <kbd aria-hidden="true">↵</kbd>';
 
     const immediate = state.motion === "reduced" || state.renderer === "flat";
     if (immediate || state.mode === "settled" || state.mode === "open") swap(state);
     else if (state.current !== previous.current || state.selectionTick !== previous.selectionTick) {
-      // The rack is moving: the old words step down out of sight until the new case is out.
+      // The rack is moving: the old words fade out until the new case is out.
       if (shownName !== null) root.dataset.swap = "out";
       shownName = null;
     }

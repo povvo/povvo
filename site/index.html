@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="color-scheme" content="light" />
-    <meta name="theme-color" content="#CFE6DF" />
+    <meta name="theme-color" content="#FFFFFF" />
     <meta name="description" content="Ethan Lee Barrett. Public work: every repository as a case on a revolving rack. Turn the rack, take a case out, open it to read." />
     <meta property="og:title" content="Ethan Lee Barrett — public work" />
     <meta property="og:description" content="Every repository as a case on a revolving rack. Turn the rack, take a case out, open it to read." />
@@ -18,13 +18,10 @@
     <main class="stage" aria-labelledby="stage-title">
       <h2 id="stage-title" class="sr-only">The rack</h2>
 
-      <p class="hero" aria-hidden="true" data-hero data-state="off"><span class="hero__plate hero__plate--ghost" data-hero-ghost></span><span class="hero__plate hero__plate--ink" data-hero-ink></span></p>
-
       <div class="stage__field" data-field>
         <canvas id="rack" class="stage__canvas" aria-hidden="true"></canvas>
         <div class="stage__flat" data-flat hidden aria-hidden="true"></div>
       </div>
-      <div class="grain" aria-hidden="true"></div>
 
       <header class="bar">
         <h1 class="bar__name">Ethan Lee Barrett</h1>
@@ -38,11 +35,11 @@
       </header>
 
       <section class="caption" data-caption aria-label="The case out of the rack">
-        <p class="caption__no"><span data-no>&nbsp;</span><span class="caption__code" data-code></span></p>
-        <h3 class="caption__title sr-only" data-title>Loading the catalogue</h3>
-        <p class="caption__desc" data-desc>Loading the catalogue</p>
+        <p class="caption__no" data-no>&nbsp;</p>
+        <h3 class="caption__title" data-title>Loading the catalogue</h3>
+        <p class="caption__desc" data-desc></p>
         <p class="caption__meta" data-meta></p>
-        <button class="caption__open" type="button" data-open hidden>Open the case <span aria-hidden="true">↵</span></button>
+        <button class="caption__open" type="button" data-open hidden><span class="caption__label">Open the case</span> <kbd aria-hidden="true">↵</kbd></button>
       </section>
 
       <nav class="turn" aria-label="Neighbouring projects" data-turn>
@@ -69,21 +66,18 @@
         </header>
         <ul class="tracklist" role="listbox" aria-label="Projects" tabindex="0" data-list></ul>
         <p class="index__empty" data-empty hidden>Nothing in the catalogue matches that.</p>
-        <footer class="index__foot"><span data-source></span><span>ELB — Public work — github.com/povvo</span></footer>
+        <footer class="index__foot"><span data-source></span><span>github.com/povvo</span></footer>
       </div>
-      <div class="index__preview" aria-hidden="true" data-preview></div>
     </section>
 
     <section class="spread" role="dialog" aria-modal="false" aria-labelledby="spread-title" data-booklet hidden>
       <div class="spread__sheet" data-booklet-sheet>
-        <header class="spread__slab">
-          <div class="spread__quilt" data-booklet-quilt aria-hidden="true"></div>
+        <header class="spread__head">
           <div class="spread__bar">
-            <span class="capsule capsule--slab" data-booklet-code></span>
             <span class="spread__no" data-booklet-no></span>
             <button class="spread__close" type="button" data-booklet-close aria-label="Close the case">Close <kbd>Esc</kbd></button>
           </div>
-          <h2 class="spread__title" id="spread-title"><span data-booklet-title></span></h2>
+          <h2 class="spread__title" id="spread-title" data-booklet-title></h2>
         </header>
         <dl class="spread__protocol" data-booklet-meta></dl>
         <p class="spread__standfirst" data-booklet-desc></p>
@@ -93,8 +87,6 @@
         </div>
       </div>
     </section>
-
-    <div class="cursor" aria-hidden="true" data-cursor><span class="cursor__ring"></span><span class="cursor__label" data-cursor-label></span><span class="cursor__dot"></span></div>
 
     <noscript>
       <div class="noscript">

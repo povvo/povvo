@@ -2,14 +2,12 @@
 
 The site at [povvo.github.io/povvo](https://povvo.github.io/povvo/) shows every public repository as a case on a revolving rack. Turn the rack, take a case out, and open it to read its README.
 
-The design language is "Heat Sheet". It brings together Jonathan Zawada's *Hi This Is Flume* artwork and four pastiche extractions:
-- a sun-bleached heat field with the rack standing on its horizon;
-- glossy cases with generated patchwork covers;
-- each project's title set huge behind its case;
-- a full-screen tracklist index;
-- everything set on one twelve-column grid.
+The site is currently a deliberately plain baseline, to be built up again one layer at a time:
+- black and white with one grey;
+- one system sans at one weight;
+- white cases with plain black type.
 
-The records are in [`recipe/`](recipe/). Start with [`recipe/direction-v2.md`](recipe/direction-v2.md), then [`recipe/critique-v2.md`](recipe/critique-v2.md) for the composition pass.
+The rack, the case mechanics, the grid, the index and the open spread are all kept. The baseline is recorded in [`recipe/baseline.md`](recipe/baseline.md). The earlier "Heat Sheet" language is recorded in [`recipe/direction-v2.md`](recipe/direction-v2.md) and [`recipe/critique-v2.md`](recipe/critique-v2.md), and its code is set aside in [`parked/`](parked/).
 
 ## Run
 
@@ -25,8 +23,8 @@ pnpm dev
 ## How the catalogue is built
 
 - **No manual updates.** The committed snapshot paints first. The browser then reads every page of public repositories for `povvo` from the GitHub API, caches the result for an hour, and replaces the snapshot. The weekly deploy also refreshes the snapshot. A repository appears on the rack as soon as it is public. Forks and the profile repositories (`.github`, `povvo`) are excluded.
-- **Numbers and codes.** The rack, the edge rail and the tracklist number cases by position in the current order. Covers carry a volume number: the order in which the work was started. Each case has a capsule code built from its language and year, such as `ELB-PY-26`.
-- **Covers.** Covers, spines, inside sheets and disc labels are drawn to canvas from the repository data, using the tile system in `src/tiles.ts` and the cover layouts in `src/covers.ts`. The same project always gets the same patchwork, and there is no artwork to maintain.
+- **Numbers.** The caption, the spread and the index number cases by position in the current order. The default order is the order in which the work was started.
+- **Covers.** Covers, spines, inside sheets and discs are drawn to canvas from the repository data in `src/covers.ts`, so there is no artwork to maintain.
 - **READMEs.** A README is fetched from `raw.githubusercontent.com` when a case opens. It is rendered with `marked` and sanitised with DOMPurify, with repository-relative links and images resolved to GitHub.
 
 ## Controls
@@ -41,12 +39,12 @@ pnpm dev
 - Dragging the case that is out tilts it; tapping it opens it.
 
 **Index**
-- Index in the header (or the `I` key) opens the full-screen tracklist, which is the same list as the rack.
-- Type to find a project, choose an order, or pick a row. On a mouse, a cover follows the pointer over each row.
+- Index in the header (or the `I` key) opens the full-screen list, which is the same list as the rack.
+- Type to find a project, choose an order, or pick a row.
 - Previous and Next in the right-hand column name the neighbouring projects.
 
 **Other**
-- "Motion" in the header reduces motion, and the system preference is honoured by default. With a mouse and full motion, the cursor says what a press will do: Drag, Open or View.
+- "Motion" in the header reduces motion, and the system preference is honoured by default.
 - On phones, the rack takes sideways swipes and the page scrolls vertically.
 
 ## Review
@@ -66,4 +64,3 @@ Query parameters for review and weak devices:
 | `?renderer=flat` | No-WebGL fallback |
 | `?quality=low` | Low quality tier |
 | `?review=1` | Exposes `window.__rack.snap()`, plus `freeze()` and `step(ms)`, a fixed-step clock for sampling motion |
-| `?coat=` and `?key=` | Look wedges |

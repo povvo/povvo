@@ -1,5 +1,11 @@
 # Review record
 
+## Baseline: black and white
+
+The site was stripped to a plain black-and-white baseline. The review, its defects and its checks are recorded in `baseline.md`. The v2.1 and v2 records below describe the visual language that is now parked in `../parked/`.
+
+---
+
 ## v2.1: the composition pass
 
 **Reviewed candidate:** the built site at the commit that carries this file.

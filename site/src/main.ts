@@ -1,8 +1,3 @@
-import "@fontsource-variable/anybody/wdth-italic.css";
-import "@fontsource-variable/martian-mono/wdth.css";
-import "@fontsource-variable/bodoni-moda/opsz-italic.css";
-import "@fontsource-variable/archivo/wdth.css";
-import "./fonts.css";
 import "./styles.css";
 import { dateLine } from "./catalogue";
 import { loadCatalogue } from "./data";
@@ -12,9 +7,6 @@ import { createStage } from "./stage";
 import { Store } from "./state";
 import { mountBooklet } from "./ui/booklet";
 import { mountCaption } from "./ui/caption";
-import { mountCurtain } from "./ui/curtain";
-import { mountCursor } from "./ui/cursor";
-import { mountHero } from "./ui/hero";
 import { mountIndex } from "./ui/index-list";
 
 const $ = <T extends Element>(sel: string): T => {
@@ -61,15 +53,11 @@ motionToggle.addEventListener("click", () => {
 });
 reflectMotion();
 
-mountCurtain(store);
-const stageEl = $<HTMLElement>(".stage");
 mountIndex($<HTMLElement>("[data-index]"), $<HTMLElement>("[data-index-open]"), store);
 mountCaption($<HTMLElement>("[data-caption]"), $<HTMLElement>("[data-turn]"), $<HTMLElement>("[data-status]"), store);
 mountBooklet($<HTMLElement>("[data-booklet]"), store);
-mountHero($<HTMLElement>("[data-hero]"), stageEl, store);
 
 const canvas = $<HTMLCanvasElement>("#rack");
-mountCursor($<HTMLElement>("[data-cursor]"), canvas, store);
 const field = $<HTMLElement>("[data-field]");
 const flat = $<HTMLElement>("[data-flat]");
 

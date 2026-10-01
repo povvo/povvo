@@ -1,0 +1,14 @@
+/* Geometric: type drawn from the same circles and squares as the patchwork.
+   League Spartan (display, mark), Jost (voice, text), Space Mono (apparatus). */
+@font-face { font-family: "Type Display"; src: url("../../node_modules/@fontsource-variable/league-spartan/files/league-spartan-latin-wght-normal.woff2") format("woff2-variations"); font-weight: 100 900; font-display: swap; }
+@font-face { font-family: "Type Text"; src: url("../../node_modules/@fontsource-variable/jost/files/jost-latin-wght-normal.woff2") format("woff2-variations"); font-weight: 100 900; font-display: swap; }
+@font-face { font-family: "Type Voice"; src: url("../../node_modules/@fontsource-variable/jost/files/jost-latin-wght-italic.woff2") format("woff2-variations"); font-weight: 100 900; font-display: swap; }
+@font-face { font-family: "Type Mono"; src: url("../../node_modules/@fontsource/space-mono/files/space-mono-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Type Mono"; src: url("../../node_modules/@fontsource/space-mono/files/space-mono-latin-700-normal.woff2") format("woff2"); font-weight: 500 700; font-display: swap; }
+:root {
+  --display: "Type Display", sans-serif; --display-weight: 800; --display-case: uppercase; --display-track: -0.035em; --display-lh: 0.88; --display-descent: 0em;
+  --mark: "Type Display", sans-serif; --mark-weight: 700; --mark-style: normal; --mark-track: -0.02em; --mark-size: 1.05;
+  --voice: "Type Voice", sans-serif; --voice-style: normal; --voice-weight: 400;
+  --mono: "Type Mono", monospace; --sans: "Type Text", sans-serif;
+  --face-display: "Type Display"; --face-mono: "Type Mono"; --face-narrow: "Type Mono"; --face-voice: "Type Voice";
+}

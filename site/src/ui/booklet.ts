@@ -1,16 +1,14 @@
-import { dateLine, position, shellOf, SIGNAL } from "../catalogue";
-import { drawSlab } from "../covers";
+import { dateLine, position } from "../catalogue";
 import { fetchReadme, renderReadme } from "../readme";
 import type { State, Store } from "../state";
 
 /**
- * The spread: the open case as a feature, with the README as real text. A slab in the case
- * colour carries the title; a protocol row carries the facts; the standfirst is the voice;
- * the README follows. Focus moves to Close and returns on close.
+ * The spread: the open case as a panel, with the README as real text. A header carries the
+ * position and the title; a row of facts and the description follow, then the README.
+ * Focus moves to Close and returns on close.
  */
 export function mountBooklet(root: HTMLElement, store: Store): void {
   const sheet = root.querySelector<HTMLElement>("[data-booklet-sheet]")!;
-  const code = root.querySelector<HTMLElement>("[data-booklet-code]")!;
   const no = root.querySelector<HTMLElement>("[data-booklet-no]")!;
   const title = root.querySelector<HTMLElement>("[data-booklet-title]")!;
   const desc = root.querySelector<HTMLElement>("[data-booklet-desc]")!;
@@ -18,7 +16,6 @@ export function mountBooklet(root: HTMLElement, store: Store): void {
   const link = root.querySelector<HTMLAnchorElement>("[data-booklet-link]")!;
   const close = root.querySelector<HTMLButtonElement>("[data-booklet-close]")!;
   const body = root.querySelector<HTMLElement>("[data-booklet-body]")!;
-  const quilt = root.querySelector<HTMLElement>("[data-booklet-quilt]")!;
   let returnFocus: HTMLElement | null = null;
   let token = 0;
   let leaving = 0;
@@ -61,11 +58,6 @@ export function mountBooklet(root: HTMLElement, store: Store): void {
     const entry = state.current >= 0 ? state.visible[state.current] : null;
     if (!entry) return;
     clearTimeout(leaving);
-    const shell = shellOf(entry);
-    root.style.setProperty("--slab", shell.hex);
-    root.style.setProperty("--slab-text", shell.text);
-    root.style.setProperty("--slab-accent", entry.layout === "specimen" ? SIGNAL : shell.accent);
-    code.textContent = entry.capsule;
     no.textContent = position(state.current, state.visible.length);
     title.textContent = entry.title;
     desc.textContent = entry.description?.trim() || "No description on GitHub yet.";
@@ -78,13 +70,6 @@ export function mountBooklet(root: HTMLElement, store: Store): void {
     link.href = entry.html_url;
     if (root.hidden) returnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     root.hidden = false;
-    // The slab's patchwork comes from the same seed family as the case's cover; it is drawn
-    // after the spread is shown so it can be sized to the slab.
-    const rect = quilt.getBoundingClientRect();
-    const dpr = Math.min(2, devicePixelRatio || 1);
-    const art = drawSlab(entry, Math.max(320, Math.round(rect.width * dpr)), Math.max(200, Math.round(rect.height * dpr)));
-    art.className = "spread__quilt-art";
-    quilt.replaceChildren(art);
     root.dataset.phase = "in";
     sheet.scrollTop = 0;
     void load(state);

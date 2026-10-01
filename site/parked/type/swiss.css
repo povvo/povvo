@@ -1,0 +1,12 @@
+/* Swiss: one plain grotesk at every size, like the bold numerals in the video frame.
+   Inter Tight (display, mark, voice, text), Fragment Mono (codes). */
+@font-face { font-family: "Type Display"; src: url("../../node_modules/@fontsource-variable/inter-tight/files/inter-tight-latin-wght-normal.woff2") format("woff2-variations"); font-weight: 100 900; font-display: swap; }
+@font-face { font-family: "Type Voice"; src: url("../../node_modules/@fontsource-variable/inter-tight/files/inter-tight-latin-wght-normal.woff2") format("woff2-variations"); font-weight: 100 900; font-display: swap; }
+@font-face { font-family: "Type Mono"; src: url("../../node_modules/@fontsource/fragment-mono/files/fragment-mono-latin-400-normal.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
+:root {
+  --display: "Type Display", sans-serif; --display-weight: 800; --display-case: uppercase; --display-track: -0.05em; --display-lh: 0.86; --display-descent: 0em;
+  --mark: "Type Display", sans-serif; --mark-weight: 600; --mark-style: normal; --mark-track: -0.03em; --mark-size: 1;
+  --voice: "Type Voice", sans-serif; --voice-style: normal; --voice-weight: 300;
+  --mono: "Type Mono", monospace; --sans: "Type Display", sans-serif;
+  --face-display: "Type Display"; --face-mono: "Type Mono"; --face-narrow: "Type Mono"; --face-voice: "Type Voice";
+}

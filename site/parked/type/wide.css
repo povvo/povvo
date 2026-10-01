@@ -1,0 +1,13 @@
+/* Wide: a broad rounded geometric for object words, a neutral sans for reading.
+   Unbounded (display, mark), Instrument Sans (voice, text), DM Mono (apparatus). */
+@font-face { font-family: "Type Display"; src: url("../../node_modules/@fontsource-variable/unbounded/files/unbounded-latin-wght-normal.woff2") format("woff2-variations"); font-weight: 200 900; font-display: swap; }
+@font-face { font-family: "Type Text"; src: url("../../node_modules/@fontsource-variable/instrument-sans/files/instrument-sans-latin-wght-normal.woff2") format("woff2-variations"); font-weight: 400 700; font-display: swap; }
+@font-face { font-family: "Type Mono"; src: url("../../node_modules/@fontsource/dm-mono/files/dm-mono-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Type Mono"; src: url("../../node_modules/@fontsource/dm-mono/files/dm-mono-latin-500-normal.woff2") format("woff2"); font-weight: 500 700; font-display: swap; }
+:root {
+  --display: "Type Display", sans-serif; --display-weight: 700; --display-case: uppercase; --display-track: -0.035em; --display-lh: 0.92; --display-descent: 0em;
+  --mark: "Type Display", sans-serif; --mark-weight: 500; --mark-style: normal; --mark-track: -0.03em; --mark-size: 0.92;
+  --voice: "Type Text", sans-serif; --voice-style: normal; --voice-weight: 400;
+  --mono: "Type Mono", monospace; --sans: "Type Text", sans-serif;
+  --face-display: "Type Display"; --face-mono: "Type Mono"; --face-narrow: "Type Mono"; --face-voice: "Type Text";
+}
