@@ -1,0 +1,19 @@
+{
+  "_note": "Authored by the art direction stage. Scores are 1 to 5 judgements made after writing the route cards in direction.md; the weighted total exposes trade-offs and does not replace the decision rationale.",
+  "criteria": [
+    {"id": "collection_as_one_object", "weight": 3, "direction": "max"},
+    {"id": "singular_selection", "weight": 2, "direction": "max"},
+    {"id": "finding_speed", "weight": 2, "direction": "max"},
+    {"id": "accessibility_floor", "weight": 2, "direction": "max"},
+    {"id": "distinctiveness_after_effect_removal", "weight": 2, "direction": "max"},
+    {"id": "vestibular_risk", "weight": 2, "direction": "min"},
+    {"id": "gpu_and_build_cost", "weight": 1, "direction": "min"},
+    {"id": "phone_fit", "weight": 2, "direction": "max"}
+  ],
+  "candidates": [
+    {"id": "A-drum", "scores": {"collection_as_one_object": 5, "singular_selection": 5, "finding_speed": 3, "accessibility_floor": 3, "distinctiveness_after_effect_removal": 4, "vestibular_risk": 2, "gpu_and_build_cost": 4, "phone_fit": 3}},
+    {"id": "B-index", "scores": {"collection_as_one_object": 2, "singular_selection": 3, "finding_speed": 5, "accessibility_floor": 5, "distinctiveness_after_effect_removal": 2, "vestibular_risk": 1, "gpu_and_build_cost": 2, "phone_fit": 5}},
+    {"id": "C-shelf", "scores": {"collection_as_one_object": 4, "singular_selection": 4, "finding_speed": 2, "accessibility_floor": 2, "distinctiveness_after_effect_removal": 4, "vestibular_risk": 5, "gpu_and_build_cost": 5, "phone_fit": 2}},
+    {"id": "A-drum-plus-locked-index", "scores": {"collection_as_one_object": 5, "singular_selection": 5, "finding_speed": 5, "accessibility_floor": 5, "distinctiveness_after_effect_removal": 4, "vestibular_risk": 2, "gpu_and_build_cost": 4, "phone_fit": 4}}
+  ]
+}

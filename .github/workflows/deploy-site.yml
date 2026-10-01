@@ -1,15 +1,17 @@
-name: Deploy Povvo Poker
+name: Deploy the catalogue
 
 on:
   push:
     branches: [main]
     paths:
-      - "poker/**"
-      - ".github/workflows/deploy-povvo-poker.yml"
+      - "site/**"
+      - ".github/workflows/deploy-site.yml"
   pull_request:
     paths:
-      - "poker/**"
-      - ".github/workflows/deploy-povvo-poker.yml"
+      - "site/**"
+      - ".github/workflows/deploy-site.yml"
+  schedule:
+    - cron: "23 5 * * 1"
   workflow_dispatch:
 
 permissions:
@@ -24,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: poker
+        working-directory: site
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
@@ -37,15 +39,17 @@ jobs:
       - name: Set up pnpm
         run: |
           corepack enable
-          corepack prepare pnpm@11.7.0 --activate
+          corepack prepare pnpm@10.28.0 --activate
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run unit tests
-        run: pnpm test
+      - name: Refresh the repository snapshot
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: pnpm data
 
-      - name: Build game and solver policy
+      - name: Type-check and build
         run: pnpm build
 
       - name: Configure GitHub Pages
@@ -56,7 +60,7 @@ jobs:
         if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v4
         with:
-          path: poker/dist
+          path: site/dist
 
   deploy:
     if: github.event_name != 'pull_request'

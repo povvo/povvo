@@ -1,0 +1,14 @@
+{
+  "_question": "Does each essential state change keep an equivalent non-motion communication under reduced motion? Mappings are from the full-motion carrier to the reduced carrier.",
+  "start": "rack-turns",
+  "states": ["rack-turns", "case-extracts", "case-opens", "booklet-slides", "caption-swaps", "index-highlight"],
+  "mappings": [
+    {"from": "rack-turns", "to": "case-extracts", "full": "spring rotation of the rack", "reduced": "instant reposition; the index line and caption number change immediately"},
+    {"from": "case-extracts", "to": "case-opens", "full": "case travels forward with a quarter turn", "reduced": "instant extraction; caption title, description and meta appear at once"},
+    {"from": "case-opens", "to": "booklet-slides", "full": "hinge swings, camera pushes", "reduced": "instant open; booklet shown without the slide; focus moves to Close"},
+    {"from": "booklet-slides", "to": "caption-swaps", "full": "24 px slide and fade", "reduced": "no animation; same content"},
+    {"from": "caption-swaps", "to": "index-highlight", "full": "title steps aside until settled", "reduced": "title changes immediately"},
+    {"from": "index-highlight", "to": "rack-turns", "full": "scrollIntoView smooth", "reduced": "scrollIntoView auto"}
+  ],
+  "require_reverse": false
+}

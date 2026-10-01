@@ -1,0 +1,1 @@
+{"_question": "Does the extraction spring (stiffness 110, ratio 0.96) settle within 0.5 s with overshoot under 2 percent?", "mass": 1, "stiffness": 110, "damping": 20.137, "initial": 0, "target": 1, "velocity": 0, "duration": 1.2, "fps": 120, "settle_tolerance": 0.01}

@@ -1,0 +1,1 @@
+{"_question": "Does the opening spring (stiffness 55, critically damped) settle within 0.7 s?", "mass": 1, "stiffness": 55, "damping": 14.832, "initial": 0, "target": 1, "velocity": 0, "duration": 1.5, "fps": 120, "settle_tolerance": 0.01}

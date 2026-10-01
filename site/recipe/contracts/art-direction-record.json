@@ -1,0 +1,69 @@
+{
+  "mode": "route-comparison",
+  "product": "Ethan Lee Barrett public-work catalogue on povvo.github.io/povvo: a finder for about sixty repositories",
+  "audience": "Recruiters, collaborators and curious developers arriving from GitHub on laptops and phones for a few minutes",
+  "decision_owner": "Ethan Lee Barrett (direction drafted in this build; approval pending his review)",
+  "visual_thesis": "Because visitors arrive at sixty projects by one person with no idea which matter, organise the work as a single physical collection, cases with printed spines and inserts on a revolving rack, set into a quiet typeset catalogue page, so that scale reads at a glance, the chosen project reads as singular, and reading the README feels like turning a case over in the hand rather than scrolling a feed.",
+  "perceptual_goals": [
+    "Orientation: one person's collection, catalogued; masthead carries name, subtitle and count",
+    "Selection: the front case is the current one; it is the only extracted object and the only accented index line",
+    "Relation: neighbouring spines show order; the index mirrors rack order; the catalogue number ties both",
+    "Interpretation: printed inserts under a glossy sleeve read as authored objects; the still page reads as edited",
+    "Reward: opening the case, the disc, the small print on the insert"
+  ],
+  "anti_targets": [
+    {"name": "PS2 cosplay", "failure_signature": "Blue void, cube icons, console boot cues; the page reads as an emulator rather than a person's catalogue"},
+    {"name": "Dark portfolio default", "failure_signature": "Near-black page, glowing accent, cursor trail, grain, marquee; another developer could ship it unchanged"},
+    {"name": "Spec-Scan carry-over", "failure_signature": "Cyan line accents, condensed sans plus mono instrument look, scanlines, the aperture P"},
+    {"name": "Carousel theatre", "failure_signature": "Rack spins dramatically on every change, idle motion with hands off, parallax on scroll, selection settles slower than half a second"},
+    {"name": "Cover art soup", "failure_signature": "Gradient, blob and noise covers compete with titles; spines unreadable at rest"},
+    {"name": "Reading inside the texture", "failure_signature": "README rendered as a canvas texture: blurry, unscrollable, invisible to assistive technology"}
+  ],
+  "routes": [
+    {
+      "name": "A. The Drum",
+      "governing_relationship": "Object dominates, type annotates: a helical revolving rack fills the stage; rotation selects; the front case extracts and hinges open; the page is a quiet catalogue sheet",
+      "tradeoff": "WebGL and GPU cost for sixty textured cases; a non-WebGL equivalent must exist",
+      "falsification_test": "A mid-range phone drops below about 45 fps while turning, or spine titles are unreadable at rest on a 1366-wide laptop",
+      "representative_states": ["rest with sixty cases", "turning at real wheel speed", "extracted", "open with a long README", "reduced motion", "phone portrait", "no WebGL"]
+    },
+    {
+      "name": "B. The Index",
+      "governing_relationship": "Type dominates, one object illustrates: a long typographic index is the hero; focusing a line summons that one case into a fixed window",
+      "tradeoff": "The rack idea disappears; the sense of a collection as one object is lost; cheapest and most accessible",
+      "falsification_test": "The page reads as a plain list with a decorative 3D widget and passes competitor reassignment unchanged",
+      "representative_states": ["rest", "line focused", "open", "reduced motion", "phone portrait"]
+    },
+    {
+      "name": "C. The Shelf",
+      "governing_relationship": "Camera dominates, objects are scenery: a literal shelf runs across a room; scroll dollies the camera; the hovered case pulls out and the camera pushes in",
+      "tradeoff": "Horizontal travel fights phones; sixty cases is a long walk; camera travel is the largest vestibular risk",
+      "falsification_test": "A visitor cannot reach item 47 within a few seconds, or reduced motion removes the navigation model",
+      "representative_states": ["rest", "travelling", "pulled out", "pushed in", "reduced motion", "phone portrait"]
+    }
+  ],
+  "signature_patterns": [
+    {
+      "name": "The extraction",
+      "governing_relationship": "The current case is the only object that leaves the rack, travelling along its outward normal with a slight rise and a quarter turn to show the cover",
+      "recurrence_rule": "Triggered when rack angular velocity settles with a case at the front; never on hover; at most one case out at any time",
+      "variation_rule": "Travel distance scales with viewport; under reduced motion it becomes a crossfade of a flat rendition",
+      "failure_signature": "Extraction on hover, two cases out, cases that bob or never settle"
+    },
+    {
+      "name": "The catalogue number as key",
+      "governing_relationship": "The accession number (order of repository creation) ties the spine, insert, index line and booklet header",
+      "recurrence_rule": "Printed on exactly those four surfaces and nowhere else; no other numbers in the chrome",
+      "variation_rule": "Three digits until the collection passes 999; typeset tabular in the grotesk",
+      "failure_signature": "Stars, forks and dates competing with the number as badges"
+    }
+  ],
+  "artefacts": [
+    {"name": "site/recipe/direction.md", "purpose": "Human-readable direction record: reframe, theses, anti-targets, routes, decision, briefs", "authority": "directional"},
+    {"name": "geometric roughs in the built site", "purpose": "Route A mechanism rough rendered with real data before polish", "authority": "exploratory"},
+    {"name": "Playwright review frames", "purpose": "Representative states at 1440x900 and 390x844, with and without reduced motion", "authority": "benchmark"}
+  ],
+  "exceptions": [
+    {"reason": "The index is locked as always-present even though route A is object-led, because finding speed and accessibility floor come from route B", "scope": "Wide viewports show both columns; reduced motion and no-WebGL make the index primary", "return_condition": "Revisit if a user study shows the index is ignored on wide viewports"}
+  ]
+}

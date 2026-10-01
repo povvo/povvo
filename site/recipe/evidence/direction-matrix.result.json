@@ -1,0 +1,230 @@
+{
+  "findings": [
+    {
+      "code": "judgement-boundary",
+      "level": "WARN",
+      "message": "candidate scoring reflects the supplied criteria/weights; use it to expose trade-offs, not replace art direction"
+    }
+  ],
+  "interpretation_boundary": "MCDA-style normalization is transparent bookkeeping. Criteria, weights and final creative selection remain human/design judgements.",
+  "ranking": [
+    {
+      "id": "A-drum-plus-locked-index",
+      "parts": {
+        "accessibility_floor": {
+          "normalized": 1.0,
+          "raw": 5.0,
+          "weight": 2.0,
+          "weighted": 2.0
+        },
+        "collection_as_one_object": {
+          "normalized": 1.0,
+          "raw": 5.0,
+          "weight": 3.0,
+          "weighted": 3.0
+        },
+        "distinctiveness_after_effect_removal": {
+          "normalized": 1.0,
+          "raw": 4.0,
+          "weight": 2.0,
+          "weighted": 2.0
+        },
+        "finding_speed": {
+          "normalized": 1.0,
+          "raw": 5.0,
+          "weight": 2.0,
+          "weighted": 2.0
+        },
+        "gpu_and_build_cost": {
+          "normalized": 0.3333333333333333,
+          "raw": 4.0,
+          "weight": 1.0,
+          "weighted": 0.3333333333333333
+        },
+        "phone_fit": {
+          "normalized": 0.6666666666666666,
+          "raw": 4.0,
+          "weight": 2.0,
+          "weighted": 1.3333333333333333
+        },
+        "singular_selection": {
+          "normalized": 1.0,
+          "raw": 5.0,
+          "weight": 2.0,
+          "weighted": 2.0
+        },
+        "vestibular_risk": {
+          "normalized": 0.75,
+          "raw": 2.0,
+          "weight": 2.0,
+          "weighted": 1.5
+        }
+      },
+      "weighted_total": 14.166666666666668
+    },
+    {
+      "id": "A-drum",
+      "parts": {
+        "accessibility_floor": {
+          "normalized": 0.3333333333333333,
+          "raw": 3.0,
+          "weight": 2.0,
+          "weighted": 0.6666666666666666
+        },
+        "collection_as_one_object": {
+          "normalized": 1.0,
+          "raw": 5.0,
+          "weight": 3.0,
+          "weighted": 3.0
+        },
+        "distinctiveness_after_effect_removal": {
+          "normalized": 1.0,
+          "raw": 4.0,
+          "weight": 2.0,
+          "weighted": 2.0
+        },
+        "finding_speed": {
+          "normalized": 0.3333333333333333,
+          "raw": 3.0,
+          "weight": 2.0,
+          "weighted": 0.6666666666666666
+        },
+        "gpu_and_build_cost": {
+          "normalized": 0.3333333333333333,
+          "raw": 4.0,
+          "weight": 1.0,
+          "weighted": 0.3333333333333333
+        },
+        "phone_fit": {
+          "normalized": 0.3333333333333333,
+          "raw": 3.0,
+          "weight": 2.0,
+          "weighted": 0.6666666666666666
+        },
+        "singular_selection": {
+          "normalized": 1.0,
+          "raw": 5.0,
+          "weight": 2.0,
+          "weighted": 2.0
+        },
+        "vestibular_risk": {
+          "normalized": 0.75,
+          "raw": 2.0,
+          "weight": 2.0,
+          "weighted": 1.5
+        }
+      },
+      "weighted_total": 10.833333333333334
+    },
+    {
+      "id": "B-index",
+      "parts": {
+        "accessibility_floor": {
+          "normalized": 1.0,
+          "raw": 5.0,
+          "weight": 2.0,
+          "weighted": 2.0
+        },
+        "collection_as_one_object": {
+          "normalized": 0.0,
+          "raw": 2.0,
+          "weight": 3.0,
+          "weighted": 0.0
+        },
+        "distinctiveness_after_effect_removal": {
+          "normalized": 0.0,
+          "raw": 2.0,
+          "weight": 2.0,
+          "weighted": 0.0
+        },
+        "finding_speed": {
+          "normalized": 1.0,
+          "raw": 5.0,
+          "weight": 2.0,
+          "weighted": 2.0
+        },
+        "gpu_and_build_cost": {
+          "normalized": 1.0,
+          "raw": 2.0,
+          "weight": 1.0,
+          "weighted": 1.0
+        },
+        "phone_fit": {
+          "normalized": 1.0,
+          "raw": 5.0,
+          "weight": 2.0,
+          "weighted": 2.0
+        },
+        "singular_selection": {
+          "normalized": 0.0,
+          "raw": 3.0,
+          "weight": 2.0,
+          "weighted": 0.0
+        },
+        "vestibular_risk": {
+          "normalized": 1.0,
+          "raw": 1.0,
+          "weight": 2.0,
+          "weighted": 2.0
+        }
+      },
+      "weighted_total": 9.0
+    },
+    {
+      "id": "C-shelf",
+      "parts": {
+        "accessibility_floor": {
+          "normalized": 0.0,
+          "raw": 2.0,
+          "weight": 2.0,
+          "weighted": 0.0
+        },
+        "collection_as_one_object": {
+          "normalized": 0.6666666666666666,
+          "raw": 4.0,
+          "weight": 3.0,
+          "weighted": 2.0
+        },
+        "distinctiveness_after_effect_removal": {
+          "normalized": 1.0,
+          "raw": 4.0,
+          "weight": 2.0,
+          "weighted": 2.0
+        },
+        "finding_speed": {
+          "normalized": 0.0,
+          "raw": 2.0,
+          "weight": 2.0,
+          "weighted": 0.0
+        },
+        "gpu_and_build_cost": {
+          "normalized": 0.0,
+          "raw": 5.0,
+          "weight": 1.0,
+          "weighted": 0.0
+        },
+        "phone_fit": {
+          "normalized": 0.0,
+          "raw": 2.0,
+          "weight": 2.0,
+          "weighted": 0.0
+        },
+        "singular_selection": {
+          "normalized": 0.5,
+          "raw": 4.0,
+          "weight": 2.0,
+          "weighted": 1.0
+        },
+        "vestibular_risk": {
+          "normalized": 0.0,
+          "raw": 5.0,
+          "weight": 2.0,
+          "weighted": 0.0
+        }
+      },
+      "weighted_total": 5.0
+    }
+  ],
+  "status": "WARN",
+  "tool": "direction_matrix"
+}

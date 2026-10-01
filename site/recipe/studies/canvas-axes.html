@@ -1,0 +1,18 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@font-face{font-family:"Fraunces Plain";src:url("../../node_modules/@fontsource-variable/fraunces/files/fraunces-latin-full-normal.woff2") format("woff2");font-weight:100 900;}
+@font-face{font-family:"Fraunces Cover";src:url("../../node_modules/@fontsource-variable/fraunces/files/fraunces-latin-full-normal.woff2") format("woff2");font-weight:100 900;font-variation-settings:"opsz" 144,"SOFT" 100,"WONK" 1;}
+@font-face{font-family:"Archivo Wide";src:url("../../node_modules/@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2") format("woff2");font-weight:100 900;font-stretch:62% 125%;}
+@font-face{font-family:"Archivo Spine";src:url("../../node_modules/@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2") format("woff2");font-weight:100 900;font-stretch:62% 125%;font-variation-settings:"wdth" 62;}
+body{margin:0;background:#E9E5DD}
+</style></head><body><canvas id="c" width="1200" height="520"></canvas><script>
+(async()=>{
+  await Promise.all([document.fonts.load('400 80px "Fraunces Plain"'),document.fonts.load('400 80px "Fraunces Cover"'),document.fonts.load('500 40px "Archivo Wide"'),document.fonts.load('500 40px "Archivo Spine"')]);
+  const c=document.getElementById('c').getContext('2d');c.fillStyle='#221F1C';
+  c.font='400 90px "Fraunces Plain"';c.fillText('Barrett age 1',20,110);const w1=c.measureText('Barrett age 1').width;
+  c.font='400 90px "Fraunces Cover"';c.fillText('Barrett age 1',20,230);const w2=c.measureText('Barrett age 1').width;
+  c.font='500 44px "Archivo Wide"';c.fillText('motion-design-skills',20,330);const w3=c.measureText('motion-design-skills').width;
+  c.font='500 44px "Archivo Spine"';c.fillText('motion-design-skills',20,400);const w4=c.measureText('motion-design-skills').width;
+  c.fontStretch='condensed';c.font='500 44px "Archivo Wide"';c.fillText('motion-design-skills (fontStretch api)',20,470);const w5=c.measureText('motion-design-skills').width;
+  document.title=JSON.stringify({plain:w1,cover:w2,wide:w3,spine:w4,stretchApi:w5,hasFontStretch:'fontStretch' in c});
+})();
+</script></body></html>
