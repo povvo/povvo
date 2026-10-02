@@ -1,114 +1,85 @@
 import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import type { Entry } from "./catalogue";
-import { drawInsert, drawInsideLeft, drawInsideRight, drawSpine, edgeColour, ensureFonts } from "./covers";
+import { DISK, SHUTTER_SLIDE, applyEnvironment, buildBox, buildDisk, type Disk, setWriteProtect } from "./floppy";
 import { FRONT_CLEAR, TURN_BLOCK, gateCase } from "./gates";
+import { labelCanvas } from "./labels";
 import { Spring, clamp, easeOutCubic, smoothstep } from "./motion";
+import { sound } from "./sound";
 import type { State, Store } from "./state";
 
 /**
- * The rack. Coordinate contract (3d-motion-design: transforms and pivots):
- *   world: right-handed, +y up, +z toward the viewer, units of ten centimetres. The floor is
- *     the plane y = FLOOR_Y; it only receives shadows, the black page shows through it.
- *   rack group: rotates about +y and translates along y; a case's slot i sits at angle
- *     i * step around the axis and height i * rise. Slot 0 is at the front (+z).
- *   case group: local +x is the case's outward normal while it is on the rack (its spine
- *     faces the viewer); presenting yaws it by a quarter turn so local +z (the cover) faces
- *     the viewer. The hinge pivot is the front edge of the spine.
+ * The disk box (recipe/direction-v4.md). Every repository is a 3.5" floppy standing in an
+ * open box, and browsing is flipping through them: the disks already passed lean towards the
+ * viewer, the rest lean back, and the gap opens at the current one.
  *
- * Each case owns three gated springs (recipe/direction-v2.md, mechanism changes):
- *   pull  0..1  straight out along the outward normal, far enough to clear the rack
- *   turn  0..1  the quarter turn and the float up to the presentation spot
- *   open  0..1  the front leaf swings on the hinge
- * Out runs pull, then turn, then open; back runs close, then turn back, then retract. Only
- * one case may be turned at a time. A case that loses the selection runs its own reverse
- * sequence while the rack turns, so nothing ever snaps shut or passes through a neighbour.
+ * Coordinate contract (3d-motion-design: transforms and pivots):
+ *   world: right-handed, +y up, +z towards the viewer, units of ten centimetres. The box
+ *     floor is y = 0. The current slot is always at z = 0: the box moves, the camera stays.
+ *   slot i stands at z = (pos - i) × GAP, its foot on the floor; a disk's lean is a rotation
+ *     about +x at its foot (positive tips its top towards the viewer).
+ *   disk frame (src/floppy.ts): origin at the centre, +y the shutter edge, +z the label face.
  *
- * Reflow (filter, sort, new data) never slides cases past each other: visible cases sink
- * through the floor, the slots change unseen, and the cases rise again from the front out.
+ * Each disk owns gated springs (src/gates.ts):
+ *   pull  0..1  straight up out of the box, along the disk's own plane, clear of its neighbours
+ *   turn  0..1  from the box to the presentation spot, square to the camera
+ *   open  0..1  the shutter slides, the disk turns on its side and goes into the drive, which is
+ *               the left edge of the open sheet
+ * Out runs pull, then turn, then open; back runs eject, then turn back, then drop home. Only one
+ * disk is out of the box at a time.
+ *
+ * Its own springs, outside the gates: `lean` follows its place relative to the gap and stops hard
+ * against its neighbours (a small bounce, a tick); `peek` lifts it a little under the pointer;
+ * `lift` sinks it under the floor for a reflow and raises it again.
  */
 
-const CASE_W = 1.35;
-const CASE_H = 1.9;
-const CASE_D = 0.15;
-const LEAF_D = CASE_D * 0.42;
-const SPINE_T = 0.03;
-const PULL_OUT = 1.6; // > 1.414, the radius a case sweeps while turning plus the rack's outer edge
-const FLOOR_Y = -CASE_H / 2;
-const SINK = CASE_H + 0.15;
-const WINDOW = THREE.MathUtils.degToRad(100); // cases beyond this angle from the front are not drawn
-const WINDOW_FADE = THREE.MathUtils.degToRad(12);
-const HINGE_OPEN = -2.55; // radians, how far the front leaf swings
-const REST_YAW = 0.14; // the presented case rests slightly turned so its spine edge catches the light
-const RACK_TONE = 0.62; // cases on the rack sit in the dark; the one taken out is in the light
+const GAP = 0.055;
+const LEAN_F = 0.6; // flipped past: leaning towards the viewer, resting on the disk in front
+const LEAN_B = 0.16; // still to come: leaning back
+const PULL_LIFT = 0.98 * DISK.H;
+const SINK = DISK.H + 0.12;
+const FRONT_WINDOW = 16;
+const BACK_WINDOW = 26;
+const RACK_TONE = 0.62;
+const HERO_KEEP = 6;
+const X = new THREE.Vector3(1, 0, 0);
+const Y = new THREE.Vector3(0, 1, 0);
+const Z = new THREE.Vector3(0, 0, 1);
 
-/** Material colours are base colour times a tone; the base changes when textures are painted. */
-function setBase(mat: THREE.MeshPhysicalMaterial, colour: THREE.ColorRepresentation): void {
-  const base = (mat.userData.base as THREE.Color | undefined) ?? new THREE.Color();
-  base.set(colour);
-  mat.userData.base = base;
-  mat.color.copy(base).multiplyScalar((mat.userData.tone as number | undefined) ?? 1);
-}
-function setTone(node: { materials: THREE.MeshPhysicalMaterial[]; tone: number }, k: number): void {
-  if (Math.abs(node.tone - k) < 0.004) return;
-  node.tone = k;
-  for (const m of node.materials) {
-    m.userData.tone = k;
-    const base = (m.userData.base as THREE.Color | undefined) ?? m.color.clone();
-    m.userData.base = base;
-    m.color.copy(base).multiplyScalar(k);
-  }
+/** The lean a disk wants, from its slot's distance `d` past the gap (negative: already flipped). */
+export function leanFor(d: number): number {
+  return -LEAN_B + (LEAN_F + LEAN_B) * smoothstep((-d - 0.15) / 0.7);
 }
 
-interface RackGeometry {
-  step: number;
-  radius: number;
-  rise: number;
-}
-
-/**
- * An arc, not a ring: twelve degrees per case for small collections, tightening to five
- * degrees so that sixty cases span three hundred degrees without the first case wrapping
- * round to sit beside the last. Beyond sixty the arc becomes a helix at five degrees per
- * case. The inner radius keeps neighbouring spines from intersecting.
- */
-export function rackGeometry(count: number): RackGeometry {
-  const maxStep = THREE.MathUtils.degToRad(12);
-  const minStep = THREE.MathUtils.degToRad(5);
-  const arc = THREE.MathUtils.degToRad(300);
-  const helix = count > 60;
-  const step = helix ? minStep : clamp(arc / Math.max(1, count - 1), minStep, maxStep);
-  const inner = Math.max(0.77, CASE_D / (2 * Math.sin(step / 2)) + 0.05);
-  const perTurn = (Math.PI * 2) / step;
-  return { step, radius: inner + CASE_W + SPINE_T, rise: helix ? (CASE_H * 1.18) / perTurn : 0 };
-}
-
-interface CaseNode {
+interface DiskNode {
   entry: Entry;
-  group: THREE.Group;
-  front: THREE.Mesh;
-  back: THREE.Mesh;
-  spine: THREE.Mesh;
-  hinge: THREE.Group;
+  disk: Disk;
   slot: number;
   alive: boolean;
   pull: Spring;
   turn: Spring;
   open: Spring;
   lift: Spring;
-  /** Seconds to wait before rising, for the stagger. */
+  lean: Spring;
+  peek: Spring;
+  shutterPeek: Spring;
+  wp: Spring;
   liftDelay: number;
-  clip: THREE.Plane;
-  materials: THREE.MeshPhysicalMaterial[];
-  frontMat: THREE.MeshPhysicalMaterial;
-  spineMat: THREE.MeshPhysicalMaterial;
-  insideLeftMat: THREE.MeshPhysicalMaterial;
-  insideRightMat: THREE.MeshPhysicalMaterial;
+  rackTex: THREE.CanvasTexture | null;
+  rackReady: Promise<void> | null;
   hero: boolean;
   tone: number;
+  /** Which side of the gap the disk was on last frame, for the flip tick. */
+  side: number;
+  /** Was out of the box (for the drop sound). */
+  wasOut: boolean;
 }
 
 export interface StageHandle {
+  /** Draw and upload what the first view needs; reports progress as disks become ready. */
+  warm(onProgress: (done: number, total: number, entry: Entry | null) => void): Promise<void>;
+  /** The reveal after the boot screen: the camera settles and the disks rise into the box. */
+  arrive(): void;
   dispose(): void;
 }
 
@@ -119,26 +90,6 @@ function texture(canvas: HTMLCanvasElement, renderer: THREE.WebGLRenderer): THRE
   t.generateMipmaps = true;
   t.minFilter = THREE.LinearMipmapLinearFilter;
   return t;
-}
-
-/** Black plastic (recipe/direction-v3.md, cases): a glossy coat over whatever is printed beneath it. */
-function physical(opts: THREE.MeshPhysicalMaterialParameters): THREE.MeshPhysicalMaterial {
-  return new THREE.MeshPhysicalMaterial({
-    roughness: 0.45,
-    metalness: 0,
-    clearcoat: 1,
-    clearcoatRoughness: 0.12,
-    envMapIntensity: 1,
-    ...opts,
-  });
-}
-
-/** A neutral grey room for the gloss to reflect: highlights only, no colour. */
-function neutralEnvironment(renderer: THREE.WebGLRenderer): THREE.Texture {
-  const pmrem = new THREE.PMREMGenerator(renderer);
-  const tex = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-  pmrem.dispose();
-  return tex;
 }
 
 export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store: Store): StageHandle | null {
@@ -153,239 +104,196 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
   let quality: "high" | "low" = params.get("quality") === "low" ? "low" : "high";
   renderer.setPixelRatio(quality === "low" ? 1 : Math.min(devicePixelRatio || 1, small ? 1.5 : 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
-  // Neutral tone mapping keeps white white.
   renderer.toneMapping = THREE.NeutralToneMapping;
-  renderer.toneMappingExposure = 1.0;
   renderer.shadowMap.enabled = quality === "high";
   renderer.shadowMap.type = THREE.PCFShadowMap;
-  renderer.localClippingEnabled = true;
   renderer.setClearColor(0x000000, 0);
 
   const scene = new THREE.Scene();
-  scene.environment = neutralEnvironment(renderer);
-  scene.environmentIntensity = 0.42;
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  // Reflections are given per material (src/floppy.ts, applyEnvironment), so each takes its own share.
+  applyEnvironment(pmrem.fromScene(new RoomEnvironment(), 0.04).texture);
+  pmrem.dispose();
 
-  const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 80);
-  const camBase = new THREE.Vector3(0, 0.2, 10);
-  camera.position.copy(camBase);
-  const lookAt = new THREE.Vector3(0, 0.35, 0);
+  // Near at one unit: nothing comes closer, and coarse depth buffers keep the shutter off the body.
+  const camera = new THREE.PerspectiveCamera(30, 1, 1, 30);
+  const camBase = new THREE.Vector3(0, 4, 8);
+  const lookDir = new THREE.Vector3(0, -0.5, -1).normalize();
 
-  // Light rig: a cold key from high in front, a rim from high behind so the black cases keep
-  // their edges against the black page, and almost no fill. Night, not studio.
-  const key = new THREE.DirectionalLight(0xe9eefa, 2.3);
-  key.position.set(-1.6, 10, 3.2);
+  // Light: a cold key from high on the left, off the camera's axis so the flat faces never mirror
+  // it into the lens; a rim from high behind that draws the disks' edges against the black; and
+  // almost no fill. The metal shutters catch both.
+  const key = new THREE.DirectionalLight(0xe9eefa, 2.8);
+  key.position.set(-5.5, 6.5, 1.6);
   key.castShadow = true;
   key.shadow.mapSize.set(2048, 2048);
   key.shadow.camera.near = 1;
-  key.shadow.camera.far = 30;
-  key.shadow.camera.left = -7;
-  key.shadow.camera.right = 7;
-  key.shadow.camera.top = 7;
-  key.shadow.camera.bottom = -7;
-  key.shadow.bias = -0.0005;
-  key.shadow.normalBias = 0.02;
-  key.shadow.radius = 4;
-  scene.add(key);
-  scene.add(key.target);
-  const rim = new THREE.DirectionalLight(0xffffff, 1.4);
-  rim.position.set(3, 6, -7);
+  key.shadow.camera.far = 20;
+  key.shadow.camera.left = -2.4;
+  key.shadow.camera.right = 2.4;
+  key.shadow.camera.top = 2.4;
+  key.shadow.camera.bottom = -2.4;
+  key.shadow.bias = -0.0004;
+  key.shadow.normalBias = 0.01;
+  key.shadow.radius = 3;
+  scene.add(key, key.target);
+  const rim = new THREE.DirectionalLight(0xffffff, 1.5);
+  rim.position.set(2.5, 5, -6);
   scene.add(rim);
-  const fill = new THREE.HemisphereLight(0x9ea6b4, 0x000000, 0.3);
-  scene.add(fill);
+  scene.add(new THREE.HemisphereLight(0x9ea6b4, 0x000000, 0.35));
+  // A soft spot straight down into the box at the gap, so the labels and shutters there read.
+  const boxSpot = new THREE.SpotLight(0xf2f4fa, 26, 7, 0.55, 0.85, 1.6);
+  boxSpot.position.set(0, 3.6, 0.9);
+  boxSpot.target.position.set(0, 0.35, -0.25);
+  scene.add(boxSpot, boxSpot.target);
 
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.ShadowMaterial({ color: 0x000000, opacity: 0.08 }));
-  floor.rotation.x = -Math.PI / 2;
-  floor.position.y = FLOOR_Y - 0.002;
-  floor.receiveShadow = true;
-  scene.add(floor);
-
-  // Contact shadow: a soft ellipse under a floating case, fainter and wider the higher it is.
-  const blobCanvas = document.createElement("canvas");
-  blobCanvas.width = blobCanvas.height = 128;
-  const bctx = blobCanvas.getContext("2d")!;
-  const grad = bctx.createRadialGradient(64, 64, 0, 64, 64, 64);
-  // On a black floor a shadow cannot show; a faint pool of light under the case does the job.
-  grad.addColorStop(0, "rgba(255,255,255,0.22)");
-  grad.addColorStop(0.5, "rgba(255,255,255,0.07)");
+  // A faint pool of light on the black floor under the box, so it stands somewhere.
+  const poolCanvas = document.createElement("canvas");
+  poolCanvas.width = poolCanvas.height = 128;
+  const pctx = poolCanvas.getContext("2d")!;
+  const grad = pctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+  grad.addColorStop(0, "rgba(255,255,255,0.16)");
+  grad.addColorStop(0.55, "rgba(255,255,255,0.04)");
   grad.addColorStop(1, "rgba(255,255,255,0)");
-  bctx.fillStyle = grad;
-  bctx.fillRect(0, 0, 128, 128);
-  const blob = new THREE.Mesh(
-    new THREE.PlaneGeometry(1, 1),
-    new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(blobCanvas), transparent: true, depthWrite: false, opacity: 0 }),
-  );
-  blob.rotation.x = -Math.PI / 2;
-  blob.visible = false;
-  blob.renderOrder = 1;
-  scene.add(blob);
+  pctx.fillStyle = grad;
+  pctx.fillRect(0, 0, 128, 128);
+  const pool = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(poolCanvas), transparent: true, depthWrite: false }));
+  pool.rotation.x = -Math.PI / 2;
+  pool.position.set(0, -0.03, -0.4);
+  pool.scale.set(5, 4, 1);
+  scene.add(pool);
 
-  const rack = new THREE.Group();
-  scene.add(rack);
+  const box = buildBox();
+  scene.add(box.group);
 
-  // Far cases fade into the dark. Range set on resize.
-  const fog = new THREE.Fog(0x000000, 9, 16);
+  const fog = new THREE.Fog(0x000000, 6, 12);
   scene.fog = fog;
 
-  const leafGeo = new THREE.BoxGeometry(CASE_W, CASE_H, LEAF_D);
-  const spineGeo = new THREE.BoxGeometry(SPINE_T, CASE_H, CASE_D);
-
-  const nodes = new Map<string, CaseNode>();
+  const nodes = new Map<string, DiskNode>();
   let order: Entry[] = [];
-  let geo = rackGeometry(11);
-
-  // Continuous rack position in slots; the committed target is store.state.current.
   const pos = new Spring(0, { stiffness: 120, ratio: 1 });
-  const inspectYaw = new Spring(0, { stiffness: 60, ratio: 0.9 });
-  const inspectPitch = new Spring(0, { stiffness: 60, ratio: 0.9 });
-
-  let reduced = store.state.motion === "reduced";
-  let dragging: null | { kind: "rack" | "inspect"; startX: number; startY: number; startPos: number; lastT: number; velocity: number; moved: boolean; pointerId: number } = null;
-  let settledFor = -1;
-  let arrivalT = reduced ? 1 : 0;
-  let dirty = true;
+  const inspectYaw = new Spring(0, { stiffness: 90, ratio: 0.8 });
+  const inspectPitch = new Spring(0, { stiffness: 120, ratio: 1 });
+  const lookYaw = new Spring(0, { stiffness: 40, ratio: 1 });
+  const lookPitch = new Spring(0, { stiffness: 40, ratio: 1 });
   let frame = 0;
   let lastTime = performance.now();
   let disposed = false;
-  let hovered: CaseNode | null = null;
-  let currentNode: CaseNode | null = null;
-  /** A reflow in progress: visible cases sinking before their slots change. */
-  let reflow: null | { phase: "sink" | "rise"; slots: Map<CaseNode, number> } = null;
-  const heroCache = new Map<string, { front: THREE.CanvasTexture; left: THREE.CanvasTexture; right: THREE.CanvasTexture }>();
+  let dirty = true;
+  let reduced = store.state.motion === "reduced";
+  let settledFor = -1;
+  let arrivalT = 1;
+  /** Before the reveal, the disks wait under the floor. */
+  let held = true;
+  let hovered: DiskNode | null = null;
+  let hoverPart: "shutter" | "wp" | "body" | null = null;
+  let currentNode: DiskNode | null = null;
+  let reflow: null | { phase: "sink" | "rise"; slots: Map<DiskNode, number> } = null;
+  let dragging: null | { kind: "box" | "inspect"; startX: number; startY: number; startPos: number; startYaw: number; startPitch: number; lastT: number; velocity: number; axis: "x" | "y" | null; moved: boolean; pointerId: number } = null;
+  const heroCache = new Map<string, THREE.CanvasTexture>();
+  let drive: "empty" | "inserting" | "reading" | "ejecting" = "empty";
+  document.body.dataset.drive = drive;
 
-  function buildNode(entry: Entry): CaseNode {
-    const edge = new THREE.Color(edgeColour());
-    const clip = new THREE.Plane(new THREE.Vector3(0, 1, 0), 1000);
-    const clippingPlanes = [clip];
-    const frontMat = physical({ color: edge, clippingPlanes });
-    // The inside sheet is paper: matte, under no coat.
-    const insideLeftMat = physical({ color: 0xffffff, roughness: 0.9, clearcoat: 0, clippingPlanes });
-    const insideRightMat = physical({ color: edge, clippingPlanes });
-    const backMat = physical({ color: edge, clippingPlanes });
-    const spineMat = physical({ color: edge, clippingPlanes });
-    const edgeMat = physical({ color: edge, roughness: 0.3, clippingPlanes });
+  function setDrive(next: typeof drive): void {
+    if (next === drive) return;
+    drive = next;
+    document.body.dataset.drive = next;
+    window.dispatchEvent(new CustomEvent("drive", { detail: next }));
+  }
 
-    // Box material order: +x, -x, +y, -y, +z, -z
-    const front = new THREE.Mesh(leafGeo, [edgeMat, edgeMat, edgeMat, edgeMat, frontMat, insideLeftMat]);
-    const back = new THREE.Mesh(leafGeo, [edgeMat, edgeMat, edgeMat, edgeMat, insideRightMat, backMat]);
-    const spine = new THREE.Mesh(spineGeo, [edgeMat, spineMat, edgeMat, edgeMat, edgeMat, edgeMat]);
-    for (const m of [front, back, spine]) {
-      m.castShadow = true;
-      m.receiveShadow = true;
-    }
-
-    const group = new THREE.Group();
-    // Assemble: spine on the left (-x), back leaf behind (-z), front leaf in front (+z).
-    spine.position.set(-CASE_W / 2 - SPINE_T / 2, 0, 0);
-    back.position.set(0, 0, -(CASE_D / 2 - LEAF_D / 2));
-    const hinge = new THREE.Group();
-    hinge.position.set(-CASE_W / 2, 0, CASE_D / 2 - LEAF_D / 2);
-    front.position.set(CASE_W / 2, 0, 0);
-    hinge.add(front);
-    group.add(spine, back, hinge);
-
-    const node: CaseNode = {
+  // ---------- disks ----------
+  function buildNode(entry: Entry): DiskNode {
+    const disk = buildDisk();
+    const node: DiskNode = {
       entry,
-      group,
-      front,
-      back,
-      spine,
-      hinge,
+      disk,
       slot: 0,
       alive: true,
       pull: new Spring(0, { stiffness: 200, ratio: 1 }),
       turn: new Spring(0, { stiffness: 150, ratio: 1 }),
-      open: new Spring(0, { stiffness: 70, ratio: 1 }),
+      open: new Spring(0, { stiffness: 60, ratio: 1 }),
       lift: new Spring(0, { stiffness: 170, ratio: 1 }),
+      lean: new Spring(-LEAN_B, { stiffness: 320, ratio: 0.55 }),
+      peek: new Spring(0, { stiffness: 260, ratio: 0.7 }),
+      shutterPeek: new Spring(0, { stiffness: 300, ratio: 0.6 }),
+      wp: new Spring(0, { stiffness: 400, ratio: 0.7 }),
       liftDelay: 0,
-      clip,
-      materials: [frontMat, insideLeftMat, insideRightMat, backMat, spineMat, edgeMat],
-      frontMat,
-      spineMat,
-      insideLeftMat,
-      insideRightMat,
+      rackTex: null,
+      rackReady: null,
       hero: false,
       tone: 1,
+      side: 0,
+      wasOut: false,
     };
-    for (const m of [front, back, spine]) m.userData.node = node;
+    disk.group.traverse((o) => (o.userData.node = node));
+    disk.writeProtect.userData.part = "wp";
+    disk.shutter.traverse((o) => (o.userData.part = "shutter"));
+    for (const d of disk.detail) d.visible = false;
     return node;
   }
 
-  async function paintRackTextures(node: CaseNode): Promise<void> {
-    await ensureFonts();
-    if (disposed) return;
-    const insert = texture(drawInsert(node.entry, small ? 256 : 320), renderer);
-    const spine = texture(drawSpine(node.entry, small ? 48 : 64), renderer);
-    node.frontMat.map = insert;
-    setBase(node.frontMat, 0xffffff);
-    node.frontMat.needsUpdate = true;
-    node.spineMat.map = spine;
-    setBase(node.spineMat, 0xffffff);
-    node.spineMat.needsUpdate = true;
-    dirty = true;
+  function priorityFor(node: DiskNode): number {
+    return 2 + Math.min(60, Math.abs(node.slot - Math.max(0, store.state.current)));
   }
 
-  async function paintHero(node: CaseNode): Promise<void> {
-    await ensureFonts();
-    if (disposed || currentNode !== node) return;
-    let hero = heroCache.get(node.entry.name);
-    if (!hero) {
-      hero = {
-        front: texture(drawInsert(node.entry, small ? 640 : 1024), renderer),
-        left: texture(drawInsideLeft(node.entry, small ? 512 : 768), renderer),
-        right: texture(drawInsideRight(node.entry, small ? 512 : 768), renderer),
-      };
-      heroCache.set(node.entry.name, hero);
-      if (heroCache.size > 6) {
+  function paintRack(node: DiskNode): Promise<void> {
+    if (!node.rackReady) {
+      node.rackReady = labelCanvas(node.entry, small ? 256 : 320, priorityFor(node)).then((c) => {
+        if (disposed) return;
+        const t = texture(c, renderer);
+        renderer.initTexture(t);
+        node.rackTex = t;
+        if (!node.hero) {
+          node.disk.labelMat.map = t;
+          node.disk.labelMat.needsUpdate = true;
+        }
+        dirty = true;
+      });
+    }
+    return node.rackReady;
+  }
+
+  async function paintHero(node: DiskNode): Promise<void> {
+    let t = heroCache.get(node.entry.name);
+    if (!t) {
+      const c = await labelCanvas(node.entry, small ? 640 : 1024, 0);
+      if (disposed) return;
+      t = texture(c, renderer);
+      renderer.initTexture(t);
+      heroCache.set(node.entry.name, t);
+      if (heroCache.size > HERO_KEEP) {
         const oldest = heroCache.keys().next().value as string;
         const dropped = heroCache.get(oldest)!;
         heroCache.delete(oldest);
-        for (const t of [dropped.front, dropped.left, dropped.right]) t.dispose();
         const owner = nodes.get(oldest);
         if (owner?.hero) dropHero(owner);
+        dropped.dispose();
       }
     }
-    node.frontMat.map = hero.front;
-    node.insideLeftMat.map = hero.left;
-    setBase(node.insideLeftMat, 0xffffff);
-    node.insideRightMat.map = hero.right;
-    setBase(node.insideRightMat, 0xffffff);
-    for (const m of [node.frontMat, node.insideLeftMat, node.insideRightMat]) m.needsUpdate = true;
+    if (currentNode !== node) return;
+    node.disk.labelMat.map = t;
+    node.disk.labelMat.needsUpdate = true;
     node.hero = true;
     dirty = true;
   }
 
-  function dropHero(node: CaseNode): void {
+  function dropHero(node: DiskNode): void {
     if (!node.hero) return;
     node.hero = false;
-    node.insideLeftMat.map = null;
-    setBase(node.insideLeftMat, 0xffffff);
-    node.insideRightMat.map = null;
-    setBase(node.insideRightMat, edgeColour());
-    for (const m of [node.insideLeftMat, node.insideRightMat]) m.needsUpdate = true;
-    // The rack-resolution insert is repainted lazily.
-    void paintRackTextures(node);
-  }
-
-  /** Angle of a slot relative to the front, unwrapped so the two ends of the arc never meet. */
-  function relAngle(slot: number): number {
-    return slot * geo.step - pos.x * geo.step;
-  }
-
-  function inView(node: CaseNode): boolean {
-    return node.group.visible && Math.abs(relAngle(node.slot)) < WINDOW + WINDOW_FADE;
+    node.disk.labelMat.map = node.rackTex;
+    node.disk.labelMat.needsUpdate = true;
   }
 
   function staggerFor(slot: number, front: number): number {
-    return reduced ? 0 : Math.min(0.5, Math.abs(slot - front) * 0.035);
+    return reduced ? 0 : Math.min(0.55, Math.abs(slot - front) * 0.03);
   }
 
   function syncCatalogue(state: State): void {
     const firstLoad = nodes.size === 0;
     order = state.visible;
-    const next = rackGeometry(Math.max(order.length, 1));
-    const geometryChanged = next.step !== geo.step || next.radius !== geo.radius || next.rise !== geo.rise;
+    box.fit(order.length, GAP);
     const front = Math.max(0, state.current);
-    const slots = new Map<CaseNode, number>();
+    const slots = new Map<DiskNode, number>();
     const alive = new Set<string>();
     let visibleChange = false;
     order.forEach((entry, i) => {
@@ -395,60 +303,46 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
         node = buildNode(entry);
         node.slot = i;
         node.lift.snap(0);
-        node.alive = false; // rises with the reflow below
+        node.alive = false;
         nodes.set(entry.name, node);
-        rack.add(node.group);
-        void paintRackTextures(node);
+        scene.add(node.disk.group);
       }
       if (node.slot !== i || !node.alive) {
         slots.set(node, i);
-        if (node.alive && inView(node)) visibleChange = true;
+        if (node.alive && Math.abs(node.slot - pos.x) < BACK_WINDOW) visibleChange = true;
       }
     });
     for (const node of nodes.values()) {
       if (!alive.has(node.entry.name) && node.alive) {
         node.alive = false;
-        if (inView(node)) visibleChange = true;
+        visibleChange = true;
       }
     }
-    if (geometryChanged) visibleChange = visibleChange || !firstLoad;
+    for (const entry of order) void paintRack(nodes.get(entry.name)!);
 
-    if (reduced || firstLoad || (!visibleChange && !reflow)) {
-      // Nothing moving in view (or no motion wanted): change slots in place.
-      if (geometryChanged) {
-        geo = next;
-        resize();
-      }
+    if (reduced || firstLoad || held || (!visibleChange && !reflow)) {
       for (const [node, slot] of slots) {
         node.slot = slot;
         node.alive = true;
-        node.lift.target = 1;
-        node.liftDelay = firstLoad ? 0.15 + staggerFor(slot, front) : staggerFor(slot, front);
-        if (reduced) node.lift.snap(1);
+        node.lean.snap(leanFor(slot - front));
+        node.liftDelay = staggerFor(slot, front);
+        if (!held) node.lift.target = 1;
+        if (reduced && !held) node.lift.snap(1);
       }
-      for (const node of nodes.values()) if (!alive.has(node.entry.name)) node.lift.target = 0;
-      if (reduced || firstLoad) for (const node of nodes.values()) if (!alive.has(node.entry.name)) node.lift.snap(0);
-      if (reduced || firstLoad) pos.snap(front);
+      for (const node of nodes.values()) if (!alive.has(node.entry.name)) node.lift.snap(0);
+      if (reduced || firstLoad || held) pos.snap(front);
     } else {
-      // Sink everything in view, re-slot unseen, rise from the front out.
-      const all = new Map<CaseNode, number>();
+      // Sink everything in view, re-slot unseen, rise from the gap out.
+      const all = new Map<DiskNode, number>();
       order.forEach((entry, i) => all.set(nodes.get(entry.name)!, i));
       reflow = { phase: "sink", slots: all };
-      pendingGeometry = geometryChanged ? next : pendingGeometry;
       for (const node of nodes.values()) node.lift.target = 0;
     }
     dirty = true;
   }
-  let pendingGeometry: RackGeometry | null = null;
 
-  /** Second half of a reflow, once every case in view is under the floor. */
   function completeReflow(): void {
     if (!reflow) return;
-    if (pendingGeometry) {
-      geo = pendingGeometry;
-      pendingGeometry = null;
-      resize();
-    }
     const front = Math.max(0, store.state.current);
     for (const node of nodes.values()) {
       const slot = reflow.slots.get(node);
@@ -462,6 +356,7 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
       node.pull.snap(0);
       node.turn.snap(0);
       node.open.snap(0);
+      node.lean.snap(leanFor(slot - front));
       node.lift.target = 0;
       node.liftDelay = staggerFor(slot, front);
     }
@@ -469,51 +364,19 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
     reflow.phase = "rise";
   }
 
-  const layout = { presentX: 0, presentY: 0.45, presentZ: 0, openX: 0, openY: 0.3, push: 0.4, wide: true };
+  // ---------- framing ----------
+  const layout = {
+    wide: true,
+    present: new THREE.Vector3(0, 1.4, 3),
+    face: new THREE.Quaternion(),
+    drive: new THREE.Vector3(3, 1.4, 3),
+    pxPerSlot: 34,
+  };
   const tmp = new THREE.Vector3();
-
-  function placeNode(node: CaseNode, isPresented: boolean): void {
-    const i = node.slot;
-    const rel = relAngle(i);
-    const lift = node.lift.x;
-    const g = node.group;
-    const out = node.pull.x > 0.001 || node.turn.x > 0.001;
-    const arc = out ? 1 : clamp((WINDOW - Math.abs(rel)) / WINDOW_FADE, 0, 1);
-    g.visible = arc > 0.005 && lift > 0.001;
-    if (!g.visible) return;
-    const p = node.pull.x;
-    const yawT = smoothstep(node.turn.x);
-    // The turn is phased. Low in its range the case swings along the arc, just outside the
-    // rack, between its slot's angle and the front; high in its range it floats forward and up
-    // to the presentation spot. So on the way home it first steps back from the viewer, then
-    // swings home close to the rack, and it is at its slot's exact angle whenever it is near
-    // enough to the rack to touch a neighbour.
-    const swing = smoothstep(clamp((node.turn.x - 0.1) / 0.35, 0, 1));
-    const float = smoothstep(clamp((node.turn.x - 0.45) / 0.55, 0, 1));
-    const o = node.open.x;
-    const phi = pos.x * geo.step;
-    // Positions are worked out in the world, then expressed in the rack's frame (local = R_y(phi) world).
-    const worldAngle = rel * (1 - swing);
-    const radius = geo.radius + p * PULL_OUT + float * layout.presentZ;
-    const X = Math.sin(worldAngle) * radius + float * layout.presentX + o * (layout.openX - layout.presentX);
-    const Z = Math.cos(worldAngle) * radius;
-    const lift3 = float * layout.presentY + o * (layout.openY - layout.presentY);
-    const cos = Math.cos(phi);
-    const sin = Math.sin(phi);
-    // Sinking clears the floor from wherever the case is, including the presentation spot.
-    const sinkY = -(SINK + Math.max(0, lift3)) * (1 - easeOutCubic(lift));
-    g.position.set(X * cos + Z * sin, i * geo.rise + lift3 + sinkY, -X * sin + Z * cos);
-    // Yaw: spine outward on the rack (+90), cover to the viewer when presented, with a little
-    // of the spine edge left in the light.
-    const worldYaw = worldAngle + (Math.PI / 2) * (1 - yawT) + REST_YAW * yawT * (1 - o) + (isPresented ? inspectYaw.x : 0);
-    const pitch = isPresented ? inspectPitch.x : 0;
-    g.rotation.set(pitch, worldYaw + phi, 0, "YXZ");
-    node.hinge.rotation.y = HINGE_OPEN * o;
-    g.scale.setScalar(0.001 + arc * 0.999);
-    // Clip at the floor while the case is below it.
-    const baseY = i * geo.rise - pos.x * geo.rise + FLOOR_Y;
-    node.clip.constant = lift < 0.999 ? -baseY + 0.001 : 1000;
-  }
+  const tmp2 = new THREE.Vector3();
+  const qA = new THREE.Quaternion();
+  const qB = new THREE.Quaternion();
+  const qC = new THREE.Quaternion();
 
   function resize(): void {
     const w = Math.max(1, field.clientWidth);
@@ -522,89 +385,151 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
     camera.aspect = w / h;
     layout.wide = matchMedia("(min-width: 1024px)").matches;
     const halfV = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
-    const halfH = halfV * camera.aspect;
-    // Framing by proportion and position (recipe/direction-v3.md, composition): the logo holds
-    // the top of the stage, so the rack is a band below the middle, its front case a fifth of
-    // the stage tall, and the presented case, two fifths tall, stands just under the logo and
-    // overlaps its foot, the way a figure stands in front of a band's name on a cover.
-    const presentedShare = layout.wide ? 0.4 : 0.36;
-    const rackShare = layout.wide ? 0.2 : 0.19;
-    const rackCentre = layout.wide ? 0.63 : 0.66;
-    const presentCentre = layout.wide ? 0.57 : 0.61;
-    const dPresent = CASE_H / (2 * halfV * presentedShare);
-    const dRack = CASE_H / (2 * halfV * rackShare);
-    camBase.z = geo.radius + dRack;
-    camBase.y = layout.wide ? 0.5 : 0.55;
-    // The view axis drops from the camera to pass the rack's front at the height that puts the
-    // rack's centre at rackCentre; lookAt is that axis continued to the rack's own centre.
-    const axisAtRack = -(1 - 2 * rackCentre) * halfV * dRack;
-    const slope = (camBase.y - axisAtRack) / dRack;
-    lookAt.y = camBase.y - slope * camBase.z;
-    layout.presentX = 0;
-    layout.presentY = camBase.y - slope * dPresent + (1 - 2 * presentCentre) * halfV * dPresent;
-    layout.presentZ = Math.max(0, camBase.z - dPresent - (geo.radius + PULL_OUT));
-    // Open: the spread covers the right of the viewport, so the opened case (whose front leaf
-    // swings out to the left) is centred on what remains of the stage.
+    // Framing by proportion and position (recipe/direction-v4.md, composition): the logo holds
+    // the top of the stage; the presented disk, about two fifths of the stage tall, floats just
+    // below the middle; the box sits at the foot, its current disk a fifth of the stage tall,
+    // seen from above at about thirty-five degrees, so the label tops show over the disks in front.
+    const boxShare = layout.wide ? 0.23 : 0.2;
+    const presentShare = layout.wide ? 0.37 : 0.34;
+    const boxAt = layout.wide ? 0.82 : 0.85;
+    const presentAt = layout.wide ? 0.52 : 0.55;
+    const elevation = 0.62;
+    const dBox = DISK.H / (2 * halfV * boxShare);
+    const target = tmp.set(0, DISK.H * 0.55, 0);
+    camBase.set(0, target.y + Math.sin(elevation) * dBox, Math.cos(elevation) * dBox);
+    // Tilt the view up so the box lands at boxAt down the frame.
+    const alpha = Math.atan((2 * boxAt - 1) * halfV);
+    const pitch = elevation - alpha;
+    lookDir.set(0, -Math.sin(pitch), -Math.cos(pitch));
+    // The presented disk: on the ray through presentAt, at the depth that gives presentShare.
+    const beta = Math.atan((1 - 2 * presentAt) * halfV);
+    const rayPitch = pitch - beta;
+    const dPresent = DISK.H / (2 * halfV * presentShare);
+    const ray = tmp2.set(0, -Math.sin(rayPitch), -Math.cos(rayPitch));
+    layout.present.copy(camBase).addScaledVector(ray, dPresent / Math.cos(beta));
+    layout.face.setFromAxisAngle(X, -rayPitch);
+    // The drive: the open sheet's left edge, at the presented disk's height and depth. The disk
+    // turns on its side, so half its height runs ahead of its centre.
     const spreadPx = Math.min(760, innerWidth * 0.54);
     const rect = field.getBoundingClientRect();
-    const visibleRight = Math.min(rect.right, innerWidth - spreadPx);
-    const centrePx = Math.max(0, visibleRight - rect.left) / 2;
-    const ndcX = (centrePx / w) * 2 - 1;
-    layout.openX = layout.wide ? ndcX * halfH * dPresent + CASE_W * 0.45 : 0;
-    layout.openY = layout.presentY - 0.05;
-    layout.push = 0;
-    fog.near = camBase.z - geo.radius * 0.5;
-    fog.far = camBase.z + geo.radius * 2 + 4;
+    if (layout.wide) {
+      const edgePx = innerWidth - spreadPx - rect.left;
+      const ndcX = (edgePx / w) * 2 - 1;
+      const halfH = halfV * camera.aspect;
+      layout.drive.copy(layout.present);
+      layout.drive.x = ndcX * halfH * dPresent + DISK.H / 2 + 0.12;
+    } else {
+      layout.drive.copy(layout.present);
+      layout.drive.x = halfV * camera.aspect * dPresent + DISK.H;
+    }
+    // Where the slot is drawn on the sheet, in page pixels.
+    const root = document.documentElement.style;
+    root.setProperty("--drive-y", `${(rect.top + presentAt * h).toFixed(1)}px`);
+    root.setProperty("--drive-h", `${((DISK.W / (2 * halfV * dPresent)) * h).toFixed(1)}px`);
+    layout.pxPerSlot = layout.wide ? 34 : 26;
+    fog.near = dBox - 1.2;
+    fog.far = dBox + 3.2;
     camera.updateProjectionMatrix();
-    placeCamera(0, 1);
-    camera.updateMatrixWorld();
+    placeCamera(1);
     dirty = true;
   }
 
-  function placeCamera(openAmount: number, arrival: number): void {
-    camera.position.set(camBase.x, camBase.y + (1 - arrival) * 0.25, camBase.z + (1 - arrival) * 0.9 - openAmount * layout.push);
-    camera.lookAt(lookAt.x + openAmount * layout.openX * 0.25, lookAt.y, lookAt.z);
+  function placeCamera(arrival: number): void {
+    const a = 1 - arrival;
+    camera.position.set(camBase.x, camBase.y + a * 0.9, camBase.z + a * 1.6);
+    camera.lookAt(tmp.copy(camera.position).add(lookDir));
+    camera.updateMatrixWorld();
   }
 
   const ro = new ResizeObserver(resize);
   ro.observe(field);
   resize();
 
+  // ---------- placement ----------
+  const boxPos = new THREE.Vector3();
+
+  function presented(): DiskNode | null {
+    return currentNode && currentNode.turn.x > 0.9 ? currentNode : null;
+  }
+
+  function placeNode(node: DiskNode, isPresented: boolean): void {
+    const g = node.disk.group;
+    const d = node.slot - pos.x;
+    const out = node.pull.x > 0.001 || node.turn.x > 0.001 || node.open.x > 0.001;
+    g.visible = (out || (d > -FRONT_WINDOW && d < BACK_WINDOW)) && node.lift.x > 0.001;
+    if (!g.visible) return;
+    // In the box: the foot on the floor at its slot, the disk raised along its own plane.
+    const lean = node.lean.x;
+    const along = DISK.H / 2 + node.pull.x * PULL_LIFT + node.peek.x * 0.07;
+    boxPos.set(0, Math.cos(lean) * along, -d * GAP + Math.sin(lean) * along);
+    qA.setFromAxisAngle(X, lean);
+    // Out: the turn travels only once it is under way, so near home the disk is exactly over
+    // its slot (the gate lets it drop only then).
+    const t = node.turn.x;
+    const travel = smoothstep(clamp((t - 0.1) / 0.9, 0, 1));
+    const square = smoothstep(t);
+    const o = node.open.x;
+    const roll = smoothstep(clamp((o - 0.25) / 0.3, 0, 1));
+    const insert = smoothstep(clamp((o - 0.5) / 0.5, 0, 1));
+    const inspect = isPresented ? 1 - smoothstep(o / 0.3) : 0;
+    qB.copy(layout.face);
+    qC.setFromAxisAngle(Y, (inspectYaw.x + lookYaw.x) * inspect);
+    qB.multiply(qC);
+    qC.setFromAxisAngle(X, (inspectPitch.x + lookPitch.x) * inspect);
+    qB.multiply(qC);
+    qC.setFromAxisAngle(Z, (-Math.PI / 2) * roll);
+    qB.multiply(qC);
+    g.quaternion.slerpQuaternions(qA, qB, square);
+    g.position.lerpVectors(boxPos, layout.present, travel);
+    g.position.y += Math.sin(Math.PI * travel) * 0.14;
+    if (insert > 0) g.position.lerp(tmp.copy(layout.drive), insert);
+    // Sinking clears the floor from wherever the disk is.
+    const lift = easeOutCubic(node.lift.x);
+    g.position.y -= (SINK + Math.max(0, g.position.y - DISK.H / 2)) * (1 - lift);
+    // Shutter: slides fully as the disk opens, and part way under the pointer.
+    node.disk.shutter.position.x = SHUTTER_SLIDE * Math.max(smoothstep(o / 0.3), node.shutterPeek.x * 0.32);
+    setWriteProtect(node.disk, node.wp.x);
+    const close = node.pull.x > 0.02;
+    for (const part of node.disk.detail) part.visible = close;
+  }
+
   // ---------- input ----------
   const raycaster = new THREE.Raycaster();
   const ndc = new THREE.Vector2();
+  const tip = document.querySelector<HTMLElement>("[data-tip]");
 
-  function hit(x: number, y: number): CaseNode | null {
+  function hit(x: number, y: number): { node: DiskNode; part: "shutter" | "wp" | "body" } | null {
     const rect = canvas.getBoundingClientRect();
     ndc.set(((x - rect.left) / rect.width) * 2 - 1, -(((y - rect.top) / rect.height) * 2 - 1));
     raycaster.setFromCamera(ndc, camera);
     const meshes: THREE.Object3D[] = [];
-    for (const n of nodes.values()) if (n.group.visible && n.alive) meshes.push(n.front, n.back, n.spine);
+    for (const n of nodes.values()) {
+      if (!n.disk.group.visible || !n.alive) continue;
+      meshes.push(n.disk.body, n.disk.label, ...n.disk.shutter.children);
+      if (n === currentNode) meshes.push(n.disk.writeProtect);
+    }
     const found = raycaster.intersectObjects(meshes, false);
-    return found.length ? (found[0].object.userData.node as CaseNode) : null;
+    if (!found.length) return null;
+    const o = found[0].object;
+    return { node: o.userData.node as DiskNode, part: (o.userData.part as "shutter" | "wp" | undefined) ?? "body" };
   }
 
-  function pxPerSlot(): number {
-    // Screen pixels of rack travel per slot at the front of the drum.
-    const rect = canvas.getBoundingClientRect();
-    const dist = camera.position.z - geo.radius;
-    const halfV = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
-    const unitsPerPx = (2 * halfV * dist) / rect.height;
-    return (geo.step * geo.radius) / unitsPerPx;
+  /** Is the presented disk showing its back? (Its yaw rests on an odd half turn.) */
+  function showingBack(): boolean {
+    return Math.abs(Math.round(inspectYaw.target / Math.PI)) % 2 === 1;
   }
 
   let wheelAccum = 0;
   let wheelTimer = 0;
   function onWheel(e: WheelEvent): void {
     if (store.state.mode === "loading" || store.state.mode === "failed") return;
-    // On narrow layouts the page scrolls vertically; only horizontal wheels turn the rack there.
     const horizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY);
+    // On narrow layouts the page scrolls vertically; only horizontal wheels flip there.
     if (!layout.wide && !horizontal) return;
     e.preventDefault();
     const unit = e.deltaMode === 1 ? 40 : e.deltaMode === 2 ? 800 : 1;
-    const delta = (horizontal ? e.deltaX : e.deltaY) * unit;
-    wheelAccum += delta;
-    const threshold = 90;
+    wheelAccum += (horizontal ? e.deltaX : e.deltaY) * unit;
+    const threshold = 60;
     const steps = Math.trunc(wheelAccum / threshold);
     if (steps !== 0) {
       wheelAccum -= steps * threshold;
@@ -614,27 +539,55 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
     wheelTimer = window.setTimeout(() => (wheelAccum = 0), 240);
   }
 
-  function presented(): CaseNode | null {
-    return currentNode && currentNode.turn.x > 0.9 ? currentNode : null;
-  }
-
   function onPointerDown(e: PointerEvent): void {
     if (e.button !== 0 && e.pointerType === "mouse") return;
     if (store.state.mode === "loading" || store.state.mode === "failed") return;
-    const target = hit(e.clientX, e.clientY);
-    const inspecting = target !== null && target === presented() && store.state.mode === "settled";
-    dragging = { kind: inspecting ? "inspect" : "rack", startX: e.clientX, startY: e.clientY, startPos: pos.x, lastT: performance.now(), velocity: 0, moved: false, pointerId: e.pointerId };
+    const h = hit(e.clientX, e.clientY);
+    const inspecting = h !== null && h.node === presented() && store.state.mode === "settled";
+    dragging = {
+      kind: inspecting ? "inspect" : "box",
+      startX: e.clientX,
+      startY: e.clientY,
+      startPos: pos.x,
+      startYaw: inspectYaw.x,
+      startPitch: inspectPitch.x,
+      lastT: performance.now(),
+      velocity: 0,
+      axis: null,
+      moved: false,
+      pointerId: e.pointerId,
+    };
     canvas.setPointerCapture(e.pointerId);
+  }
+
+  function setHover(next: DiskNode | null, part: typeof hoverPart, x: number, y: number): void {
+    if (next !== hovered || part !== hoverPart) {
+      hovered = next;
+      hoverPart = part;
+      canvas.dataset.hover = next ? (next === currentNode ? "current" : "case") : "";
+      dirty = true;
+    }
+    if (tip) {
+      // Names in the box are small; the pointer says which disk it is on.
+      const show = next !== null && next !== presented() && store.state.mode !== "open";
+      tip.hidden = !show;
+      if (show) {
+        tip.textContent = next.entry.title;
+        tip.style.transform = `translate3d(${Math.round(x + 14)}px, ${Math.round(y + 16)}px, 0)`;
+      }
+    }
   }
 
   function onPointerMove(e: PointerEvent): void {
     if (!dragging) {
       if (e.pointerType !== "mouse") return;
-      const target = hit(e.clientX, e.clientY);
-      if (target !== hovered) {
-        hovered = target;
-        canvas.style.cursor = target ? "pointer" : "grab";
-        canvas.dataset.hover = target ? (target === currentNode ? "current" : "case") : "";
+      const h = hit(e.clientX, e.clientY);
+      setHover(h?.node ?? null, h?.part ?? null, e.clientX, e.clientY);
+      // The presented disk turns a touch towards the pointer.
+      if (presented() && !reduced) {
+        const rect = canvas.getBoundingClientRect();
+        lookYaw.target = clamp(((e.clientX - rect.left) / rect.width - 0.5) * 0.5, -0.2, 0.2);
+        lookPitch.target = clamp(((e.clientY - rect.top) / rect.height - 0.54) * 0.4, -0.14, 0.14);
         dirty = true;
       }
       return;
@@ -643,22 +596,37 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
     const dy = e.clientY - dragging.startY;
     if (!dragging.moved && Math.hypot(dx, dy) > 6) {
       dragging.moved = true;
-      canvas.style.cursor = "grabbing";
-      if (dragging.kind === "rack") store.unsettle();
+      dragging.axis = Math.abs(dx) >= Math.abs(dy) ? "x" : "y";
+      if (dragging.kind === "box") {
+        // Narrow pages scroll vertically, so there only sideways drags flip.
+        if (!layout.wide && dragging.axis === "y") {
+          if (canvas.hasPointerCapture(dragging.pointerId)) canvas.releasePointerCapture(dragging.pointerId);
+          dragging = null;
+          return;
+        }
+        store.unsettle();
+      }
+      setHover(null, null, 0, 0);
     }
     if (!dragging.moved) return;
     const now = performance.now();
-    if (dragging.kind === "rack") {
-      const slots = -dx / pxPerSlot();
-      const next = clamp(dragging.startPos + slots, -0.6, Math.max(0, order.length - 1) + 0.6);
-      const dt = Math.max(1, now - dragging.lastT) / 1000;
+    const dt = Math.max(1, now - dragging.lastT) / 1000;
+    if (dragging.kind === "box") {
+      // Drag left, or down towards you, to flip forward.
+      const travel = dragging.axis === "x" ? -dx : dy;
+      const next = clamp(dragging.startPos + travel / layout.pxPerSlot, -0.6, Math.max(0, order.length - 1) + 0.6);
       dragging.velocity = (next - pos.x) / dt;
       pos.x = next;
       pos.target = next;
       pos.v = 0;
     } else {
-      inspectYaw.target = clamp(dx / 260, -0.9, 0.9);
-      inspectPitch.target = clamp(dy / 320, -0.5, 0.5);
+      // Turn it in the hand: freely round its vertical axis, a little over its horizontal one.
+      const yaw = dragging.startYaw + dx / 140;
+      dragging.velocity = (yaw - inspectYaw.x) / dt;
+      inspectYaw.x = yaw;
+      inspectYaw.target = yaw;
+      inspectYaw.v = 0;
+      inspectPitch.target = clamp(dragging.startPitch + dy / 320, -0.5, 0.5);
     }
     dragging.lastT = now;
     dirty = true;
@@ -669,76 +637,120 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
     const d = dragging;
     dragging = null;
     if (canvas.hasPointerCapture(d.pointerId)) canvas.releasePointerCapture(d.pointerId);
-    canvas.style.cursor = "grab";
     if (!d.moved) {
       if (e.type === "pointercancel") return;
-      // A tap: open the presented case, or select the tapped one.
-      const target = hit(e.clientX, e.clientY);
-      if (target && target === currentNode) {
-        if (store.state.mode === "settled") store.open();
-      } else if (target) {
-        const idx = order.indexOf(target.entry);
+      const h = hit(e.clientX, e.clientY);
+      if (!h) return;
+      if (h.node === currentNode && presented()) {
+        if (showingBack()) {
+          if (h.part === "wp") {
+            h.node.wp.target = h.node.wp.target > 0.5 ? 0 : 1;
+            sound.click();
+          } else inspectYaw.target += Math.PI;
+        } else if (store.state.mode === "settled") store.open();
+      } else if (h.node === currentNode) {
+        if (store.state.mode === "settled" || store.state.mode === "browsing") store.open();
+      } else {
+        const idx = order.indexOf(h.node.entry);
         if (idx >= 0) store.select(idx, "drag");
       }
+      dirty = true;
       return;
     }
-    if (d.kind === "rack") {
-      // Release: keep the gesture velocity and settle on the nearest slot the fling reaches.
-      const v = clamp(d.velocity, -40, 40);
-      const projected = pos.x + v * 0.12;
-      const target = Math.round(clamp(projected, 0, Math.max(0, order.length - 1)));
+    if (d.kind === "box") {
+      // Keep the gesture's velocity and settle on the slot the fling reaches.
+      const v = clamp(d.velocity, -60, 60);
+      const target = Math.round(clamp(pos.x + v * 0.14, 0, Math.max(0, order.length - 1)));
       pos.v = v;
       store.select(target, "drag");
     } else {
-      inspectYaw.target = 0;
+      // Let go: a flick keeps spinning and comes to rest face or back, whichever it reaches.
+      const v = clamp(d.velocity, -40, 40);
+      inspectYaw.v = v;
+      inspectYaw.target = Math.round((inspectYaw.x + v * 0.22) / Math.PI) * Math.PI;
       inspectPitch.target = 0;
     }
     dirty = true;
   }
 
+  // Type-ahead: letters jump to the next disk whose name starts with what was typed.
+  let typed = "";
+  let typedAt = 0;
+  function typeAhead(ch: string): void {
+    const now = performance.now();
+    typed = now - typedAt > 800 ? ch : typed + ch;
+    typedAt = now;
+    const n = order.length;
+    const start = typed.length > 1 ? Math.max(0, store.state.current) : Math.max(0, store.state.current) + 1;
+    for (let k = 0; k < n; k++) {
+      const i = (start + k) % n;
+      if (order[i].title.toLowerCase().startsWith(typed)) {
+        store.select(i, "keys");
+        return;
+      }
+    }
+  }
+
   function onKey(e: KeyboardEvent): void {
     const t = e.target as HTMLElement | null;
     if (t && (t.tagName === "INPUT" || t.tagName === "SELECT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
-    if (t && t.closest("[data-list]")) return; // the tracklist handles its own keys
-    if (document.body.dataset.index === "open") return; // the index overlay owns the keyboard
+    if (t && t.closest("[data-list]")) return;
+    if (document.body.dataset.index === "open" || document.body.dataset.boot) return;
     const mode = store.state.mode;
     if (mode === "loading" || mode === "failed") return;
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
     switch (e.key) {
       case "ArrowRight":
         e.preventDefault();
         store.step(1, "keys");
-        break;
+        return;
       case "ArrowLeft":
         e.preventDefault();
         store.step(-1, "keys");
-        break;
+        return;
       case "ArrowDown":
       case "ArrowUp":
-        if (!layout.wide) return; // narrow pages scroll
+        if (!layout.wide) return;
         e.preventDefault();
         store.step(e.key === "ArrowDown" ? 1 : -1, "keys");
-        break;
+        return;
+      case "PageDown":
+      case "PageUp":
+        e.preventDefault();
+        store.step(e.key === "PageDown" ? 5 : -5, "keys");
+        return;
       case "Home":
         e.preventDefault();
         store.select(0, "keys");
-        break;
+        return;
       case "End":
         e.preventDefault();
         store.select(order.length - 1, "keys");
-        break;
+        return;
       case "Enter":
       case " ":
         if (t && (t.tagName === "BUTTON" || t.tagName === "A")) return;
         e.preventDefault();
         if (mode === "settled" || mode === "browsing") store.open();
-        break;
+        return;
       case "Escape":
         if (mode === "open") {
           e.preventDefault();
           store.close();
         }
-        break;
+        return;
+      case "f":
+      case "F":
+        // Turn the presented disk over.
+        if (presented() && mode === "settled") {
+          e.preventDefault();
+          inspectYaw.target += Math.PI;
+          dirty = true;
+        }
+        return;
     }
+    if (mode === "open") return;
+    if (e.key.length === 1 && /[a-z0-9]/i.test(e.key) && e.key.toLowerCase() !== "i") typeAhead(e.key.toLowerCase());
   }
 
   canvas.addEventListener("wheel", onWheel, { passive: false });
@@ -747,13 +759,11 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
   canvas.addEventListener("pointerup", onPointerUp);
   canvas.addEventListener("pointercancel", onPointerUp);
   canvas.addEventListener("pointerleave", () => {
-    if (!dragging && hovered) {
-      hovered = null;
-      dirty = true;
-    }
+    if (!dragging) setHover(null, null, 0, 0);
+    lookYaw.target = 0;
+    lookPitch.target = 0;
   });
   window.addEventListener("keydown", onKey);
-  canvas.style.cursor = "grab";
   canvas.dataset.hover = "";
 
   // ---------- state coupling ----------
@@ -766,19 +776,24 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
       settledFor = -1;
       const next = state.current >= 0 ? nodes.get(state.visible[state.current]?.name) ?? null : null;
       if (next !== currentNode) {
-        // The old case keeps its springs and runs its own way home; nothing is reset here.
+        // The old disk keeps its springs and runs its own way home.
         currentNode = next;
-        inspectYaw.target = 0;
+        inspectYaw.snap(0);
         inspectPitch.target = 0;
       }
     }
-    if (state.mode !== previous.mode && (state.mode === "settled" || state.mode === "open") && currentNode) void paintHero(currentNode);
+    if (state.mode !== previous.mode) {
+      if ((state.mode === "settled" || state.mode === "open") && currentNode) void paintHero(currentNode);
+      // Opening from the back turns the disk face up first.
+      if (state.mode === "open") inspectYaw.target = Math.round(inspectYaw.target / (2 * Math.PI)) * 2 * Math.PI;
+      if (state.mode === "open" || state.mode === "browsing") setHover(null, null, 0, 0);
+    }
     dirty = true;
   });
 
   // ---------- gates ----------
-  function gate(node: CaseNode, mode: State["mode"]): void {
-    const out = node === currentNode && node.alive && !reflow && node.lift.x > 0.98 && (mode === "settled" || mode === "open");
+  function gate(node: DiskNode, mode: State["mode"]): void {
+    const out = node === currentNode && node.alive && !reflow && !held && node.lift.x > 0.98 && (mode === "settled" || mode === "open");
     let anotherTurned = false;
     let anotherForward = false;
     if (out && node.turn.target < 1)
@@ -797,11 +812,13 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
   function applyQuality(): void {
     renderer.setPixelRatio(quality === "low" ? 1 : Math.min(devicePixelRatio || 1, small ? 1.5 : 2));
     renderer.shadowMap.enabled = quality === "high";
-    for (const n of nodes.values()) for (const m of n.materials) m.needsUpdate = true;
+    scene.traverse((o) => {
+      const m = (o as THREE.Mesh).material as THREE.Material | undefined;
+      if (m) m.needsUpdate = true;
+    });
     resize();
   }
 
-  /** Review only: a frozen clock advanced in fixed steps, so sequences can be sampled exactly. */
   let frozen = false;
   function tick(now: number): void {
     if (disposed) return;
@@ -812,8 +829,12 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
     advance(Math.min(0.05, rawDt), rawDt);
   }
 
+  function step(s: Spring, dt: number): boolean {
+    s.step(dt);
+    return !s.settled(0.001, 0.003);
+  }
+
   function advance(dt: number, rawDt: number, draw = true): void {
-    // Degraded-condition detection: sustained slow frames while rendering drop to the low tier once.
     if (quality === "high" && renderedLastFrame) {
       sampled++;
       if (rawDt > 0.045) slowFrames++;
@@ -830,19 +851,20 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
 
     const state = store.state;
     let moving = false;
-    if (!dragging || dragging.kind !== "rack") {
-      pos.step(dt);
-      if (!pos.settled(0.0015, 0.004)) moving = true;
-    } else moving = true;
-    for (const s of [inspectYaw, inspectPitch]) {
-      s.step(dt);
-      if (!s.settled(0.001, 0.003)) moving = true;
+    if (!dragging || dragging.kind !== "box") moving = step(pos, dt) || moving;
+    else moving = true;
+    if (!dragging || dragging.kind !== "inspect") moving = step(inspectYaw, dt) || moving;
+    else moving = true;
+    for (const s of [inspectPitch, lookYaw, lookPitch]) moving = step(s, dt) || moving;
+    const pres = presented();
+    if (!pres) {
+      lookYaw.target = 0;
+      lookPitch.target = 0;
     }
 
-    // Reflow sequencing.
     if (reflow?.phase === "sink") {
       let down = true;
-      for (const n of nodes.values()) if (n.lift.x > 0.02 && n.group.visible) down = false;
+      for (const n of nodes.values()) if (n.lift.x > 0.02 && n.disk.group.visible) down = false;
       if (down) completeReflow();
       moving = true;
     } else if (reflow?.phase === "rise") {
@@ -860,34 +882,73 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
     }
 
     for (const n of nodes.values()) {
-      if (!reflow && n.alive) {
+      if (!reflow && n.alive && !held) {
         if (n.liftDelay > 0) {
           n.liftDelay -= dt;
           moving = true;
         } else n.lift.target = 1;
       }
-      // Under reduced motion the gate sequence resolves within the frame.
       for (let pass = 0; pass < (reduced ? 4 : 1); pass++) {
         gate(n, state.mode);
-        if (reduced) {
-          n.pull.snap();
-          n.turn.snap();
-          n.open.snap();
-          n.lift.snap();
-        }
+        if (reduced) for (const s of [n.pull, n.turn, n.open, n.lift]) s.snap();
       }
-      for (const s of [n.pull, n.turn, n.open, n.lift]) {
-        s.step(dt);
-        if (!s.settled(0.001, 0.003)) moving = true;
+      // The flip: lean follows the gap, and stops hard against the neighbours with a small bounce.
+      const d = n.slot - pos.x;
+      n.lean.target = leanFor(d);
+      if (reduced) n.lean.snap();
+      else {
+        n.lean.step(dt);
+        if (n.lean.x > LEAN_F) {
+          n.lean.x = LEAN_F;
+          if (n.lean.v > 0) n.lean.v *= -0.3;
+        } else if (n.lean.x < -LEAN_B) {
+          n.lean.x = -LEAN_B;
+          if (n.lean.v < 0) n.lean.v *= -0.3;
+        }
+        if (!n.lean.settled(0.001, 0.01)) moving = true;
+      }
+      const side = d + 0.5 > 0 ? 1 : -1;
+      if (n.side !== 0 && side !== n.side && n.alive && n.disk.group.visible && n.pull.x < 0.05) sound.tick();
+      n.side = side;
+      n.peek.target = n === hovered && n.pull.x < 0.02 && !dragging ? 1 : 0;
+      n.shutterPeek.target = n === pres && hoverPart === "shutter" && hovered === n && state.mode === "settled" ? 1 : 0;
+      for (const s of [n.pull, n.turn, n.open, n.lift, n.peek, n.shutterPeek, n.wp]) moving = step(s, dt) || moving;
+      // Sounds at the moments that matter.
+      if (n.pull.x > 0.5 && !n.wasOut) {
+        n.wasOut = true;
+        sound.lift();
+      } else if (n.pull.x < 0.04 && n.wasOut) {
+        n.wasOut = false;
+        sound.drop();
       }
     }
+
+    // The drive, from the current disk's open spring.
+    const cur = currentNode;
+    if (cur && cur.open.target > 0.5) {
+      if (cur.open.x > 0.97 && drive !== "reading") {
+        setDrive("reading");
+        sound.insert();
+        sound.seek();
+      } else if (cur.open.x > 0.04 && drive === "empty") {
+        setDrive("inserting");
+        sound.shutter();
+      }
+    } else if (drive === "reading" || drive === "inserting") {
+      setDrive("ejecting");
+      sound.eject();
+    } else if (drive === "ejecting") {
+      let anyOpen = 0;
+      for (const n of nodes.values()) anyOpen = Math.max(anyOpen, n.open.x);
+      if (anyOpen < 0.03) setDrive("empty");
+    }
+
     if (arrivalT < 1) {
-      arrivalT = Math.min(1, arrivalT + dt / 1.4);
+      arrivalT = Math.min(1, arrivalT + dt / 1.3);
       moving = true;
     }
 
-    // Settle detection: the rack has stopped on the committed case.
-    if (!dragging && !reflow && state.mode === "browsing" && state.current >= 0 && pos.settled(0.004, 0.02) && settledFor !== state.selectionTick) {
+    if (!dragging && !reflow && !held && state.mode === "browsing" && state.current >= 0 && pos.settled(0.004, 0.02) && settledFor !== state.selectionTick) {
       settledFor = state.selectionTick;
       store.settle();
     }
@@ -896,43 +957,17 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
     dirty = false;
     renderedLastFrame = true;
 
-    rack.rotation.y = -pos.x * geo.step;
-    rack.position.y = -pos.x * geo.rise;
-
-    let openAmount = 0;
-    for (const n of nodes.values()) openAmount = Math.max(openAmount, n.open.x);
-    placeCamera(easeOutCubic(openAmount), easeOutCubic(arrivalT));
-
-    const shown = presented();
+    box.group.position.z = pos.x * GAP;
+    placeCamera(easeOutCubic(arrivalT));
     for (const n of nodes.values()) {
-      placeNode(n, n === shown);
-      const hover = n === hovered && n !== currentNode ? 0.06 : 0;
-      if (n.spineMat.emissive.r !== hover) {
-        n.spineMat.emissive.setScalar(hover);
-        n.frontMat.emissive.setScalar(hover);
+      placeNode(n, n === pres);
+      // Tone: the disk in the light at full brightness, the box in the dark, the one under the pointer lifted a little.
+      const k = RACK_TONE + (1 - RACK_TONE) * smoothstep(n.turn.x) + (n === hovered && n.pull.x < 0.02 ? 0.18 * n.peek.x : 0);
+      if (Math.abs(k - n.tone) > 0.002) {
+        n.tone = k;
+        n.disk.labelMat.color.setScalar(Math.min(1, k));
       }
     }
-    key.target.position.set(0, -pos.x * geo.rise, 0);
-    key.target.updateMatrixWorld();
-
-    // The presented case at full brightness, the rack toned a little grey, and a soft contact
-    // shadow under whichever case is in the air.
-    let air: CaseNode | null = null;
-    for (const n of nodes.values()) {
-      setTone(n, RACK_TONE + (1 - RACK_TONE) * smoothstep(n.turn.x));
-      if (n.turn.x > 0.02 && (!air || n.turn.x > air.turn.x)) air = n;
-    }
-    if (air) {
-      rack.updateMatrixWorld();
-      air.group.getWorldPosition(tmp);
-      const height = Math.max(0, tmp.y - CASE_H / 2 - FLOOR_Y);
-      const k = smoothstep(air.turn.x);
-      blob.visible = true;
-      blob.position.set(tmp.x, FLOOR_Y + 0.004, tmp.z);
-      blob.scale.set(CASE_W * (1.5 + height * 0.5), CASE_W * (0.55 + height * 0.25), 1);
-      (blob.material as THREE.MeshBasicMaterial).opacity = k * clamp(0.7 - height * 0.15, 0.2, 0.7);
-    } else blob.visible = false;
-
     renderer.render(scene, camera);
   }
   frame = requestAnimationFrame(tick);
@@ -946,6 +981,41 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
   }
   document.addEventListener("visibilitychange", onVisibility);
 
+  function arrive(): void {
+    if (!held) return;
+    held = false;
+    const front = Math.max(0, store.state.current);
+    for (const n of nodes.values()) {
+      if (!n.alive) continue;
+      n.liftDelay = 0.12 + staggerFor(n.slot, front);
+      if (reduced) {
+        n.liftDelay = 0;
+        n.lift.snap(1);
+      }
+    }
+    arrivalT = reduced ? 1 : 0;
+    dirty = true;
+  }
+
+  function snapAll(): void {
+    if (reflow?.phase === "sink") completeReflow();
+    reflow = null;
+    held = false;
+    for (const sp of [pos, inspectYaw, inspectPitch, lookYaw, lookPitch]) sp.snap();
+    for (let pass = 0; pass < 4; pass++) {
+      for (const n of nodes.values()) {
+        n.liftDelay = 0;
+        if (n.alive) n.lift.target = 1;
+        gate(n, store.state.mode);
+        n.lean.target = leanFor(n.slot - pos.x);
+        for (const s of [n.pull, n.turn, n.open, n.lift, n.lean, n.peek, n.shutterPeek]) s.snap();
+      }
+    }
+    if (store.state.mode === "browsing") store.settle();
+    arrivalT = 1;
+    dirty = true;
+  }
+
   if (params.get("review")) {
     (window as unknown as { __rack: unknown }).__rack = {
       freeze() {
@@ -955,20 +1025,13 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
         const n = Math.max(1, Math.round(ms / (1000 / 60)));
         for (let k = 0; k < n; k++) advance(1 / 60, 1 / 60, k === n - 1);
       },
-      snap() {
-        if (reflow?.phase === "sink") completeReflow();
-        reflow = null;
-        for (const sp of [pos, inspectYaw, inspectPitch]) sp.snap();
-        for (let pass = 0; pass < 4; pass++) {
-          for (const n of nodes.values()) {
-            n.liftDelay = 0;
-            if (n.alive) n.lift.target = 1;
-            gate(n, store.state.mode);
-            for (const s of [n.pull, n.turn, n.open, n.lift]) s.snap();
-          }
-        }
-        if (store.state.mode === "browsing") store.settle();
-        arrivalT = 1;
+      snap: snapAll,
+      flip() {
+        inspectYaw.snap(Math.PI);
+        dirty = true;
+      },
+      scene,
+      redraw() {
         dirty = true;
       },
     };
@@ -981,6 +1044,38 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
   }
 
   return {
+    async warm(onProgress) {
+      // The disks nearest the gap first: those are the ones on screen.
+      const front = Math.max(0, store.state.current);
+      // Ten either side of the gap is what the first view shows; the rest draw in the background.
+      const near = [...nodes.values()].filter((n) => n.alive).sort((a, b) => Math.abs(a.slot - front) - Math.abs(b.slot - front)).slice(0, 10);
+      const total = near.length;
+      let done = 0;
+      onProgress(0, total, null);
+      await Promise.all([...near.map((n) => paintRack(n).then(() => onProgress(++done, total, n.entry))), currentNode ? paintHero(currentNode) : null]);
+      performance.mark("boot:labels");
+      // Compile every shader the scene will need now, not on the first frame that needs it.
+      // The disks wait out of sight until the reveal, so show them for the compile.
+      const hidden: THREE.Object3D[] = [];
+      for (const n of nodes.values())
+        for (const part of [n.disk.group, ...n.disk.detail])
+          if (!part.visible) {
+            part.visible = true;
+            hidden.push(part);
+          }
+      try {
+        // In parallel where the driver can; otherwise here and now, while the boot screen is up.
+        if (renderer.extensions.has("KHR_parallel_shader_compile")) await renderer.compileAsync(scene, camera);
+        else renderer.compile(scene, camera);
+      } catch {
+        /* compiling ahead is an optimisation only */
+      }
+      for (const part of hidden) part.visible = false;
+      performance.mark("boot:compiled");
+      dirty = true;
+      onProgress(total, total, null);
+    },
+    arrive,
     dispose() {
       disposed = true;
       cancelAnimationFrame(frame);

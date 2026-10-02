@@ -1,3 +1,4 @@
+import { type AnyCanvas, type Ctx2D, context, makeCanvas } from "./art/canvas";
 import { type Rand, hashSeed, range, rng, valueNoise } from "./random";
 
 /**
@@ -16,7 +17,7 @@ const grey = (v: number): string => {
   return `rgb(${c},${c},${c})`;
 };
 
-function sky(ctx: CanvasRenderingContext2D, w: number, h: number, top: number, low: number, horizon: number): void {
+function sky(ctx: Ctx2D, w: number, h: number, top: number, low: number, horizon: number): void {
   const g = ctx.createLinearGradient(0, 0, 0, h * horizon);
   g.addColorStop(0, grey(top));
   g.addColorStop(1, grey(low));
@@ -24,7 +25,7 @@ function sky(ctx: CanvasRenderingContext2D, w: number, h: number, top: number, l
   ctx.fillRect(0, 0, w, h);
 }
 
-function fogBand(ctx: CanvasRenderingContext2D, w: number, y: number, depth: number, v: number, a: number): void {
+function fogBand(ctx: Ctx2D, w: number, y: number, depth: number, v: number, a: number): void {
   const g = ctx.createLinearGradient(0, y - depth, 0, y + depth * 0.4);
   g.addColorStop(0, `rgba(${Math.round(v * 255)},${Math.round(v * 255)},${Math.round(v * 255)},0)`);
   g.addColorStop(0.7, `rgba(${Math.round(v * 255)},${Math.round(v * 255)},${Math.round(v * 255)},${a})`);
@@ -34,7 +35,7 @@ function fogBand(ctx: CanvasRenderingContext2D, w: number, y: number, depth: num
 }
 
 /** A spruce: a spire of drooping tiers, ragged at the edges. */
-function pine(ctx: CanvasRenderingContext2D, r: Rand, x: number, base: number, h: number): void {
+function pine(ctx: Ctx2D, r: Rand, x: number, base: number, h: number): void {
   const top = base - h;
   const tiers = Math.max(5, Math.round(h / 7));
   const maxHalf = h * range(r, 0.16, 0.24);
@@ -56,7 +57,7 @@ function pine(ctx: CanvasRenderingContext2D, r: Rand, x: number, base: number, h
   ctx.fill();
 }
 
-function treeline(ctx: CanvasRenderingContext2D, r: Rand, w: number, h: number, base: number, hMin: number, hMax: number, v: number): void {
+function treeline(ctx: Ctx2D, r: Rand, w: number, h: number, base: number, hMin: number, hMax: number, v: number): void {
   ctx.fillStyle = grey(v);
   ctx.fillRect(0, base, w, h - base);
   let x = -10;
@@ -67,7 +68,7 @@ function treeline(ctx: CanvasRenderingContext2D, r: Rand, w: number, h: number, 
 }
 
 /** A bare tree: a trunk forking into thinner and thinner limbs. */
-function limb(ctx: CanvasRenderingContext2D, r: Rand, x: number, y: number, len: number, angle: number, width: number, depth: number): void {
+function limb(ctx: Ctx2D, r: Rand, x: number, y: number, len: number, angle: number, width: number, depth: number): void {
   const x2 = x + Math.sin(angle) * len;
   const y2 = y - Math.cos(angle) * len;
   ctx.lineWidth = width;
@@ -83,7 +84,7 @@ function limb(ctx: CanvasRenderingContext2D, r: Rand, x: number, y: number, len:
   }
 }
 
-function ridgeLine(ctx: CanvasRenderingContext2D, r: Rand, w: number, h: number, base: number, amp: number, v: number): void {
+function ridgeLine(ctx: Ctx2D, r: Rand, w: number, h: number, base: number, amp: number, v: number): void {
   const n = 65;
   const ys: number[] = new Array(n).fill(0);
   // Midpoint displacement for a jagged skyline.
@@ -106,7 +107,7 @@ function ridgeLine(ctx: CanvasRenderingContext2D, r: Rand, w: number, h: number,
   ctx.fill();
 }
 
-function moonDisc(ctx: CanvasRenderingContext2D, r: Rand, x: number, y: number, R: number): void {
+function moonDisc(ctx: Ctx2D, r: Rand, x: number, y: number, R: number): void {
   const halo = ctx.createRadialGradient(x, y, R * 0.8, x, y, R * 4);
   halo.addColorStop(0, "rgba(255,255,255,0.35)");
   halo.addColorStop(1, "rgba(255,255,255,0)");
@@ -131,11 +132,9 @@ function moonDisc(ctx: CanvasRenderingContext2D, r: Rand, x: number, y: number, 
 }
 
 /** Paint `scene` into a `w` by `h` greyscale canvas and run it through the copier. */
-export function photograph(seed: string, scene: Scene, w: number, h: number): HTMLCanvasElement {
-  const c = document.createElement("canvas");
-  c.width = Math.round(w);
-  c.height = Math.round(h);
-  const ctx = c.getContext("2d", { willReadFrequently: true })!;
+export function photograph(seed: string, scene: Scene, w: number, h: number): AnyCanvas {
+  const c = makeCanvas(w, h);
+  const ctx = context(c, true);
   const s = hashSeed(`photo:${seed}`);
   const r = rng(s);
   switch (scene) {
@@ -192,7 +191,7 @@ export function photograph(seed: string, scene: Scene, w: number, h: number): HT
 }
 
 /** Crushed tone, grain, a partial threshold and toner streaks. */
-function copier(ctx: CanvasRenderingContext2D, w: number, h: number, seed: number): void {
+function copier(ctx: Ctx2D, w: number, h: number, seed: number): void {
   const img = ctx.getImageData(0, 0, w, h);
   const d = img.data;
   const r = rng(seed ^ 0x3c6ef372);
@@ -226,7 +225,7 @@ function copier(ctx: CanvasRenderingContext2D, w: number, h: number, seed: numbe
 }
 
 /** Paper grain for the printed sheets: specks and faint toner dust on white. */
-export function paperGrain(ctx: CanvasRenderingContext2D, w: number, h: number, seed: string): void {
+export function paperGrain(ctx: Ctx2D, w: number, h: number, seed: string): void {
   const r = rng(hashSeed(`paper:${seed}`));
   const n = Math.round((w * h) / 900);
   ctx.save();

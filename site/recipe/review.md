@@ -1,5 +1,9 @@
 # Review record
 
+## v4: floppy disks, the boot screen and polish
+
+The review, its defects and its checks are recorded in `direction-v4.md`.
+
 ## v3: black metal and Helvetica
 
 The review, its defects and its checks are recorded in `direction-v3.md`.

@@ -1,3 +1,4 @@
+import { sound } from "../sound";
 import type { Store } from "../state";
 
 /**
@@ -24,6 +25,7 @@ export function mountFlicker(store: Store): void {
 
   function burst(): void {
     if (!allowed()) return schedule(6000);
+    sound.hiss();
     // Two flashes: on 70 ms, off 55 ms, on 45 ms, off.
     const steps: [boolean, number][] = [[true, 70], [false, 55], [true, 45]];
     let t = 0;

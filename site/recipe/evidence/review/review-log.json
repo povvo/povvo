@@ -1,5 +1,204 @@
 [
   {
+    "scene": "desktop-boot",
+    "shot": "first-paint",
+    "file": "desktop-boot-01-first-paint.png",
+    "state": "browsing",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "Loading the catalogue",
+    "status": ""
+  },
+  {
+    "scene": "desktop-boot",
+    "shot": "writing",
+    "file": "desktop-boot-02-writing.png",
+    "state": "settled",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "deepest research",
+    "status": "11 / 11. deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python, updated 5 Sept 2026."
+  },
+  {
+    "scene": "desktop-boot",
+    "shot": "after",
+    "file": "desktop-boot-03-after.png",
+    "state": "settled",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "deepest research",
+    "status": "11 / 11. deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python, updated 5 Sept 2026."
+  },
+  {
+    "scene": "desktop-boot",
+    "errors": [
+      "warning: Service Worker registration blocked by Playwright",
+      "error: Failed to load resource: the server responded with a status of 403 (Forbidden)"
+    ]
+  },
+  {
+    "scene": "desktop-inspect",
+    "shot": "shutter-peek",
+    "file": "desktop-inspect-01-shutter-peek.png",
+    "state": "settled",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "deepest research",
+    "status": "11 / 11. deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python, updated 5 Sept 2026."
+  },
+  {
+    "scene": "desktop-inspect",
+    "shot": "back",
+    "file": "desktop-inspect-02-back.png",
+    "state": "settled",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "deepest research",
+    "status": "11 / 11. deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python, updated 5 Sept 2026."
+  },
+  {
+    "scene": "desktop-inspect",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 403 (Forbidden)"
+    ]
+  },
+  {
+    "scene": "sequence-insert",
+    "shot": "in-t0150ms",
+    "file": "sequence-insert-01-in-t0150ms.png",
+    "state": "open",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "deepest research",
+    "status": "11 / 11. deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python, updated 5 Sept 2026."
+  },
+  {
+    "scene": "sequence-insert",
+    "shot": "in-t0300ms",
+    "file": "sequence-insert-02-in-t0300ms.png",
+    "state": "open",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "deepest research",
+    "status": "11 / 11. deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python, updated 5 Sept 2026."
+  },
+  {
+    "scene": "sequence-insert",
+    "shot": "in-t0450ms",
+    "file": "sequence-insert-03-in-t0450ms.png",
+    "state": "open",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "deepest research",
+    "status": "11 / 11. deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python, updated 5 Sept 2026."
+  },
+  {
+    "scene": "sequence-insert",
+    "shot": "in-t0600ms",
+    "file": "sequence-insert-04-in-t0600ms.png",
+    "state": "open",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "deepest research",
+    "status": "11 / 11. deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python, updated 5 Sept 2026."
+  },
+  {
+    "scene": "sequence-insert",
+    "shot": "in-t0750ms",
+    "file": "sequence-insert-05-in-t0750ms.png",
+    "state": "open",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "deepest research",
+    "status": "11 / 11. deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python, updated 5 Sept 2026."
+  },
+  {
+    "scene": "sequence-insert",
+    "shot": "in-t0900ms",
+    "file": "sequence-insert-06-in-t0900ms.png",
+    "state": "open",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "deepest research",
+    "status": "11 / 11. deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python, updated 5 Sept 2026."
+  },
+  {
+    "scene": "sequence-insert",
+    "shot": "in-t1050ms",
+    "file": "sequence-insert-07-in-t1050ms.png",
+    "state": "open",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "deepest research",
+    "status": "11 / 11. deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python, updated 5 Sept 2026."
+  },
+  {
+    "scene": "sequence-insert",
+    "shot": "in-t1200ms",
+    "file": "sequence-insert-08-in-t1200ms.png",
+    "state": "open",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "deepest research",
+    "status": "11 / 11. deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python, updated 5 Sept 2026."
+  },
+  {
+    "scene": "sequence-insert",
+    "shot": "in-read",
+    "file": "sequence-insert-09-in-read.png",
+    "state": "open",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "deepest research",
+    "status": "11 / 11. deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python, updated 5 Sept 2026."
+  },
+  {
+    "scene": "sequence-insert",
+    "shot": "out-t0120ms",
+    "file": "sequence-insert-10-out-t0120ms.png",
+    "state": "settled",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "deepest research",
+    "status": "11 / 11. deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python, updated 5 Sept 2026."
+  },
+  {
+    "scene": "sequence-insert",
+    "shot": "out-t0240ms",
+    "file": "sequence-insert-11-out-t0240ms.png",
+    "state": "settled",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "deepest research",
+    "status": "11 / 11. deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python, updated 5 Sept 2026."
+  },
+  {
+    "scene": "sequence-insert",
+    "shot": "out-t0360ms",
+    "file": "sequence-insert-12-out-t0360ms.png",
+    "state": "settled",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "deepest research",
+    "status": "11 / 11. deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python, updated 5 Sept 2026."
+  },
+  {
+    "scene": "sequence-insert",
+    "shot": "out-t0480ms",
+    "file": "sequence-insert-13-out-t0480ms.png",
+    "state": "settled",
+    "renderer": "webgl",
+    "motion": "full",
+    "caption": "deepest research",
+    "status": "11 / 11. deepest research. An agent skill for source-grounded research design, evidence search, method comparison, and executable research workflows. Python, updated 5 Sept 2026."
+  },
+  {
+    "scene": "sequence-insert",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 403 (Forbidden)"
+    ]
+  },
+  {
     "scene": "desktop-snapshot",
     "shot": "arrival",
     "file": "desktop-snapshot-01-arrival.png",
@@ -114,20 +313,20 @@
   {
     "scene": "desktop-stress60",
     "probe": {
-      "frames": 23,
-      "avg": 58.88695652174319,
-      "max": 500
+      "frames": 5,
+      "avg": 358.0000000000371,
+      "max": 683.2999999999993
     }
   },
   {
     "scene": "desktop-stress60",
     "shot": "wheel-turning",
     "file": "desktop-stress60-02-wheel-turning.png",
-    "state": "settled",
+    "state": "browsing",
     "renderer": "webgl",
     "motion": "full",
-    "caption": "margin quiet 22",
-    "status": "50 / 60. margin quiet 22. A margin for quiet, with sources, a validator and a worked example. Rust, updated 22 Sept 2026."
+    "caption": "drum field 24",
+    "status": "60 / 60. drum field 24. No description. PowerShell, updated 24 Sept 2026."
   },
   {
     "scene": "desktop-stress60",
@@ -136,18 +335,18 @@
     "state": "settled",
     "renderer": "webgl",
     "motion": "full",
-    "caption": "margin quiet 22",
-    "status": "50 / 60. margin quiet 22. A margin for quiet, with sources, a validator and a worked example. Rust, updated 22 Sept 2026."
+    "caption": "field drum margin margin 21",
+    "status": "45 / 60. field drum margin margin 21. No description. Lua, updated 21 Sept 2026."
   },
   {
     "scene": "desktop-stress60",
     "shot": "drag-release",
     "file": "desktop-stress60-04-drag-release.png",
-    "state": "browsing",
+    "state": "settled",
     "renderer": "webgl",
     "motion": "full",
-    "caption": "margin quiet 22",
-    "status": "50 / 60. margin quiet 22. A margin for quiet, with sources, a validator and a worked example. Rust, updated 22 Sept 2026."
+    "caption": "quiet margin 19",
+    "status": "35 / 60. quiet margin 19. A quiet for margin, with sources, a validator and a worked example. Shell, updated 19 Sept 2026, 94 stars."
   },
   {
     "scene": "desktop-stress60",
@@ -156,8 +355,8 @@
     "state": "settled",
     "renderer": "webgl",
     "motion": "full",
-    "caption": "paper kitchen 32",
-    "status": "37 / 60. paper kitchen 32. No description. PowerShell, updated 4 Sept 2026."
+    "caption": "quiet margin 19",
+    "status": "35 / 60. quiet margin 19. A quiet for margin, with sources, a validator and a worked example. Shell, updated 19 Sept 2026, 94 stars."
   },
   {
     "scene": "desktop-stress60",
@@ -166,12 +365,47 @@
     "state": "open",
     "renderer": "webgl",
     "motion": "full",
-    "caption": "paper kitchen 32",
-    "status": "37 / 60. paper kitchen 32. No description. PowerShell, updated 4 Sept 2026."
+    "caption": "quiet margin 19",
+    "status": "35 / 60. quiet margin 19. A quiet for margin, with sources, a validator and a worked example. Shell, updated 19 Sept 2026, 94 stars."
   },
   {
     "scene": "desktop-stress60",
     "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
       "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
       "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
       "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
@@ -224,6 +458,31 @@
     "motion": "full",
     "caption": "study signal orbit atlas 01",
     "status": "01 / 12. study signal orbit atlas 01. A study for signal, with sources, a validator and a worked example. Python, updated 1 Sept 2026."
+  },
+  {
+    "scene": "desktop-filter",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ]
   },
   {
     "scene": "sequence-close-on-turn",
@@ -442,6 +701,25 @@
     "status": "04 / 24. drum field 24. No description. PowerShell, updated 24 Sept 2026."
   },
   {
+    "scene": "sequence-reflow",
+    "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    ]
+  },
+  {
     "scene": "phone-stress60",
     "shot": "settled",
     "file": "phone-stress60-01-settled.png",
@@ -464,6 +742,15 @@
   {
     "scene": "phone-stress60",
     "errors": [
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
       "error: Failed to load resource: the server responded with a status of 404 (Not Found)"
     ]
   },
@@ -500,6 +787,17 @@
   {
     "scene": "reduced-motion",
     "errors": [
+      "warning: Service Worker registration blocked by Playwright",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
       "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
       "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
       "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
@@ -530,6 +828,12 @@
   {
     "scene": "flat-renderer",
     "errors": [
+      "warning: Service Worker registration blocked by Playwright",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
       "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
       "error: Failed to load resource: the server responded with a status of 404 (Not Found)",
       "error: Failed to load resource: the server responded with a status of 404 (Not Found)",

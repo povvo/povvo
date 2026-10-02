@@ -1,5 +1,5 @@
 import { type Entry, type Order, pad2 } from "../catalogue";
-import { logoCanvas } from "../logo";
+import { logoArt } from "../art";
 import type { State, Store } from "../state";
 
 /**
@@ -26,14 +26,15 @@ export function mountIndex(root: HTMLElement, opener: HTMLElement, store: Store)
         const li = e.target as HTMLElement;
         logos.unobserve(li);
         const slot = li.querySelector<HTMLElement>(".track__logo")!;
-        const logo = logoCanvas(li.dataset.title ?? "", 52 * dpr, "#fff");
-        const c = document.createElement("canvas");
-        c.width = logo.width;
-        c.height = logo.height;
-        c.getContext("2d")!.drawImage(logo, 0, 0);
-        c.style.height = "52px";
-        c.style.width = `${(logo.width / logo.height) * 52}px`;
-        slot.replaceChildren(c);
+        void logoArt(li.dataset.title ?? "", 52 * dpr, "#fff", 3).then((logo) => {
+          const c = document.createElement("canvas");
+          c.width = logo.width;
+          c.height = logo.height;
+          c.getContext("2d")!.drawImage(logo, 0, 0);
+          c.style.height = "52px";
+          c.style.width = `${(logo.width / logo.height) * 52}px`;
+          slot.replaceChildren(c);
+        });
       }
     },
     { root: sheet, rootMargin: "200px 0px" },

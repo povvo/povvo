@@ -5,14 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="color-scheme" content="dark" />
     <meta name="theme-color" content="#000000" />
-    <meta name="description" content="Ethan Lee Barrett. Public work: every repository as a case on a revolving rack. Turn the rack, take a case out, open it to read." />
+    <meta name="description" content="Ethan Lee Barrett. Public work: every repository as a floppy disk in a box. Flip through, take a disk out, put it in the drive to read." />
     <meta property="og:title" content="Ethan Lee Barrett — public work" />
-    <meta property="og:description" content="Every repository as a case on a revolving rack. Turn the rack, take a case out, open it to read." />
+    <meta property="og:description" content="Every repository as a floppy disk in a box. Flip through, take a disk out, put it in the drive to read." />
     <meta property="og:type" content="website" />
     <title>Ethan Lee Barrett — public work</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
   </head>
-  <body data-state="loading" data-motion="full" data-renderer="pending">
+  <body data-state="loading" data-motion="full" data-renderer="pending" data-boot="on">
+    <div class="boot" data-boot-screen>
+      <div class="boot__frame">
+        <p class="boot__name">Ethan Lee Barrett</p>
+        <div class="boot__logo" data-boot-logo aria-hidden="true"></div>
+        <div class="boot__disks" data-boot-disks aria-hidden="true"></div>
+        <p class="boot__line" role="status" aria-live="polite"><span data-boot-msg>Reading the box</span><span class="boot__count" data-boot-count></span></p>
+        <p class="boot__skip" aria-hidden="true">Any key or a tap to skip</p>
+      </div>
+    </div>
+
     <a class="skip" href="#index-open">Skip to the index</a>
 
     <main class="stage" aria-labelledby="stage-title">
@@ -28,20 +38,21 @@
       <header class="bar">
         <h1 class="bar__name">Ethan Lee Barrett</h1>
         <p class="bar__line">Public work, <span data-count>—</span></p>
-        <p class="bar__hint"><span class="bar__hint--keys">Drag, scroll or <kbd>←</kbd> <kbd>→</kbd> to turn</span><span class="bar__hint--touch">Swipe sideways to turn</span></p>
+        <p class="bar__hint"><span class="bar__hint--keys">Scroll or <kbd>←</kbd> <kbd>→</kbd> to flip, type to jump</span><span class="bar__hint--touch">Swipe sideways to flip</span></p>
         <nav class="bar__nav" aria-label="Site">
           <button class="bar__link" type="button" id="index-open" data-index-open aria-haspopup="dialog" aria-controls="index">Index <span class="bar__count" data-tally></span></button>
+          <button class="bar__link" type="button" data-sound-toggle aria-pressed="false">Sound off</button>
           <button class="bar__link" type="button" data-motion-toggle aria-pressed="false">Motion on</button>
           <a class="bar__link" href="https://github.com/povvo" rel="me">GitHub <span aria-hidden="true">↗</span></a>
         </nav>
       </header>
 
-      <section class="caption" data-caption aria-label="The case out of the rack">
+      <section class="caption" data-caption aria-label="The disk out of the box">
         <p class="caption__no" data-no>&nbsp;</p>
         <h3 class="caption__title" data-title>Loading the catalogue</h3>
         <p class="caption__desc" data-desc></p>
         <p class="caption__meta" data-meta></p>
-        <button class="caption__open" type="button" data-open hidden><span class="caption__label">Open the case</span> <kbd aria-hidden="true">↵</kbd></button>
+        <button class="caption__open" type="button" data-open hidden><span class="caption__label">Read the disk</span> <kbd aria-hidden="true">↵</kbd></button>
       </section>
 
       <nav class="turn" aria-label="Neighbouring projects" data-turn>
@@ -50,6 +61,7 @@
       </nav>
 
       <p class="stage__status sr-only" role="status" aria-live="polite" data-status></p>
+      <div class="tip" data-tip hidden aria-hidden="true"></div>
     </main>
 
     <section class="index" id="index" role="dialog" aria-modal="true" aria-labelledby="index-title" data-index hidden>
@@ -73,11 +85,12 @@
     </section>
 
     <section class="spread" role="dialog" aria-modal="false" aria-labelledby="spread-title" data-booklet hidden>
+      <div class="spread__drive" aria-hidden="true"><span class="spread__slot"></span><span class="spread__led"></span><span class="spread__badge">1.44 MB</span></div>
       <div class="spread__sheet" data-booklet-sheet>
         <header class="spread__head">
           <div class="spread__bar">
             <span class="spread__no" data-booklet-no></span>
-            <button class="spread__close" type="button" data-booklet-close aria-label="Close the case">Close <kbd>Esc</kbd></button>
+            <button class="spread__close" type="button" data-booklet-close aria-label="Eject the disk">Eject <kbd>Esc</kbd></button>
           </div>
           <div class="spread__logo" data-booklet-logo aria-hidden="true"></div>
           <h2 class="spread__title" id="spread-title" data-booklet-title></h2>
@@ -86,7 +99,7 @@
         <p class="spread__standfirst" data-booklet-desc></p>
         <p class="spread__links"><a class="spread__link" data-booklet-link href="#" target="_blank" rel="noopener">Open on GitHub <span aria-hidden="true">↗</span></a></p>
         <div class="spread__body" data-booklet-body>
-          <p class="spread__state">Fetching the README from GitHub</p>
+          <p class="spread__state">Reading the disk</p>
         </div>
       </div>
     </section>

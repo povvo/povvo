@@ -1,30 +1,30 @@
 import type { Spring } from "./motion";
 
 /**
- * The case sequence gates (recipe/direction-v2.md, mechanism changes). Pure, so the review
- * simulation (scripts/simulate-gates.ts) runs exactly what the stage runs.
+ * The disk sequence gates (recipe/direction-v4.md). Pure, so the review simulation
+ * (scripts/simulate-gates.ts) runs exactly what the stage runs.
  *
- * Out:  pull → turn → open.   Back: close → turn back → retract.
+ * Out:  lift (pull) → turn → into the drive (open).   Back: eject → turn back → drop home.
  *
- * PULL_CLEAR: a case may begin to turn only once it is out far enough that its turning sweep
- *   (radius 0.709) clears the rack's outer edge: PULL_OUT × 0.9 = 1.44 > 1.414.
- * TURN_BLOCK: no case starts its turn while another is turned more than this.
- * FRONT_CLEAR: no case starts to pull out while another is still on its way home past the
- *   front of the rack (the presented case steps back, then swings home along the arc).
+ * PULL_CLEAR: a disk may begin to travel only once it is lifted far enough that its foot clears
+ *   the tops of the disks leaning towards the viewer: 0.9 × 0.92 × cos 9° = 0.82 > 0.94 × cos 34° = 0.78.
+ * TURN_BLOCK: no disk starts its turn while another is turned more than this.
+ * FRONT_CLEAR: no disk starts to lift while another is still on its way home.
  */
 export const PULL_CLEAR = 0.9;
 export const TURN_READY = 0.92;
 export const OPEN_SHUT = 0.06;
 export const TURN_HOME = 0.05;
 export const TURN_BLOCK = 0.04;
-/** No case starts to pull out while another is still forward of the arc (turn above this). */
+/** No disk starts to lift while another is still on its way home (turn above this). */
 export const FRONT_CLEAR = 0.1;
 
-/** Stiffness out and back: the way home is quicker than the way out (exits lead, entries settle). */
+/** Stiffness out and back: the way home is quicker than the way out (exits lead, entries settle);
+ *  the drive takes its time going in, so the shutter, the turn and the slide each read. */
 export const STIFFNESS = {
   pull: { out: 200, back: 220 },
   turn: { out: 150, back: 220 },
-  open: { out: 70, back: 150 },
+  open: { out: 55, back: 150 },
 } as const;
 
 export interface Gated {

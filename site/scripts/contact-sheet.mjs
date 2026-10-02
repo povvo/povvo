@@ -10,22 +10,22 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const dir = path.join(here, "..", "recipe", "evidence", "review");
 const out = path.join(here, "..", "recipe", "evidence", "contact-sheet.jpg");
 const wanted = [
-  ["desktop-shadows-01-settled-high", "Settled: the logo across the top, the case standing in front of its foot, Helvetica at the foot"],
-  ["desktop-stress60-03-wheel-settled", "Sixty cases: the rack in the dark, the presented case in the light"],
-  ["desktop-snapshot-03-turning", "Turning: the logo and the caption go while the rack moves"],
-  ["desktop-index-01-index-hover", "Index: a tape trader's list, every logo beside its name; the current row in negative"],
-  ["desktop-shadows-02-open-high", "Open: the case's insert as a photocopied sheet, the README in Helvetica"],
-  ["desktop-snapshot-06-open-readme", "Open, another case: the sheet and the disc"],
-  ["sequence-close-on-turn-03-t0450ms", "Turning off an open case, 450 ms: shut, stepping back, swinging home"],
-  ["sequence-close-on-turn-10-t1500ms", "1500 ms: the next case presented, its logo opening from the centre"],
-  ["sequence-reflow-03-t0300ms", "Sort reflow, 300 ms: cases under the floor"],
+  ["desktop-boot-01-first-paint", "Boot, first paint: the box being read"],
+  ["desktop-boot-02-writing", "Boot: the current logo up, the disks filling as they are written"],
+  ["desktop-shadows-01-settled-high", "Settled: the logo, the disk out of the box, the box lit at the foot"],
+  ["desktop-inspect-02-back", "Turned over: the hub and the write-protect tab"],
+  ["desktop-stress60-02-wheel-turning", "Sixty disks, flipping: the ones passed lean towards you"],
+  ["desktop-snapshot-04-settled-after-keys", "After flipping with the arrow keys"],
+  ["sequence-insert-01-in-t0150ms", "Into the drive, 150 ms: shutter open, turning on its side"],
+  ["sequence-insert-09-in-read", "In the drive: the light on, the README read off the disk"],
+  ["sequence-insert-10-out-t0120ms", "Eject, 120 ms: out of the slot before the sheet goes"],
+  ["desktop-index-01-index-hover", "Index: every logo beside its name; the current row in negative"],
+  ["sequence-reflow-03-t0300ms", "Sort reflow, 300 ms: disks under the floor"],
   ["desktop-filter-02-filtered", "Filtered to 'atlas'"],
-  ["desktop-snapshot-04-settled-after-keys", "After turning with the arrow keys"],
-  ["desktop-stress60-02-wheel-turning", "Sixty cases, turning"],
   ["phone-stress60-01-settled", "Phone, settled"],
   ["phone-stress60-02-open", "Phone, open: the sheet full screen"],
   ["reduced-motion-02-after-key", "Reduced motion: instant states, no flicker"],
-  ["flat-renderer-01-rest", "No WebGL: the flat rack under the logo"],
+  ["flat-renderer-01-rest", "No WebGL: flat disks under the logo"],
 ];
 const files = await readdir(dir);
 const items = wanted.map(([k, label]) => ({ file: files.find((f) => f.startsWith(k)), label })).filter((x) => x.file);

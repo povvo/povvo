@@ -2,13 +2,13 @@
   "tool": "simulate-gates",
   "pull_clear": 0.9,
   "status": "PASS",
-  "interpretation_boundary": "Simulates the stage's gates and springs at 120 Hz with the rack geometry's clearance constants; it does not render or test feel.",
+  "interpretation_boundary": "Simulates the stage's gates and springs at 120 Hz with the disk box's clearance constants; it does not render or test feel.",
   "results": [
     {
-      "scenario": "open case, then turn to the next one",
+      "scenario": "disk in the drive, then flip to the next one",
       "status": "PASS",
       "findings": [],
-      "min_clearance_while_turning": 0.023,
+      "min_clearance_while_turning": 0.021,
       "max_second_case_turn": 0.0007,
       "max_open_while_unturned": 0.0424,
       "max_pull_while_another_forward": 0,
@@ -68,10 +68,10 @@
       ]
     },
     {
-      "scenario": "open case, then three fast steps",
+      "scenario": "disk in the drive, then three fast flips",
       "status": "PASS",
       "findings": [],
-      "min_clearance_while_turning": 0.023,
+      "min_clearance_while_turning": 0.021,
       "max_second_case_turn": 0.0001,
       "max_open_while_unturned": 0.0424,
       "max_pull_while_another_forward": 0,
@@ -131,10 +131,10 @@
       ]
     },
     {
-      "scenario": "presenting case reversed mid-turn",
+      "scenario": "presenting disk reversed mid-turn",
       "status": "PASS",
       "findings": [],
-      "min_clearance_while_turning": 0.023,
+      "min_clearance_while_turning": 0.021,
       "max_second_case_turn": 0,
       "max_open_while_unturned": 0,
       "max_pull_while_another_forward": 0,

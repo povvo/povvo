@@ -1,3 +1,4 @@
+import { type AnyCanvas, type Ctx2D, context, makeCanvas } from "./art/canvas";
 import { type Rand, hashSeed, range, rng, valueNoise } from "./random";
 
 /**
@@ -429,14 +430,19 @@ export function logoAspect(text: string): number {
   return (x1 - x0) / (y1 - y0);
 }
 
-const canvasCache = new Map<string, HTMLCanvasElement>();
+const canvasCache = new Map<string, AnyCanvas>();
 
 /**
  * The logo for `text` as a canvas `height` device pixels tall (its width follows from the
  * aspect), in `ink` on transparent. Sizes are bucketed so neighbouring requests share a canvas.
  */
-export function logoCanvas(text: string, height: number, ink = "#fff"): HTMLCanvasElement {
-  const bucket = height < 120 ? Math.max(12, Math.round(height / 4) * 4) : Math.round(height / 24) * 24;
+/** Requested heights are bucketed so neighbouring sizes share one drawing (and one cache entry). */
+export function logoBucket(height: number): number {
+  return height < 120 ? Math.max(12, Math.round(height / 4) * 4) : Math.round(height / 24) * 24;
+}
+
+export function logoCanvas(text: string, height: number, ink = "#fff"): AnyCanvas {
+  const bucket = logoBucket(height);
   const key = `${text.trim().toLowerCase()}|${bucket}|${ink}`;
   const hit = canvasCache.get(key);
   if (hit) return hit;
@@ -449,10 +455,8 @@ export function logoCanvas(text: string, height: number, ink = "#fff"): HTMLCanv
   const pad = Math.ceil(3 * k);
   const W = Math.ceil((x1 - x0) * scale) + pad * 2;
   const Hc = Math.ceil(H) + pad * 2;
-  const c = document.createElement("canvas");
-  c.width = W;
-  c.height = Hc;
-  const ctx = c.getContext("2d", { willReadFrequently: true })!;
+  const c = makeCanvas(W, Hc);
+  const ctx = context(c, true);
   ctx.setTransform(scale, 0, 0, scale, pad - x0 * scale, pad - y0 * scale);
   ctx.fillStyle = "#fff";
   ctx.strokeStyle = "#fff";
@@ -483,10 +487,8 @@ export function logoCanvas(text: string, height: number, ink = "#fff"): HTMLCanv
   ink_(ctx, W, Hc, scale, geo.seed, ink);
   let out = c;
   if (k > 1) {
-    out = document.createElement("canvas");
-    out.width = Math.round(W / k);
-    out.height = Math.round(Hc / k);
-    const o = out.getContext("2d")!;
+    out = makeCanvas(W / k, Hc / k);
+    const o = context(out);
     o.imageSmoothingEnabled = true;
     o.imageSmoothingQuality = "high";
     o.drawImage(c, 0, 0, out.width, out.height);
@@ -497,13 +499,13 @@ export function logoCanvas(text: string, height: number, ink = "#fff"): HTMLCanv
 }
 
 /** The logo for `text`, as large as fits in `maxW` by `maxH` device pixels. */
-export function fitLogo(text: string, maxW: number, maxH: number, ink = "#fff"): HTMLCanvasElement {
+export function fitLogo(text: string, maxW: number, maxH: number, ink = "#fff"): AnyCanvas {
   const a = logoAspect(text);
   return logoCanvas(text, Math.max(12, Math.min(maxH, maxW / a)), ink);
 }
 
 /** Draw the logo into `ctx`, fitted to the box and centred in it. */
-export function paintLogo(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, w: number, h: number, ink = "#fff"): void {
+export function paintLogo(ctx: Ctx2D, text: string, x: number, y: number, w: number, h: number, ink = "#fff"): void {
   const logo = fitLogo(text, w, h, ink);
   const k = Math.min(w / logo.width, h / logo.height);
   const dw = logo.width * k;
@@ -511,7 +513,7 @@ export function paintLogo(ctx: CanvasRenderingContext2D, text: string, x: number
   ctx.drawImage(logo, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh);
 }
 
-function fillThorn(ctx: CanvasRenderingContext2D, t: Thorn): void {
+function fillThorn(ctx: Ctx2D, t: Thorn): void {
   const n = 14;
   const left: Pt[] = [];
   const right: Pt[] = [];
@@ -536,7 +538,7 @@ function fillThorn(ctx: CanvasRenderingContext2D, t: Thorn): void {
  * edges go ragged, ink pools in the tight joins and the finest hairs break up, as in a
  * photocopy of a pen drawing. Then colour it.
  */
-function ink_(ctx: CanvasRenderingContext2D, W: number, H: number, scale: number, seed: number, ink: string): void {
+function ink_(ctx: Ctx2D, W: number, H: number, scale: number, seed: number, ink: string): void {
   const img = ctx.getImageData(0, 0, W, H);
   const d = img.data;
   const n = W * H;

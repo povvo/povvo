@@ -2,7 +2,7 @@ import { metaLine, position } from "../catalogue";
 import type { State, Store } from "../state";
 
 /**
- * The caption is the case out of the rack, typeset on the grid with no box around it. Feedback
+ * The caption is the disk out of the box, typeset on the grid with no box around it. Feedback
  * and result are separate moments: the position updates as soon as the selection moves; the
  * code, standfirst and meta rise into place once the rack has settled and the case is out.
  * Under reduced motion both are immediate. The status region announces the settled case.
@@ -43,7 +43,7 @@ export function mountCaption(root: HTMLElement, turn: HTMLElement, status: HTMLE
     }
     shownName = entry.name;
     title.textContent = entry.title;
-    desc.textContent = entry.description?.trim() || "No description on GitHub yet. The README is inside.";
+    desc.textContent = entry.description?.trim() || "No description on GitHub yet. The README is on the disk.";
     meta.textContent = metaLine(entry);
     root.dataset.swap = "off";
     void root.offsetWidth;
@@ -73,7 +73,7 @@ export function mountCaption(root: HTMLElement, turn: HTMLElement, status: HTMLE
     }
     no.textContent = position(state.current, state.visible.length);
     open.hidden = false;
-    open.innerHTML = state.mode === "open" ? '<span class="caption__label">Close the case</span> <kbd aria-hidden="true">Esc</kbd>' : '<span class="caption__label">Open the case</span> <kbd aria-hidden="true">↵</kbd>';
+    open.innerHTML = state.mode === "open" ? '<span class="caption__label">Eject the disk</span> <kbd aria-hidden="true">Esc</kbd>' : '<span class="caption__label">Read the disk</span> <kbd aria-hidden="true">↵</kbd>';
 
     const immediate = state.motion === "reduced" || state.renderer === "flat";
     if (immediate || state.mode === "settled" || state.mode === "open") swap(state);

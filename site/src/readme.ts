@@ -86,3 +86,21 @@ export function renderReadme(entry: Entry, markdown: string): string {
   DOMPurify.removeAllHooks();
   return clean;
 }
+
+const rendered = new Map<string, Promise<string | null>>();
+
+/**
+ * The README as sanitised HTML, fetched and rendered once. Opening a disk that was prefetched
+ * (src/main.ts prefetches the settled disk and its neighbours while the page is idle) costs
+ * nothing.
+ */
+export function readmeHtml(entry: Entry): Promise<string | null> {
+  const key = `${entry.name}@${entry.default_branch}`;
+  let hit = rendered.get(key);
+  if (!hit) {
+    hit = fetchReadme(entry).then((text) => (text === null ? null : renderReadme(entry, text)));
+    hit.catch(() => rendered.delete(key));
+    rendered.set(key, hit);
+  }
+  return hit;
+}

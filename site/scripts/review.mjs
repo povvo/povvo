@@ -61,9 +61,10 @@ async function viaCurl(route) {
 const browser = await chromium.launch({ args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"] });
 const log = [];
 
-async function scene(name, { viewport, query = "", reducedMotion = "no-preference", steps }) {
+async function scene(name, { viewport, query = "", reducedMotion = "no-preference", keepBoot = false, steps }) {
   if (only && !name.startsWith(only)) return;
-  const context = await browser.newContext({ viewport, deviceScaleFactor: 1, reducedMotion, hasTouch: viewport.width < 600, ignoreHTTPSErrors: true });
+  // Service workers are blocked: requests they make bypass the route below.
+  const context = await browser.newContext({ viewport, deviceScaleFactor: 1, reducedMotion, hasTouch: viewport.width < 600, ignoreHTTPSErrors: true, serviceWorkers: "block" });
   await context.route((url) => url.protocol === "https:", viaCurl);
   const page = await context.newPage();
   const errors = [];
@@ -79,6 +80,11 @@ async function scene(name, { viewport, query = "", reducedMotion = "no-preferenc
     return;
   }
   await page.evaluate(() => document.fonts.ready);
+  if (!keepBoot) {
+    // The boot screen draws the first view; the scenes start once it has gone.
+    try { await page.waitForFunction(() => !document.body.dataset.boot, null, { timeout: 30000 }); }
+    catch { log.push({ scene: name, warning: "boot screen did not finish" }); }
+  }
   let i = 0;
   for (const step of steps) {
     if (step.key) await page.keyboard.press(step.key);
@@ -88,6 +94,8 @@ async function scene(name, { viewport, query = "", reducedMotion = "no-preferenc
     if (step.type) await page.keyboard.type(step.type, { delay: 40 });
     if (step.select) await page.selectOption(step.select[0], step.select[1]);
     if (step.freeze) await page.evaluate(() => window.__rack?.freeze());
+    if (step.flip) { await page.evaluate(() => window.__rack?.flip()); await page.waitForTimeout(300); }
+    if (step.move) { await page.mouse.move(step.move[0], step.move[1], { steps: 4 }); await page.waitForTimeout(80); }
     if (step.advance) { await page.evaluate((ms) => window.__rack?.step(ms), step.advance); await page.waitForTimeout(60); }
     if (step.until) {
       try { await page.waitForFunction((st) => document.body.dataset.state === st, step.until, { timeout: 15000 }); }
@@ -123,6 +131,27 @@ async function scene(name, { viewport, query = "", reducedMotion = "no-preferenc
 }
 
 const desktop = { width: 1440, height: 900 };
+
+// The boot screen itself, without the review clock: first paint, mid-way, and the page after it.
+await scene("desktop-boot", { viewport: desktop, query: "?quality=low", keepBoot: true, steps: [
+  { wait: 60, shot: "first-paint" },
+  { wait: 450, shot: "writing" },
+  { wait: 2600, shot: "after" },
+] });
+// The presented disk up close: the shutter peeking under the pointer, the back with its hub.
+await scene("desktop-inspect", { viewport: desktop, query: "?review=1", steps: [
+  { snap: true }, { until: "settled" }, { snap: true },
+  { move: [720, 420] }, { move: [700, 345] }, { wait: 500, shot: "shutter-peek" },
+  { move: [300, 700] }, { flip: true }, { wait: 600, shot: "back" },
+] });
+// Into the drive and out again, sampled on the fixed-step clock.
+await scene("sequence-insert", { viewport: desktop, query: "?quality=low&review=1", steps: [
+  { snap: true }, { until: "settled" }, { snap: true }, { freeze: true }, { key: "Enter" },
+  ...Array.from({ length: 8 }, (_, k) => ({ advance: 150, shot: `in-t${String((k + 1) * 150).padStart(4, "0")}ms` })),
+  { advance: 600, shot: "in-read" },
+  { key: "Escape" },
+  ...Array.from({ length: 4 }, (_, k) => ({ advance: 120, shot: `out-t${String((k + 1) * 120).padStart(4, "0")}ms` })),
+] });
 const phone = { width: 390, height: 844 };
 
 await scene("desktop-snapshot", { viewport: desktop, query: "?quality=low&review=1", steps: [

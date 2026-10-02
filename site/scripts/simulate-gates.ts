@@ -1,34 +1,38 @@
 /**
  * Gate simulation (interactive-and-realtime-motion: interruption and reversal; 3d-motion-design:
  * collision clearance). Runs the stage's own springs and gates (src/motion.ts, src/gates.ts) on
- * three scenarios and checks the invariants the direction promises:
- *   clearance   a case yaws only when it is out far enough to clear the rack, or by less
- *               than the side gap its neighbours leave it while it is still in its slot
- *   exclusive   two cases are never turned at once
- *   order       a case opens only when turned, and turns back only once shut
- *   front       no case pulls out while another is still forward of the arc
+ * three scenarios and checks the invariants the direction promises, for the disk box
+ * (recipe/direction-v4.md):
+ *   clearance   a disk travels out of its slot towards the camera only once its foot is above
+ *               the tops of the disks leaning towards the viewer; until then it stays in its
+ *               slot's plane, parallel to its neighbours, with the slot spacing to spare
+ *   exclusive   two disks are never out at once
+ *   order       a disk goes into the drive only when presented, and turns back only once ejected
+ *   front       no disk lifts out while another is still on its way home
  * Run: node --experimental-strip-types scripts/simulate-gates.ts [--output file]
  */
 import { writeFileSync } from "node:fs";
 import { FRONT_CLEAR, PULL_CLEAR, TURN_BLOCK, gateCase } from "../src/gates.ts";
 import { Spring } from "../src/motion.ts";
 
-const PULL_OUT = 1.6;
-const SWEEP = 0.709; // farthest point of a turning case from its pivot
-const RACK_OUTER = 0.705; // spine edge beyond the slot radius
-/** Half the side gap between neighbours at their inner edge, at the tightest arc (five degrees, sixty cases). */
-const HALF_GAP = (2 * (3.152 - 0.675) * Math.sin((5 * Math.PI) / 360) - 0.15) / 2;
+// Disk and box constants, as in src/floppy.ts and src/stage.ts.
+const H = 0.94;
+const T = 0.033;
+const GAP = 0.055;
+const LEAN_F = 0.6;
+const LEAN_B = 0.16;
+const PULL_LIFT = 0.98 * H;
+/** Turn below this keeps the disk over its slot (src/stage.ts: travel starts at turn 0.1). */
+const TRAVEL_FROM = 0.1;
 const DT = 1 / 120;
-const smoothstep = (t: number) => t * t * (3 - 2 * t);
 /**
- * Clearance of a case from its neighbours. Clear of the rack: the distance its sweep keeps
- * from the rack's outer edge. Still in the slot: the side gap left after its yaw.
+ * Clearance of a disk from its neighbours. Travelling: the height of its foot, slid up its own
+ * plane, over the tops of the disks leaning towards the viewer. Still over its slot: the gap
+ * left between parallel neighbours.
  */
 function clearance(pull: number, turn: number): number {
-  const out = PULL_OUT * pull - SWEEP - RACK_OUTER;
-  if (out >= 0) return out;
-  const yaw = (Math.PI / 2) * smoothstep(turn);
-  return HALF_GAP - SWEEP * Math.sin(yaw);
+  if (turn <= TRAVEL_FROM) return GAP * Math.cos(LEAN_B) - T;
+  return pull * PULL_LIFT * Math.cos(LEAN_B) - H * Math.cos(LEAN_F);
 }
 
 interface Case {
@@ -43,7 +47,7 @@ function makeCase(name: string): Case {
     name,
     pull: new Spring(0, { stiffness: 200, ratio: 1 }),
     turn: new Spring(0, { stiffness: 150, ratio: 1 }),
-    open: new Spring(0, { stiffness: 70, ratio: 1 }),
+    open: new Spring(0, { stiffness: 60, ratio: 1 }),
   };
 }
 
@@ -123,10 +127,10 @@ function run(name: string, events: Event[], seconds: number, start: { current: s
     maxDoubleTurn = Math.max(maxDoubleTurn, turned[1]);
   }
   const findings = [];
-  if (minClearanceWhileTurning < 0) findings.push({ level: "FAIL", code: "clearance", message: `a turning case came within ${minClearanceWhileTurning.toFixed(3)} of the rack` });
-  if (maxDoubleTurn > 0.06) findings.push({ level: "FAIL", code: "exclusive", message: `two cases turned at once (second ${maxDoubleTurn.toFixed(3)})` });
-  if (maxPullWhileAnotherForward > 0.02) findings.push({ level: "FAIL", code: "front", message: `a case pulled out ${maxPullWhileAnotherForward.toFixed(3)} while another was still forward of the arc` });
-  if (maxOpenWhileUnturned > 0.08) findings.push({ level: "FAIL", code: "order", message: `a case was ${maxOpenWhileUnturned.toFixed(3)} open while not turned` });
+  if (minClearanceWhileTurning < 0) findings.push({ level: "FAIL", code: "clearance", message: `a travelling disk came within ${minClearanceWhileTurning.toFixed(3)} of the disks in front` });
+  if (maxDoubleTurn > 0.06) findings.push({ level: "FAIL", code: "exclusive", message: `two disks out at once (second ${maxDoubleTurn.toFixed(3)})` });
+  if (maxPullWhileAnotherForward > 0.02) findings.push({ level: "FAIL", code: "front", message: `a disk lifted ${maxPullWhileAnotherForward.toFixed(3)} while another was still on its way home` });
+  if (maxOpenWhileUnturned > 0.08) findings.push({ level: "FAIL", code: "order", message: `a disk was ${maxOpenWhileUnturned.toFixed(3)} into the drive while not presented` });
   return {
     scenario: name,
     status: findings.length ? "FAIL" : "PASS",
@@ -140,15 +144,15 @@ function run(name: string, events: Event[], seconds: number, start: { current: s
 }
 
 const results = [
-  run("open case, then turn to the next one", [{ at: 0.2, current: "B" }], 4, { current: "A", mode: "open", out: ["A"] }),
-  run("open case, then three fast steps", [{ at: 0.2, current: "B" }, { at: 0.32, current: "C" }, { at: 0.44, current: "B" }], 4, { current: "A", mode: "open", out: ["A"] }),
-  run("presenting case reversed mid-turn", [{ at: 0.2, current: "B" }, { at: 1.35, current: "A" }], 5, { current: "A", mode: "settled", out: ["A"] }),
+  run("disk in the drive, then flip to the next one", [{ at: 0.2, current: "B" }], 4, { current: "A", mode: "open", out: ["A"] }),
+  run("disk in the drive, then three fast flips", [{ at: 0.2, current: "B" }, { at: 0.32, current: "C" }, { at: 0.44, current: "B" }], 4, { current: "A", mode: "open", out: ["A"] }),
+  run("presenting disk reversed mid-turn", [{ at: 0.2, current: "B" }, { at: 1.35, current: "A" }], 5, { current: "A", mode: "settled", out: ["A"] }),
 ];
 const out = {
   tool: "simulate-gates",
   pull_clear: PULL_CLEAR,
   status: results.every((r) => r.status === "PASS") ? "PASS" : "FAIL",
-  interpretation_boundary: "Simulates the stage's gates and springs at 120 Hz with the rack geometry's clearance constants; it does not render or test feel.",
+  interpretation_boundary: "Simulates the stage's gates and springs at 120 Hz with the disk box's clearance constants; it does not render or test feel.",
   results,
 };
 const outputAt = process.argv.indexOf("--output");

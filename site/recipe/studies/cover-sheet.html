@@ -1,34 +1,29 @@
 <!doctype html>
 <meta charset="utf-8">
-<title>Cover sheet</title>
+<title>Disk sheet</title>
+<!-- Every disk from the snapshot through src/labels.ts: the whole disk, and its label at hero size. Serve with pnpm dev at /recipe/studies/cover-sheet.html; ?stress for the synthetic set. -->
 <style>
   body { margin: 0; background: #000; color: #8c8c8c; padding: 24px; font: 11px/1.4 "Helvetica Neue", Helvetica, FreeSans, Arial, sans-serif; }
-  .grid { display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-end; }
+  .grid { display: flex; flex-wrap: wrap; gap: 22px; align-items: flex-end; }
   figure { margin: 0; display: grid; gap: 6px; }
   canvas { display: block; }
-  .row { display: flex; gap: 6px; align-items: flex-end; }
+  .row { display: flex; gap: 10px; align-items: flex-end; }
 </style>
 <div class="grid" id="g"></div>
 <script type="module">
   import { toEntries, stressEntries } from "/src/catalogue.ts";
-  import { drawInsert, drawSpine, drawInsideLeft, drawInsideRight, ensureFonts } from "/src/covers.ts";
+  import { diskCanvas, labelCanvas } from "/src/labels.ts";
   const repos = await (await fetch("/data/repos.json")).json();
-  const list = repos.repos ?? repos;
-  let entries = toEntries(list);
+  let entries = toEntries(repos.repos ?? repos);
   if (location.search.includes("stress")) entries = stressEntries(12);
-  await ensureFonts();
   const g = document.getElementById("g");
   for (const e of entries) {
+    const [disk, label] = await Promise.all([diskCanvas(e, 540), labelCanvas(e, 720)]);
+    disk.style.width = "230px";
+    label.style.width = "300px";
     const f = document.createElement("figure");
     const row = document.createElement("div"); row.className = "row";
-    const c = drawInsert(e, 540); c.style.width = "240px";
-    const s = drawSpine(e, 64); s.style.width = "26px";
-    row.append(s, c);
-    if (location.search.includes("inside")) {
-      const l = drawInsideLeft(e, 540); l.style.width = "240px";
-      const r = drawInsideRight(e, 540); r.style.width = "240px";
-      row.append(l, r);
-    }
+    row.append(disk, label);
     const cap = document.createElement("figcaption"); cap.textContent = `${e.no} ${e.name}`;
     f.append(row, cap); g.append(f);
   }

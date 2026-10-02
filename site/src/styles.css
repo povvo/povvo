@@ -148,6 +148,8 @@ html.is-inverted {
   position: absolute;
   inset: 0;
   z-index: 2;
+  /* A faint pool of light behind the presented disk, so its black edge reads against the black. */
+  background: radial-gradient(ellipse 34% 30% at 50% var(--glow-y, 56%), rgb(255 255 255 / 0.07), rgb(255 255 255 / 0) 100%);
 }
 .stage__canvas {
   display: block;
@@ -919,5 +921,232 @@ body[data-motion="reduced"] *::after {
 @media (forced-colors: active) {
   .track[aria-selected="true"] {
     outline: 2px solid CanvasText;
+  }
+}
+
+/* ---------- the boot screen (src/ui/boot.ts): the first paint, while the page draws ---------- */
+
+.boot {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  background: var(--page);
+  transition: background-color 420ms ease;
+}
+.boot__frame {
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding: var(--margin);
+}
+.boot__name {
+  margin: 0;
+  font-size: var(--small);
+  font-weight: 700;
+}
+.boot__logo {
+  align-self: center;
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  will-change: transform;
+}
+.boot__logo canvas {
+  display: block;
+}
+.boot[data-logo="in"] .boot__logo canvas {
+  animation: logo-open 640ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.boot__disks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 12px;
+}
+/* Each disk in the first view, filled as it is written. */
+.boot__disk {
+  position: relative;
+  width: 13px;
+  height: 14px;
+  border: 1px solid #636363;
+  border-radius: 1px;
+}
+.boot__disk::before {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 0;
+  width: 6px;
+  height: 4px;
+  background: #636363;
+}
+.boot__disk.is-written {
+  background: var(--ink);
+  border-color: var(--ink);
+  animation: disk-written 220ms ease-out;
+}
+.boot__disk.is-written::before {
+  background: #8c8c8c;
+}
+@keyframes disk-written {
+  from {
+    transform: translateY(-3px);
+  }
+}
+.boot__line {
+  margin: 0;
+  display: flex;
+  gap: 16px;
+  font-size: var(--small);
+  color: var(--grey);
+}
+.boot__count {
+  font-variant-numeric: tabular-nums;
+}
+.boot__skip {
+  position: absolute;
+  right: var(--margin);
+  bottom: var(--margin);
+  margin: 0;
+  font-size: var(--small);
+  color: var(--grey);
+}
+/* The exit: the words go, the ground clears, the logo travels to its place on the page. */
+.boot[data-phase="out"] {
+  background-color: transparent;
+  pointer-events: none;
+}
+.boot[data-phase="out"] :is(.boot__name, .boot__disks, .boot__line, .boot__skip) {
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+/* The page's own logo waits, placed and open, for the boot's to land on it; the chrome follows. */
+body[data-boot] .hero {
+  visibility: hidden;
+}
+.hero[data-state="shown"] canvas {
+  opacity: 1;
+}
+body[data-boot] :is(.bar, .caption, .turn) {
+  opacity: 0;
+}
+:is(.bar, .caption, .turn) {
+  transition: opacity 320ms ease;
+}
+
+/* ---------- the pointer's label over the box ---------- */
+
+.tip {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 25;
+  padding: 4px 8px;
+  background: var(--ink);
+  color: var(--page);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* ---------- the drive: the sheet's left edge (src/stage.ts feeds the disk into it) ---------- */
+
+.spread__drive {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 22px;
+  transform: translateX(-100%);
+  background: #0d0d0d;
+  box-shadow: inset -1px 0 0 #000, inset 1px 0 0 #1f1f1f;
+}
+.spread__slot {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--drive-y, 50vh) - var(--drive-h, 300px) / 2 - 6px);
+  height: calc(var(--drive-h, 300px) + 12px);
+  width: 5px;
+  transform: translateX(-50%);
+  background: #000;
+  box-shadow: 0 0 0 1px #262626, inset 1px 0 0 #050505;
+}
+.spread__led {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--drive-y, 50vh) + var(--drive-h, 300px) / 2 + 22px);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  background: #2b2b2b;
+}
+body[data-drive="reading"] .spread__led {
+  background: var(--ink);
+  box-shadow: 0 0 6px rgb(255 255 255 / 0.8);
+  animation: led-read 700ms steps(1) both;
+}
+@keyframes led-read {
+  0%,
+  20%,
+  45%,
+  70% {
+    opacity: 1;
+  }
+  10%,
+  30%,
+  55%,
+  80% {
+    opacity: 0.25;
+  }
+}
+.spread__badge {
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  writing-mode: vertical-rl;
+  transform: translateX(-50%) rotate(180deg);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--grey);
+}
+@media (min-width: 1024px) {
+  /* The sheet waits for the disk to come out of the drive before it goes. */
+  body[data-renderer="webgl"] .spread[data-phase="out"] {
+    animation-delay: 260ms;
+  }
+}
+@media (max-width: 1023px) {
+  .spread__drive {
+    display: none;
+  }
+}
+
+/* The README comes up block by block, as if read off the disk. */
+[data-reading]::after {
+  content: "";
+  display: inline-block;
+  width: 0.55em;
+  height: 1em;
+  margin-left: 4px;
+  vertical-align: -2px;
+  background: currentColor;
+  animation: caret 1s steps(1) infinite;
+}
+@keyframes caret {
+  50% {
+    opacity: 0;
+  }
+}
+.spread__body[data-read="in"] .readme > * {
+  animation: read-in 260ms ease-out both;
+  animation-delay: calc(var(--i, 24) * 22ms);
+}
+@keyframes read-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
   }
 }

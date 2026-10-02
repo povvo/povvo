@@ -2,6 +2,8 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   base: "./",
+  // Module workers, so the art worker (src/art/worker.ts) can import the generators.
+  worker: { format: "es" },
   build: {
     outDir: "dist",
     emptyOutDir: true,
