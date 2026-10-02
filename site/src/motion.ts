@@ -16,8 +16,8 @@ export class Spring {
   x: number;
   v = 0;
   target: number;
-  readonly k: number;
-  readonly c: number;
+  k: number;
+  c: number;
   readonly m: number;
 
   constructor(initial: number, opts: SpringOptions) {
@@ -42,6 +42,13 @@ export class Spring {
 
   settled(tolerance = 0.002, velocityTolerance = 0.01): boolean {
     return Math.abs(this.x - this.target) < tolerance && Math.abs(this.v) < velocityTolerance;
+  }
+
+  /** Change stiffness (and damping ratio) in flight; position and velocity are kept. */
+  tune(stiffness: number, ratio = 1): void {
+    if (this.k === stiffness) return;
+    this.k = stiffness;
+    this.c = 2 * Math.sqrt(stiffness * this.m) * ratio;
   }
 
   /** Jump without motion: the reduced-motion equivalent. */

@@ -1,5 +1,7 @@
 # Direction record: the Barrett catalogue
 
+> **Superseded in part by [`direction-v2.md`](direction-v2.md).** The mechanism below (one revolving collection, one case out, reading inside the object, the locked index) still stands. The colour, type, surface and composition sections were replaced by the Heat Sheet direction after review.
+
 Owned by `motion-art-direction` (brief and causal concepting, hierarchy and restraint, critique and convergence, production feasibility) and `ui-art-direction` (causal visual thesis, anti-targets, route comparison, signature patterns, specialist briefs). Routed references read before this record: `brief-and-causal-concepting.md`, `hierarchy-exclusion-and-restraint.md`, `cross-domain-coherence.md` (decision sequence and case comparison), `critique-selection-and-convergence.md`, `production-feasibility-and-context.md`; `principles-to-visual-thesis.md`, `anti-targets-and-reference-research.md`, `route-generation-and-convergence.md`, `signature-patterns-and-rules.md`, `cross-medium-direction-briefs.md`, `critique-diagnosis-and-validation.md`.
 
 ## 1. Reframe

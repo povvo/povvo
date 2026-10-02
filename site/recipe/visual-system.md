@@ -1,87 +1,130 @@
-# Visual system record
+# Visual system record (v2, Heat Sheet)
 
-Owned by `ui-typography` (typeface selection and voice, typography as form), `ui-color` (semantic roles, contrast), `ui-visual-language` (shape grammar, edge language, surface and depth), `ui-layout-composition` (grid families, responsive composition), `visual-development-for-motion` (shape language, silhouette hierarchy, detail hierarchy field references) and `look-development-for-motion` (look thesis and wedge plan, material vocabulary, light and atmosphere). Evidence: `studies/type-specimen.html` and `.png` rendered with the installed Fontsource files; `studies/contrast.py` output.
+This record replaces the v1 visual system. The direction it implements is `direction-v2.md`.
+
+Skills that own each part:
+- `ui-typography`: typeface selection and voice; typography as form.
+- `ui-color`: semantic roles; contrast and redundant encoding.
+- `ui-visual-language`: shape grammar; edge language; surface and depth.
+- `ui-layout-composition`: grid and spatial grammar; responsive composition.
+- `look-development-for-motion` and `visual-development-for-motion`.
+
+Evidence:
+- `studies/type-specimen-v2.png`, rendered with the Fontsource files installed at the time. The HTML still has a row for every candidate, rejected families included, but the Fontsource packages have since left the build (v3 uses no webfonts), so the page no longer renders as it did. The PNG is the record of the comparison.
+- `studies/cover-sheet.html` drew the v2 covers through `src/covers.ts`. That module is gone, and the page now draws the v4 disks and labels through `src/labels.ts`, with no `?inside` option.
+- The contrast figures in `direction-v2.md`, measured with the WCAG 2.x formula.
 
 ## Typography
 
-Roles decided from the jobs the text does, then the families chosen by rendered construction at intended sizes (specimen reviewed at 1440 wide).
+There are four families, each with one job. No family is used outside its job.
 
-| Role | Family and axes | Size and setting | Job |
+| Role | Family and axes | Setting | Job |
 |---|---|---|---|
-| Masthead name | Fraunces, opsz 144, SOFT 30, WONK 1, weight 400 | 22 px in the chrome; 64 to 96 px in the arrival frame | identity; the only place the wonk axis is fully on |
-| Catalogue title (caption, booklet header) | Fraunces, opsz 72, SOFT 0, WONK 0, weight 400 | 40 to 56 px, line height 1.0, tracking -0.01em | names the current project; repository slug shown with hyphens as spaces |
-| Insert title (on the case) | Fraunces, opsz 96, SOFT 20, WONK 1 | drawn to texture, about 9 percent of insert width | the printed cover |
-| Booklet reading | Fraunces, opsz 14, weight 400 | 17 px, line height 1.55, measure about 62ch | README prose |
-| Booklet headings | Archivo, width 100, weight 600 | 20 to 28 px | README structure, distinct from the serif reading voice |
-| Index line | Archivo, width 100, weight 400 | 16 px | the finder |
-| Catalogue number | Archivo, width 85, weight 500, tabular figures | 12 to 13 px, tracking 0.04em | the key that ties rack, caption, index and booklet |
-| Chrome label and meta | Archivo, width 90, weight 500, uppercase | 11 to 12 px, tracking 0.08em | quiet support text |
-| Spine | Archivo, width 80, weight 600 number then 400 title | drawn to texture; about 44 percent of spine width | readable at rest on the rack |
-| Code in READMEs | system monospace stack | 14 px | not a loaded family; technical content only |
+| Giant title (stage) | Anybody italic, wdth 50, wght 900 | Fitted to the stage width, one to three lines, line height 0.84, cap 34% of stage height | The object word behind the object |
+| Cover, spine and disc titles | the same face as **Heat Display** (axes fixed in `@font-face`) | Fitted per layout by `fitDisplay` | Printed matter |
+| Spread title, README h1 and h2, the cockpit heading | Anybody italic | 46 to 132 px | Short object words only |
+| Wordmark | Bodoni Moda italic, opsz 64 | 34 to 56 px | Identity; the only serif display |
+| Standfirst (caption, spread, inside sheet) | Bodoni Moda italic, opsz 20 to 32 | 18 to 30 px, line height 1.18 to 1.24 | The voice: what the project is |
+| Apparatus (capsule codes, protocol strip, positions, buttons, tracklist columns, callout) | Martian Mono, wdth 112.5 (squared) or 75 (provenance) | 9 to 12 px, uppercase, tracking 0.03 to 0.05em | Codes, facts, provenance |
+| Reading (README body), tracklist names | Archivo, wdth 88 to 100 | 13 to 16 px, line height 1.65 for reading | Sober functional text |
 
-Specimen observations: Fraunces holds character from spine size to masthead, and its optical sizes mean one family performs display and reading jobs, so a second serif is not justified. Newsreader read as classical and bookish, closer to a generic library costume. Instrument Serif is the current portfolio fashion and would fail competitor reassignment. Archivo's width axis gives spines a compact setting without a second grotesk. Long repository names (`claudikins-automatic-context-manager`, 36 characters) wrap to two lines at 40 px in a 480 px column and fit a spine at 15 px equivalent.
+Specimen observations:
+- Anybody at width 50 is compressed and slashed. It carries the mixtape and streetwear energy that Archivo at 62 lacks; Archivo condensed read as generic.
+- Bodoni Moda at opsz 96 loses its hairlines at 72 px on a standard-density screen, so the wordmark uses opsz 64.
+- Martian Mono gives grandtao's squared protocol voice and editorialisated's condensed provenance voice from one family.
+- Archivo stays for reading because READMEs are technical: lists, tables and code need a sober grotesk.
 
-Rejected: a loaded monospace family (Spec-Scan carry-over and badge-row flavour), uppercase display, tracked-out headings.
+Rejected:
+- Plex Mono (Spec-Scan carry-over).
+- Fraunces (the v1 library voice).
+- Any second display family.
 
 ## Colour
 
-Semantic roles with their contrast pairs (WCAG 2.x ratios measured with `studies/contrast.py`):
+The page is paper and the objects are hot. Every pair below was measured; tokens are in `src/styles.css :root` and `src/catalogue.ts`.
 
-| Role | Value | Pair and ratio |
+| Role | Value | Use and pair |
 |---|---|---|
-| `--stock` ground | `#E9E5DD` | page and stage |
-| `--stock-deep` | `#DCD7CE` | stage falloff, booklet rules; ink on it 11.4 |
-| `--stock-raised` | `#F2EFE9` | booklet paper |
-| `--ink` foreground | `#221F1C` | on stock 13.1 |
-| `--ink-muted` secondary | `#6B655C` | on stock 4.6, used at 12 px and above only with weight 500 |
-| `--rule` hairline | `#C9C3B8` | decorative, never text |
-| `--accent` current and focus | `#1F3BC3` | on stock 6.8; stock on it 6.8 |
+| Heat field | sky `#CFE6DF` to off-white `#F8F1DF` at the horizon, sand `#EFE3C1` to dust `#D8BE83` below | The stage background. The horizon is the 3D floor's vanishing line (`--horizon`, set by the stage). |
+| Ink | `#111719` | Text and rules on paper (14.2 on sand) |
+| Ink muted | `#4A5355` | Secondary text (6.2 on sand, 7.0 on off-white) |
+| Cockpit | petrol `#092E35`, line `#1D4A52`, text `#F8F1DF` (12.8), muted `#8FB9B6` (6.7) | The tracklist panel |
+| Cockpit marker | lime `#DDEB28` | Current row and focus ring in the cockpit (11.0 on petrol) |
+| Shells | sixteen collision colours from the patchwork palette (direction-v2 tokens) | Cases, cover title blocks, spines, and the spread's title block. Text colour per shell is the measured better of ink and paper (`textOn`), all at or above 4.5. |
+| Patchwork | nineteen tile colours (`src/tiles.ts`) | Quilts, the tile cube, the curtain and the chrome rails. Each quilt draws five to eight colours anchored on its shell. Never behind reading text. |
+| Bone | `#F4EFE1` | Specimen covers, the inside sheet, the spread paper |
+| Intervention | signal red `#E7202E` | Hover on the two primary actions, and the specimen event dot. Nothing else. |
 
-Case inks (ten, printed-ink range, stock text on each measured 4.3 to 7.6; ochre lifted to `#7A5810` to clear 4.5): oxblood `#7A2E2E`, teal `#2B6A6A`, ochre `#7A5810`, indigo `#3F3A8C`, moss `#4F6A2E`, plum `#6E3A62`, slate `#44586F`, rust `#8C4A22`, bottle `#2F5243`, graphite `#4A4642`. Assigned by accession number modulo ten, in that order, so neighbouring spines on the rack differ in hue family. Inks never carry state; the accent never appears on a case.
+Rules:
+- The current case is marked by position (out of the rack), by a tracklist row with a lime number block and bar, and by a rail marker with its number. It is never marked by colour alone.
+- Reading text never sits on a shell colour.
 
-Scarcity rule: the accent appears on the current index line, the focus ring, and the open affordance. Nothing else.
+## Shape, edge and surface
 
-Rejected: any cyan; a dark page; gradients as atmosphere.
+- **Panels**: there are none on the stage. The chrome is typeset directly on the field with hairline rules. The spread is the only panel.
+- **Capsules** (999 px radius) are used only for codes.
+- **Edge rails** live on the covers only: the tile rail along the foot of horizon covers, cropped at the edges. The v2 chrome rails, the protocol strip and the tick rail were removed in the composition pass.
+- **The patchwork** (`src/tiles.ts`): flat, hard-edged tiles with no strokes, gradients or rounded corners.
+  - Eight kinds: solid, checker, stripes, arc, split, diamond, bar and numeral.
+  - Diamonds cross the grid at its intersections.
+  - It is the collision: covers, spine heads, the disc label, the spread slab, the arrival curtain and the index preview. It appears big, or not at all.
+- **Grain**: a static SVG noise tile at 9% multiply over the field, the giant title and the 3D objects. It is never applied to the chrome text or the spread.
+- **Halftone** stays contained, inside the specimen cover's sphere.
 
-## Shape, edge, surface
+## Cover system
 
-Grammar card for the case family:
+The cover system is in `src/covers.ts`. Every cover is a deterministic function of the entry. The eleven-layout cycle and the ten-shell cycle are coprime, so pairings keep varying across sixty cases.
 
-- **Primary mass:** a tall slab in DVD proportion, 135 by 190 by 15 (scene units 1.35 by 1.90 by 0.15). Closed, it is one rectangular silhouette; its spine is a flat face, not a rounded book spine.
-- **Dominant axis:** vertical. Everything on the case reads top to bottom: number, then title, then imprint.
-- **Subdivision:** front leaf, back leaf, spine; inside, a flat tray with a disc hub on the back leaf. Outer corners of the leaves carry a small radius (about 1.5 percent of width); the hinge edge stays square.
-- **Negative space:** the insert keeps a stock margin of 3 percent around its ink field, like a printed sheet trimmed inside the sleeve. The spine has no margin.
-- **Repetition:** sixty near-identical slabs; variation is ink, title length and the position mark only.
-- **Signature detail:** the position mark, a thin ring with a filled dot at the case's angle on the rack, bottom right of the front insert and repeated in the booklet header. It is the only drawn graphic.
-- **Stop rule:** no illustration, no logos, no language icons, no stars on the insert beyond the small imprint line.
-- **Counterexample:** a cover with artwork, a gradient field, or a large ghosted number.
+| Layout | Relationship | Motifs |
+|---|---|---|
+| quilt | Collision: a 3 by 3 patchwork with a diamond across it and the volume numeral, over a bounded title block in the shell | The patchwork itself |
+| block | Packaging collage: an accent band with the capsule code and volume, a drawn heat-field "photograph", a checker block and a numeral block, the title on the shell | Checker block |
+| horizon | Drift: a pale heat field, a horizon, one tiny hot object with a long heat shadow | Numeral edge rail; tile rail along the foot |
+| specimen | Order: bone and ink, a contained halftone sphere, one red event dot with a drawn callout | Hairline frame |
 
-Edge hierarchy: the sleeve silhouette is a hard edge against the stage; the insert margin is a found edge in stock; the index column is separated from the stage by one hairline and a change in paper tone, not a card; the booklet is a raised paper with a hairline and a soft contact shadow where it meets the page.
+Other faces of the case:
+- **Spine**: a tile head, the title in Heat Display, a small accent square, and the capsule code.
+- **Inside sheet**: the liner notes (title, Bodoni standfirst, pointer to the booklet).
+- **Disc**: black vinyl with grooves and a band of sun sheen. Its label is an isometric cube faced with the case's patchwork.
+- **Volume numeral**: the accession number, the order in which the work was started. It is printed only on covers, the disc and the callout ("Vol. 07").
 
-Surface roles: ground (stock), stage (stock with a radial falloff of a few percent, drawn in CSS behind a transparent canvas), raised paper (booklet). No sunken or modal roles. The booklet dims the stage by lowering the canvas opacity slightly rather than adding a scrim.
+## Layout (v2.1, the composition pass in `critique-v2.md`)
 
-## Material and light (look thesis)
+**One grid.** Twelve columns, with `--margin` `clamp(16px, 2.25vw, 32px)` and `--gutter` `clamp(12px, 1.7vw, 24px)`; four columns below 1024 px. The stage is the grid container, and the bar uses `subgrid`.
 
-Look thesis: a printed paper insert under a satin plastic sleeve, photographed on seamless stock under one soft key. Observable behaviours: a broad soft highlight that travels across the sleeve as a case turns; the insert's ink stays matte and readable under the coat; the spines in the rack separate by shadow, not by outline.
+**Wide**
+- **The bar** is one row with a hairline under it:
+  - columns 1 to 3: the wordmark;
+  - columns 4 to 6: "Public work, N projects";
+  - columns 7 to 9: the turn hint;
+  - columns 10 to 12, right-aligned: Index (N), Motion and GitHub.
+- **The caption** sits on columns 1 to 3 in the sky: the position and capsule code, the Bodoni standfirst (up to four lines), the meta, and "Open the case" as an underlined text action. It has no box.
+- **The neighbours** sit on columns 10 to 12, right-aligned: Previous and Next, each with its project's name.
+- **The object** is centred. The presented case is about two fifths of the stage tall, centred at 38% in the sky. The rack is a band on the horizon, its front case about a fifth tall and centred at 45%, at 70% tone.
+- **The word** is the title, anchored to the foot of the stage on column one at a near-constant size: one line where it fits, two for long names. The rack never covers it.
+- **The spread** covers the right `min(760px, 54vw)`. The caption and neighbours step out while it is open.
 
-Material ingredients: body is the printed insert (`MeshPhysicalMaterial` with the insert texture, roughness 0.6, metalness 0); coat is a clear layer (clearcoat 1.0, clearcoat roughness 0.25); edge faces use the ink darkened by about 15 percent with the same coat. No fuzz, no wear, no grain.
+**The index** is a full-screen petrol dialog on the same twelve columns:
+- a sticky head: title, tally, find, order and Close;
+- rows: number on column 1, the name in Anybody at `clamp(30px, 4.2vw, 68px)` on columns 2 to 9, code and year right-aligned on 10 to 12;
+- a cover preview that follows the pointer.
 
-Light rig: one key directional light from upper left front, warm-neutral white, with shadows; environment fill from a room environment map through PMREM at about half strength; one weak cool rim from behind right for edge separation on the rack. ACES filmic tone mapping with exposure near one, sRGB output.
+**Narrow**
+- The field is `max(520px, 74svh)` tall, with the bar inside it and the title at its foot.
+- The caption and the neighbours flow beneath it.
+- The canvas takes horizontal swipes only.
 
-Wedge plan (to be rendered on the extracted case at rest and mid-turn): coat roughness 0.1, 0.25, 0.5; key intensity 1.8, 2.4, 3.0; insert roughness 0.45, 0.6, 0.8. Falsifiers: a highlight that reads as glass or a mirror; the insert text losing contrast under the highlight; spines merging into one slab at rest.
+## Look development
 
-Anti-targets: wet-look glass, metallic sheen, a dark void behind the rack, grain overlay.
-
-## Layout
-
-Spatial family: a split field. On wide viewports two columns under a one-line masthead: the stage (fluid, left) and the index (fixed width between 320 and 480 px, right) separated by one hairline. The caption for the current case sits bottom left over the stage. The footer carries input hints in one line.
-
-Invariants that survive transformation: the index stays adjacent to the stage and reflects the same selection; the current title stays visible with the stage; the open affordance stays reachable; reading order is masthead, stage caption, index, footer.
-
-Below 1024 px: stack the stage (58 percent of the small viewport height) over the index; the caption overlays the stage bottom; the booklet becomes a full-height sheet. Below 480 px the masthead drops the subtitle.
-
-The booklet: on wide viewports it slides over the index column at the index column's width; it is raised paper with a header (position mark, number, title, description, meta, "Open on GitHub"), the README body and a close control. Esc closes.
-
-Quiet fields: the stage above the caption, the masthead, the index gutter.
-
-Rejected: cards, a centred hero, a three-column dashboard, animated chrome.
+- **Look thesis**: glossy automotive shells in hard sun on a heat field.
+- **Materials**:
+  - shells: `MeshPhysicalMaterial`, roughness 0.55, clearcoat 1, clearcoat roughness 0.16;
+  - edges: clearcoat 0.8;
+  - inside sheet: roughness 0.85, clearcoat 0.2.
+- **Environment**: a generated dome, sky to off-white haze to dust, with a low sun disc, prefiltered with PMREM. The gloss therefore reflects the same field the page is printed on.
+- **Light**:
+  - one warm key from high front left with 2048 px PCF shadows on a shadow-only floor;
+  - a sky-to-sand hemisphere fill.
+- **Tone mapping**: Khronos Neutral, because ACES moved orange toward yellow and broke the measured shells.
+- **Fog**: off-white haze, so the far side of the arc fades into the field.
+- **Not run**: wedges on a real GPU (see `review.md`).

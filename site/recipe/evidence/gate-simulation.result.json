@@ -1,0 +1,189 @@
+{
+  "tool": "simulate-gates",
+  "pull_clear": 0.9,
+  "status": "PASS",
+  "interpretation_boundary": "Simulates the stage's gates and springs at 120 Hz with the disk box's clearance constants; it does not render or test feel.",
+  "results": [
+    {
+      "scenario": "disk in the drive, then flip to the next one",
+      "status": "PASS",
+      "findings": [],
+      "min_clearance_while_turning": 0.021,
+      "max_second_case_turn": 0.0007,
+      "max_open_while_unturned": 0.0424,
+      "max_pull_while_another_forward": 0,
+      "timeline": [
+        {
+          "at": 0,
+          "what": "A pull starts"
+        },
+        {
+          "at": 0,
+          "what": "A turn starts"
+        },
+        {
+          "at": 0,
+          "what": "A presented"
+        },
+        {
+          "at": 0,
+          "what": "A opens"
+        },
+        {
+          "at": 0,
+          "what": "A open"
+        },
+        {
+          "at": 0.567,
+          "what": "A shut"
+        },
+        {
+          "at": 0.575,
+          "what": "A turns back"
+        },
+        {
+          "at": 0.9,
+          "what": "A retracts"
+        },
+        {
+          "at": 0.983,
+          "what": "settled on B"
+        },
+        {
+          "at": 0.983,
+          "what": "B pull starts"
+        },
+        {
+          "at": 1.258,
+          "what": "B turn starts"
+        },
+        {
+          "at": 1.358,
+          "what": "A home"
+        },
+        {
+          "at": 1.808,
+          "what": "B presented"
+        }
+      ]
+    },
+    {
+      "scenario": "disk in the drive, then three fast flips",
+      "status": "PASS",
+      "findings": [],
+      "min_clearance_while_turning": 0.021,
+      "max_second_case_turn": 0.0001,
+      "max_open_while_unturned": 0.0424,
+      "max_pull_while_another_forward": 0,
+      "timeline": [
+        {
+          "at": 0,
+          "what": "A pull starts"
+        },
+        {
+          "at": 0,
+          "what": "A turn starts"
+        },
+        {
+          "at": 0,
+          "what": "A presented"
+        },
+        {
+          "at": 0,
+          "what": "A opens"
+        },
+        {
+          "at": 0,
+          "what": "A open"
+        },
+        {
+          "at": 0.567,
+          "what": "A shut"
+        },
+        {
+          "at": 0.575,
+          "what": "A turns back"
+        },
+        {
+          "at": 0.9,
+          "what": "A retracts"
+        },
+        {
+          "at": 1.158,
+          "what": "settled on B"
+        },
+        {
+          "at": 1.158,
+          "what": "B pull starts"
+        },
+        {
+          "at": 1.358,
+          "what": "A home"
+        },
+        {
+          "at": 1.433,
+          "what": "B turn starts"
+        },
+        {
+          "at": 1.983,
+          "what": "B presented"
+        }
+      ]
+    },
+    {
+      "scenario": "presenting disk reversed mid-turn",
+      "status": "PASS",
+      "findings": [],
+      "min_clearance_while_turning": 0.021,
+      "max_second_case_turn": 0,
+      "max_open_while_unturned": 0,
+      "max_pull_while_another_forward": 0,
+      "timeline": [
+        {
+          "at": 0,
+          "what": "A pull starts"
+        },
+        {
+          "at": 0,
+          "what": "A turn starts"
+        },
+        {
+          "at": 0,
+          "what": "A presented"
+        },
+        {
+          "at": 0,
+          "what": "A shut"
+        },
+        {
+          "at": 0.2,
+          "what": "A turns back"
+        },
+        {
+          "at": 0.525,
+          "what": "A retracts"
+        },
+        {
+          "at": 0.983,
+          "what": "settled on B"
+        },
+        {
+          "at": 0.983,
+          "what": "A home"
+        },
+        {
+          "at": 0.983,
+          "what": "B pull starts"
+        },
+        {
+          "at": 1.258,
+          "what": "B turn starts"
+        },
+        {
+          "at": 2.133,
+          "what": "settled on A"
+        }
+      ]
+    }
+  ]
+}

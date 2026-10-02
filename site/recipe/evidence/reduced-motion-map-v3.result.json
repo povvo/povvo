@@ -1,0 +1,30 @@
+{
+  "findings": [],
+  "interpretation_boundary": "Graph reachability and missing edges are structural facts. Whether every transition should exist is a design decision.",
+  "reachable": [
+    "case-opens",
+    "case-presents",
+    "index-opens",
+    "logo-and-caption-go",
+    "logo-opens",
+    "page-flickers",
+    "rack-turns",
+    "reflow-lifts",
+    "spread-slides"
+  ],
+  "states": [
+    "rack-turns",
+    "logo-and-caption-go",
+    "case-presents",
+    "logo-opens",
+    "case-opens",
+    "spread-slides",
+    "index-opens",
+    "reflow-lifts",
+    "page-flickers"
+  ],
+  "status": "PASS",
+  "tool": "reduced_motion_state_map",
+  "transition_count": 8,
+  "unreachable": []
+}

@@ -1,0 +1,100 @@
+{
+  "_question": "Heat Sheet (v2.1 composition pass): does each essential state change keep an equivalent non-motion communication under reduced motion? Mappings are from the full-motion carrier to the reduced carrier.",
+  "start": "arrival-curtain",
+  "states": [
+    "arrival-curtain",
+    "rack-turns",
+    "title-drops",
+    "case-presents",
+    "title-prints",
+    "caption-rises",
+    "case-opens",
+    "spread-slides",
+    "index-opens",
+    "index-preview",
+    "reflow-lifts",
+    "cursor-label",
+    "camera-lean"
+  ],
+  "mappings": [
+    {
+      "from": "arrival-curtain",
+      "to": "rack-turns",
+      "full": "a full-bleed patchwork title card with the project count, cut away tile by tile, once per session",
+      "reduced": "not shown; the page and the count in the bar appear directly"
+    },
+    {
+      "from": "rack-turns",
+      "to": "title-drops",
+      "full": "spring rotation of the rack; the title's lines drop out of their masks in 200 ms",
+      "reduced": "instant reposition; the title is replaced at once; the position number and index row change immediately"
+    },
+    {
+      "from": "title-drops",
+      "to": "case-presents",
+      "full": "the case pulls straight out, turns and floats to the presentation spot (gated springs)",
+      "reduced": "the gate sequence resolves within one frame; the case is shown presented"
+    },
+    {
+      "from": "case-presents",
+      "to": "title-prints",
+      "full": "two-plate print: the shell-colour plate rises through the line masks, the ink plate lands on it, the colour plate lifts",
+      "reduced": "the ink title is shown at once; the colour plate is not drawn"
+    },
+    {
+      "from": "title-prints",
+      "to": "caption-rises",
+      "full": "position, standfirst and meta rise into place in a 60 ms stagger",
+      "reduced": "caption text appears at once; the status region announces the case in both modes"
+    },
+    {
+      "from": "caption-rises",
+      "to": "case-opens",
+      "full": "front leaf swings on its hinge beside the spread",
+      "reduced": "case shown open beside the spread"
+    },
+    {
+      "from": "case-opens",
+      "to": "spread-slides",
+      "full": "spread slides in from the right; the quilt is revealed in six steps; the title rises",
+      "reduced": "spread shown without movement; focus moves to Close"
+    },
+    {
+      "from": "spread-slides",
+      "to": "index-opens",
+      "full": "the index wipes down over the page in 460 ms",
+      "reduced": "the index appears at once; focus moves to Find"
+    },
+    {
+      "from": "index-opens",
+      "to": "index-preview",
+      "full": "a cover follows the pointer over the row it is on, with a slight lean",
+      "reduced": "the cover sits at the pointer without lag or lean"
+    },
+    {
+      "from": "index-preview",
+      "to": "reflow-lifts",
+      "full": "on filter or sort, cases sink through the floor, re-slot unseen and rise from the front out",
+      "reduced": "slots change in place at once; the index shows the new order"
+    },
+    {
+      "from": "reflow-lifts",
+      "to": "cursor-label",
+      "full": "a labelled cursor (Drag, Open, View) follows on a short spring",
+      "reduced": "the system cursor; the hint in the bar names the gestures"
+    },
+    {
+      "from": "cursor-label",
+      "to": "camera-lean",
+      "full": "the camera leans a little toward the pointer",
+      "reduced": "no lean; the view is fixed"
+    },
+    {
+      "from": "camera-lean",
+      "to": "rack-turns",
+      "full": "index scrolls smoothly to the current row",
+      "reduced": "index jumps to the current row"
+    }
+  ],
+  "require_reverse": false
+}

@@ -1,0 +1,31 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Disk sheet</title>
+<!-- Every disk from the snapshot through src/labels.ts: the whole disk, and its label at hero size. Serve with pnpm dev at /recipe/studies/cover-sheet.html; ?stress for the synthetic set. -->
+<style>
+  body { margin: 0; background: #000; color: #8c8c8c; padding: 24px; font: 11px/1.4 "Helvetica Neue", Helvetica, FreeSans, Arial, sans-serif; }
+  .grid { display: flex; flex-wrap: wrap; gap: 22px; align-items: flex-end; }
+  figure { margin: 0; display: grid; gap: 6px; }
+  canvas { display: block; }
+  .row { display: flex; gap: 10px; align-items: flex-end; }
+</style>
+<div class="grid" id="g"></div>
+<script type="module">
+  import { toEntries, stressEntries } from "/src/catalogue.ts";
+  import { diskCanvas, labelCanvas } from "/src/labels.ts";
+  const repos = await (await fetch("/data/repos.json")).json();
+  let entries = toEntries(repos.repos ?? repos);
+  if (location.search.includes("stress")) entries = stressEntries(12);
+  const g = document.getElementById("g");
+  for (const e of entries) {
+    const [disk, label] = await Promise.all([diskCanvas(e, 540), labelCanvas(e, 720)]);
+    disk.style.width = "230px";
+    label.style.width = "300px";
+    const f = document.createElement("figure");
+    const row = document.createElement("div"); row.className = "row";
+    row.append(disk, label);
+    const cap = document.createElement("figcaption"); cap.textContent = `${e.no} ${e.name}`;
+    f.append(row, cap); g.append(f);
+  }
+  document.body.dataset.ready = "true";
+</script>

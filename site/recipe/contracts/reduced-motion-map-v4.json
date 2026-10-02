@@ -1,0 +1,18 @@
+{
+  "_question": "Floppy disks (v4): does each essential state change keep an equivalent non-motion communication under reduced motion? Mappings are from the full-motion carrier to the reduced carrier.",
+  "start": "boot",
+  "states": ["boot", "box-arrives", "flipping", "logo-and-caption-go", "disk-lifts-out", "logo-opens", "disk-into-drive", "readme-reads", "disk-ejects", "index-opens", "reflow", "page-flickers"],
+  "mappings": [
+    { "from": "boot", "to": "box-arrives", "full": "the boot's logo travels up into the page logo's place over 620 ms; the words fade; the chrome fades in after", "reduced": "the boot screen is removed at once; the page is already in place; the status line has announced progress and 'Ready'" },
+    { "from": "box-arrives", "to": "flipping", "full": "the disks rise into the box from the gap out, and the camera settles", "reduced": "the box is shown full, the camera at rest" },
+    { "from": "flipping", "to": "logo-and-caption-go", "full": "each disk passing the gap leans over on its own spring and stops against its neighbours with a small bounce; the logo and caption fade", "reduced": "leans are set at once; the position number and the index row change immediately" },
+    { "from": "logo-and-caption-go", "to": "disk-lifts-out", "full": "the current disk slides up out of the box along its own plane, then floats to the presentation spot, square to the viewer (gated springs)", "reduced": "the gate sequence resolves within one frame; the disk is shown presented" },
+    { "from": "disk-lifts-out", "to": "logo-opens", "full": "the logo opens from its centre line outward over 640 ms; the caption fades in", "reduced": "the logo and caption appear at once; the status region announces the disk in both modes" },
+    { "from": "logo-opens", "to": "disk-into-drive", "full": "the shutter slides, the disk turns on its side and slides into the drive slot on the sheet's edge; the sheet slides in from the right", "reduced": "the sheet is shown at once; focus moves to Eject" },
+    { "from": "disk-into-drive", "to": "readme-reads", "full": "the drive light flickers; the README's blocks come up in order, 22 ms apart, once the disk is in and the text has arrived", "reduced": "the README is shown as soon as the text has arrived; there is no disk to wait for" },
+    { "from": "readme-reads", "to": "disk-ejects", "full": "the disk slides out of the slot, turns upright, the shutter closes; the sheet waits 260 ms, then slides away", "reduced": "the sheet is removed at once; focus returns to where it was" },
+    { "from": "disk-ejects", "to": "index-opens", "full": "the index fades in over the page in 160 ms; logos draw into their rows as they scroll into view", "reduced": "the index appears at once; focus moves to Find" },
+    { "from": "index-opens", "to": "reflow", "full": "on filter or sort, the disks sink under the floor, re-slot unseen and rise from the gap out", "reduced": "slots change in place at once; the index shows the new order" },
+    { "from": "reflow", "to": "page-flickers", "full": "decorative only: every 15 to 40 s the page inverts for two flashes inside 170 ms, with a hiss if sound is on", "reduced": "never shown; nothing is lost, because the flicker communicates nothing" }
+  ]
+}

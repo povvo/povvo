@@ -1,4 +1,4 @@
-/** Pure catalogue helpers: numbering, inks, titles, ordering. No DOM, no three.js. */
+/** Pure catalogue helpers: numbering, titles, ordering. No DOM, no three.js. */
 
 export interface Repo {
   name: string;
@@ -16,34 +16,17 @@ export interface Repo {
 }
 
 export interface Entry extends Repo {
-  /** Accession number: order of repository creation, 1-based. The key printed everywhere. */
+  /** Accession number: order of repository creation, 1-based. Identity and default order. */
   no: number;
-  /** Index into INKS. */
-  ink: number;
   /** Display title: the slug with hyphens and underscores as spaces. */
   title: string;
   /** Four-digit year of the last push. */
   year: string;
+  /** Four-digit year the repository was created. */
+  born: string;
   /** Short language code for spines and lines. */
   code: string;
 }
-
-/** Printed-ink range; ordered so that consecutive accession numbers alternate hue families. */
-export const INKS = [
-  { name: "oxblood", hex: "#7A2E2E" },
-  { name: "teal", hex: "#2B6A6A" },
-  { name: "ochre", hex: "#7A5810" },
-  { name: "indigo", hex: "#3F3A8C" },
-  { name: "moss", hex: "#4F6A2E" },
-  { name: "plum", hex: "#6E3A62" },
-  { name: "slate", hex: "#44586F" },
-  { name: "rust", hex: "#8C4A22" },
-  { name: "bottle", hex: "#2F5243" },
-  { name: "graphite", hex: "#4A4642" },
-] as const;
-
-export const STOCK = "#E9E5DD";
-export const INK = "#221F1C";
 
 /** Repositories that are infrastructure for the profile rather than work. */
 export const META_REPOS = new Set([".github", "povvo"]);
@@ -82,8 +65,13 @@ export function displayTitle(name: string): string {
   return name.replace(/[-_]+/g, " ").trim();
 }
 
-export function formatNo(no: number): string {
-  return `No. ${String(no).padStart(3, "0")}`;
+/** Position in the current order, printed as 04 / 11. */
+export function pad2(n: number, total: number): string {
+  return String(n).padStart(String(total).length < 2 ? 2 : String(total).length, "0");
+}
+
+export function position(index: number, total: number): string {
+  return `${pad2(index + 1, total)} / ${pad2(total, total)}`;
 }
 
 export function yearOf(iso: string): string {
@@ -96,14 +84,15 @@ export function toEntries(repos: Repo[]): Entry[] {
   work.sort((a, b) => a.created_at.localeCompare(b.created_at) || a.name.localeCompare(b.name));
   return work.map((r, i) => {
     const no = i + 1;
+    const code = languageCode(r.language);
     return {
       ...r,
       topics: r.topics ?? [],
       no,
-      ink: (no - 1) % INKS.length,
       title: displayTitle(r.name),
       year: yearOf(r.pushed_at || r.created_at),
-      code: languageCode(r.language),
+      born: yearOf(r.created_at),
+      code,
     };
   });
 }
@@ -131,17 +120,23 @@ export function orderEntries(entries: Entry[], order: Order): Entry[] {
 export function matches(entry: Entry, query: string): boolean {
   const q = query.trim().toLowerCase();
   if (!q) return true;
-  const hay = [entry.name, entry.title, entry.description ?? "", entry.language ?? "", entry.topics.join(" "), formatNo(entry.no)]
+  const hay = [entry.name, entry.title, entry.description ?? "", entry.language ?? "", entry.topics.join(" ")]
     .join(" ")
     .toLowerCase();
   return q.split(/\s+/).every((part) => hay.includes(part));
 }
 
 export function metaLine(entry: Entry): string {
-  const parts = [entry.language ?? "No language", entry.year];
-  if (entry.stargazers_count > 0) parts.push(`${entry.stargazers_count} ★`);
-  if (entry.archived) parts.push("Archived");
-  return parts.join(" · ");
+  const parts = [entry.language ?? "No language", `updated ${dateLine(entry.pushed_at || entry.created_at)}`];
+  if (entry.stargazers_count > 0) parts.push(`${entry.stargazers_count} ${entry.stargazers_count === 1 ? "star" : "stars"}`);
+  if (entry.archived) parts.push("archived");
+  return parts.join(", ");
+}
+
+export function dateLine(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso.slice(0, 10);
+  return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 }
 
 /** Deterministic stress set for review: synthetic names, real structure. */

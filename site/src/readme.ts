@@ -24,22 +24,30 @@ function resolveAgainst(base: string, url: string): string {
   }
 }
 
-/** Fetch the README text, trying the common filenames in order. */
+/**
+ * Fetch the README text, trying the common filenames in order. Null means every name was a
+ * 404: the repository has no README. A network error or any other status rejects instead and
+ * is not kept, so a drop in the connection (during an idle prefetch, say) is retried on open.
+ */
 export function fetchReadme(entry: Entry): Promise<string | null> {
   const key = `${entry.name}@${entry.default_branch}`;
   const pending = cache.get(key);
   if (pending) return pending;
   const attempt = (async () => {
+    let failed = false;
     for (const file of ["README.md", "readme.md", "Readme.md", "README.MD", "README"]) {
       try {
         const res = await fetch(rawBase(entry) + file, { cache: "force-cache" });
         if (res.ok) return await res.text();
+        if (res.status !== 404) failed = true;
       } catch {
-        /* try the next name */
+        failed = true;
       }
     }
+    if (failed) throw new Error(`The README for ${entry.name} could not be read.`);
     return null;
   })();
+  attempt.catch(() => cache.delete(key));
   cache.set(key, attempt);
   return attempt;
 }
@@ -85,4 +93,22 @@ export function renderReadme(entry: Entry, markdown: string): string {
   });
   DOMPurify.removeAllHooks();
   return clean;
+}
+
+const rendered = new Map<string, Promise<string | null>>();
+
+/**
+ * The README as sanitised HTML, fetched and rendered once. Opening a disk that was prefetched
+ * (src/main.ts prefetches the settled disk and its neighbours while the page is idle) costs
+ * nothing.
+ */
+export function readmeHtml(entry: Entry): Promise<string | null> {
+  const key = `${entry.name}@${entry.default_branch}`;
+  let hit = rendered.get(key);
+  if (!hit) {
+    hit = fetchReadme(entry).then((text) => (text === null ? null : renderReadme(entry, text)));
+    hit.catch(() => rendered.delete(key));
+    rendered.set(key, hit);
+  }
+  return hit;
 }

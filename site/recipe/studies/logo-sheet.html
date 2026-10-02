@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Logo sheet</title>
+<!-- Every project name through src/logo.ts, white on black, at hero, cover and list sizes. Serve with pnpm dev at /recipe/studies/logo-sheet.html. -->
+<style>
+  body { margin: 0; background: #000; color: #fff; font: 13px/1.4 "Helvetica Neue", Helvetica, FreeSans, Arial, sans-serif; padding: 32px; }
+  h1 { font-size: 13px; font-weight: 400; color: #8c8c8c; margin: 0 0 24px; }
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px 48px; }
+  figure { margin: 0; }
+  figure canvas { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+  figcaption { margin-top: 10px; color: #8c8c8c; }
+  .small { display: flex; flex-wrap: wrap; gap: 18px 28px; margin-top: 48px; align-items: center; }
+  .small canvas { height: 40px; width: auto; }
+</style>
+</head>
+<body>
+<h1>Logo sheet: src/logo.ts, generated from the name alone</h1>
+<div class="grid" data-grid></div>
+<div class="small" data-small></div>
+<script type="module">
+  import { logoCanvas } from "/src/logo.ts";
+  const names = ["deepest research", "sleuth", "advanced lyricism", "web mcp skills", "personal dev env", "claudikins kernel", "claudikins marketplace", "claudikins klaus", "claudikins tool executor", "claudikins automatic context manager", "claudikins github readme for perfectionists", "drum field 48"];
+  const only = new URLSearchParams(location.search).get("only");
+  const grid = document.querySelector("[data-grid]");
+  for (const n of only ? [only] : names) {
+    const f = document.createElement("figure");
+    const c = logoCanvas(n, only ? 520 : 260, "#fff");
+    c.style.width = `${c.width / 2}px`;
+    f.appendChild(c);
+    const cap = document.createElement("figcaption");
+    cap.textContent = n;
+    f.appendChild(cap);
+    grid.appendChild(f);
+  }
+  const small = document.querySelector("[data-small]");
+  for (const n of names) small.appendChild(logoCanvas(n, 80, "#fff"));
+  document.body.dataset.ready = "true";
+</script>
+</body>
+</html>

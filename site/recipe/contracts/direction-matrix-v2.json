@@ -1,0 +1,17 @@
+{
+  "_note": "Authored by the v2 art direction stage. Scores are 1 to 5 judgements made after writing the routes in direction-v2.md; the weighted total exposes trade-offs and does not replace the decision rationale.",
+  "criteria": [
+    {"id": "fidelity_to_named_reference", "weight": 3, "direction": "max"},
+    {"id": "coherence_of_synthesis", "weight": 3, "direction": "max"},
+    {"id": "singular_selection", "weight": 2, "direction": "max"},
+    {"id": "finding_speed", "weight": 2, "direction": "max"},
+    {"id": "reading_comfort", "weight": 2, "direction": "max"},
+    {"id": "distinctiveness_after_effect_removal", "weight": 2, "direction": "max"},
+    {"id": "build_risk", "weight": 1, "direction": "min"}
+  ],
+  "candidates": [
+    {"id": "A-heat-sheet", "scores": {"fidelity_to_named_reference": 5, "coherence_of_synthesis": 4, "singular_selection": 5, "finding_speed": 4, "reading_comfort": 4, "distinctiveness_after_effect_removal": 4, "build_risk": 3}},
+    {"id": "B-cockpit-night", "scores": {"fidelity_to_named_reference": 3, "coherence_of_synthesis": 4, "singular_selection": 4, "finding_speed": 5, "reading_comfort": 3, "distinctiveness_after_effect_removal": 2, "build_risk": 2}},
+    {"id": "C-monochrome-dossier", "scores": {"fidelity_to_named_reference": 1, "coherence_of_synthesis": 5, "singular_selection": 3, "finding_speed": 4, "reading_comfort": 5, "distinctiveness_after_effect_removal": 3, "build_risk": 2}}
+  ]
+}
