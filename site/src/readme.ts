@@ -24,22 +24,30 @@ function resolveAgainst(base: string, url: string): string {
   }
 }
 
-/** Fetch the README text, trying the common filenames in order. */
+/**
+ * Fetch the README text, trying the common filenames in order. Null means every name was a
+ * 404: the repository has no README. A network error or any other status rejects instead and
+ * is not kept, so a drop in the connection (during an idle prefetch, say) is retried on open.
+ */
 export function fetchReadme(entry: Entry): Promise<string | null> {
   const key = `${entry.name}@${entry.default_branch}`;
   const pending = cache.get(key);
   if (pending) return pending;
   const attempt = (async () => {
+    let failed = false;
     for (const file of ["README.md", "readme.md", "Readme.md", "README.MD", "README"]) {
       try {
         const res = await fetch(rawBase(entry) + file, { cache: "force-cache" });
         if (res.ok) return await res.text();
+        if (res.status !== 404) failed = true;
       } catch {
-        /* try the next name */
+        failed = true;
       }
     }
+    if (failed) throw new Error(`The README for ${entry.name} could not be read.`);
     return null;
   })();
+  attempt.catch(() => cache.delete(key));
   cache.set(key, attempt);
   return attempt;
 }

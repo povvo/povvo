@@ -1,6 +1,6 @@
 import "./styles.css";
 import { dateLine } from "./catalogue";
-import { loadCatalogue } from "./data";
+import { type Catalogue, loadCatalogue } from "./data";
 import { mountFlat } from "./flat";
 import { warmLabel } from "./labels";
 import { readMotionPreference, storeMotionPreference } from "./motion";
@@ -115,8 +115,16 @@ function applyHash(): void {
   if (!want) return;
   const i = store.state.visible.findIndex((e) => e.name === want.name);
   if (i < 0) return;
-  if (i !== store.state.current) store.select(i, "index");
-  openWhenSettled = want.open;
+  if (i !== store.state.current) {
+    store.select(i, "index");
+    openWhenSettled = want.open;
+    return;
+  }
+  // Already on that disk: act now, or once it settles, and never carry the wish to another disk.
+  openWhenSettled = false;
+  if (want.open && store.state.mode === "settled" && !document.body.dataset.boot) store.open();
+  else if (want.open && store.state.mode !== "open") openWhenSettled = true;
+  else if (!want.open && store.state.mode === "open") store.close();
 }
 addEventListener("hashchange", applyHash);
 store.on((state, previous) => {
@@ -150,14 +158,20 @@ store.on((state, previous) => {
 // ---------- catalogue and boot ----------
 let ready: () => void = () => {};
 const first = new Promise<void>((r) => (ready = r));
-loadCatalogue((c) => {
+let seen = false;
+// The first catalogue to arrive opens the boot, whether it came early (cache, snapshot) or only
+// with the live read.
+function firstCatalogue(c: Catalogue): void {
+  seen = true;
   performance.mark("boot:catalogue");
   store.setCatalogue(c.entries, c.source, c.generatedAt);
   applyHash();
   ready();
-})
+}
+loadCatalogue(firstCatalogue)
   .then((c) => {
-    if (c.source !== store.state.source || c.entries.length !== store.state.all.length) store.setCatalogue(c.entries, c.source, c.generatedAt);
+    if (!seen) firstCatalogue(c);
+    else if (c.source !== store.state.source || c.entries.length !== store.state.all.length) store.setCatalogue(c.entries, c.source, c.generatedAt);
   })
   .catch(() => {
     if (store.state.all.length === 0) store.fail();
@@ -181,7 +195,8 @@ void (async () => {
           boot.progress(done, total, current);
           await Promise.all(near.map((e) => warmLabel(e, 224, 2).then(() => boot.progress(++done, total, e))));
         })();
-    await Promise.race([warm, boot.skipped]);
+    // A failed warm-up only costs the head start; it never holds the page behind the boot.
+    await Promise.race([warm.catch(() => undefined), boot.skipped]);
   }
   performance.mark("boot:warm");
   await boot.finish(() => stage?.arrive());
@@ -195,6 +210,14 @@ void (async () => {
 // ---------- offline: the service worker keeps the app shell and the snapshot ----------
 if (import.meta.env.PROD && "serviceWorker" in navigator && !review) {
   addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js").catch(() => undefined);
+    navigator.serviceWorker
+      .register("./sw.js")
+      .then(() => navigator.serviceWorker.ready)
+      .then((reg) => {
+        // What this visit loaded before the worker was in control, for it to keep.
+        const loaded = performance.getEntriesByType("resource").map((r) => r.name);
+        reg.active?.postMessage({ cache: loaded });
+      })
+      .catch(() => undefined);
   });
 }

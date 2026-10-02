@@ -64,7 +64,7 @@ export function mountBooklet(root: HTMLElement, store: Store): void {
       [html] = await Promise.all([readmeHtml(entry), inserted(state)]);
     } catch {
       if (mine !== token) return;
-      body.innerHTML = `<p class="spread__state spread__state--error">The README could not be rendered. <a href="${entry.html_url}#readme" target="_blank" rel="noopener">Read it on GitHub</a>.</p>`;
+      body.innerHTML = `<p class="spread__state spread__state--error">The README could not be loaded. <a href="${entry.html_url}#readme" target="_blank" rel="noopener">Read it on GitHub</a>.</p>`;
       store.setReadme(entry.name, "error");
       return;
     }

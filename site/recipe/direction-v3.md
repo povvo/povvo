@@ -79,7 +79,7 @@ The drawn logo is the only title; the readable name always sits in Helvetica bes
 - **Inside left:** a white photocopied sheet with the logo in black, the name in Helvetica Bold and the description.
 - **Inside right:** a black tray and disc, with the logo printed on the disc.
 
-The study is `studies/cover-sheet.html` (add `?inside`) and `studies/cover-sheet.jpg`.
+The study was `studies/cover-sheet.html` (with `?inside`) and `studies/cover-sheet.jpg`. Both now show the v4 disks and labels (`direction-v4.md`).
 
 **Index.** A tape trader's list: number, logo, name in Helvetica, language and year. Logos are drawn as their rows scroll into view. The current row is printed in negative.
 

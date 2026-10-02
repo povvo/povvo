@@ -80,7 +80,7 @@ The v2 pass answers two pieces of feedback:
 - A presented case holds the front while the rack turns, then returns along the arc outside the rack.
 - Reflow sinks visible cases through a clipped floor, re-slots them unseen and raises them from the front out.
 - Helpers:
-  - `spring_response.py` on `contracts/spring-case-{pull,turn,open,lift}.json`: all PASS, no overshoot. Settling times are 0.50, 0.58, 0.88 and 0.54 s.
+  - `spring_response.py` on `contracts/spring-case-{pull,turn,open,open-back,lift}.json`: all PASS, no overshoot. Settling times are 0.50, 0.58, 0.92, 0.58 and 0.54 s. The open spring is checked both ways at the stiffness `STIFFNESS.open` sets: 55 into the drive and 150 out.
   - A gate simulation (`scripts/simulate-gates.ts`, result in `evidence/gate-simulation.result.json`) runs the stage's own springs and gates through three interruption scenarios. All PASS:
     - minimum clearance while yawed: +0.023 units;
     - largest turn on a second case at the same time: 0.0007;

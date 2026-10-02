@@ -12,7 +12,7 @@
  * Run: node --experimental-strip-types scripts/simulate-gates.ts [--output file]
  */
 import { writeFileSync } from "node:fs";
-import { FRONT_CLEAR, PULL_CLEAR, TURN_BLOCK, gateCase } from "../src/gates.ts";
+import { FRONT_CLEAR, PULL_CLEAR, STIFFNESS, TURN_BLOCK, gateCase } from "../src/gates.ts";
 import { Spring } from "../src/motion.ts";
 
 // Disk and box constants, as in src/floppy.ts and src/stage.ts.
@@ -47,7 +47,7 @@ function makeCase(name: string): Case {
     name,
     pull: new Spring(0, { stiffness: 200, ratio: 1 }),
     turn: new Spring(0, { stiffness: 150, ratio: 1 }),
-    open: new Spring(0, { stiffness: 60, ratio: 1 }),
+    open: new Spring(0, { stiffness: STIFFNESS.open.out, ratio: 1 }),
   };
 }
 

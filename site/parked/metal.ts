@@ -151,6 +151,7 @@ function grow(text: string, S: number, o: MetalOptions): HTMLCanvasElement {
   }
 
   // Spears from the first and last letters, curving up and out; sometimes a bar under the name.
+  // Both draw from one seed, so the right spear mirrors the left barb for barb.
   const sweep = S * (1.1 + r() * 0.5);
   const lift = S * (0.5 + r() * 0.5);
   spear(ctx, left + S * 0.1, y0 - S * 0.25, -1, sweep, lift, S * 0.09, rng(hashSeed(`${text}:l`)));

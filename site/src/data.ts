@@ -73,15 +73,20 @@ async function fetchSnapshot(): Promise<Snapshot | null> {
 async function fetchLive(): Promise<Repo[] | null> {
   try {
     const all: Record<string, unknown>[] = [];
+    let complete = false;
     for (let page = 1; page <= MAX_PAGES; page++) {
       const res = await fetch(`${LIVE}&page=${page}`, { headers: { Accept: "application/vnd.github+json" } });
       if (!res.ok) return null;
       const raw = (await res.json()) as Record<string, unknown>[];
       if (!Array.isArray(raw)) return null;
       all.push(...raw);
-      if (raw.length < 100) break;
+      if (raw.length < 100) {
+        complete = true;
+        break;
+      }
     }
-    return all.length ? normalise(all) : null;
+    // A full last page means there may be more than MAX_PAGES hold: that is a partial read too.
+    return complete && all.length ? normalise(all) : null;
   } catch {
     return null;
   }

@@ -13,14 +13,16 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const { chromium } = require("playwright");
 const here = path.dirname(fileURLToPath(import.meta.url));
-const dist = path.join(here, "..", "dist");
+const dist = path.resolve(here, "..", "dist");
 const [out = "layout.json", query = "?quality=low&review=1"] = process.argv.slice(2);
 const types = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".woff2": "font/woff2", ".svg": "image/svg+xml" };
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, "http://x");
-  let file = path.join(dist, decodeURIComponent(url.pathname));
+  let file = path.resolve(dist, "." + decodeURIComponent(url.pathname));
   if (url.pathname.endsWith("/")) file = path.join(file, "index.html");
   try {
+    // Only files inside dist/ are served.
+    if (path.relative(dist, file).startsWith("..")) throw new Error("outside dist");
     const body = await readFile(file);
     res.writeHead(200, { "content-type": types[path.extname(file)] ?? "application/octet-stream" });
     res.end(body);
@@ -29,11 +31,11 @@ const server = http.createServer(async (req, res) => {
     res.end();
   }
 });
-await new Promise((r) => server.listen(0, r));
+await new Promise((r) => server.listen(0, "127.0.0.1", r));
 const browser = await chromium.launch({ args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"] });
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 await page.route((u) => u.protocol === "https:", (r) => r.abort());
-await page.goto(`http://localhost:${server.address().port}/${query}`);
+await page.goto(`http://127.0.0.1:${server.address().port}/${query}`);
 await page.waitForFunction(() => document.body.dataset.state && document.body.dataset.state !== "loading");
 await page.evaluate(() => window.__rack?.snap());
 await page.waitForTimeout(900);

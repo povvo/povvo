@@ -148,4 +148,19 @@ The frames are in `evidence/review/` and `evidence/contact-sheet.jpg`. They were
   - a second visit boots;
   - an offline reload still opens the box.
 
+**After code review** (CodeRabbit, on the pull request). Each fix was checked against the code first. The browser checks below were run on the build before and after:
+- **The boot could hang.** On a first visit with no snapshot, where only the live read succeeded, the boot never got its catalogue. A failed warm-up also stopped it before the reveal. Both now reach the page. Before: the boot never finished; after: it opens with the live list.
+- **Offline.** The service worker now keeps the bundles the first visit loaded before it was in control. It reads the shell's own asset links at install, and the page lists the rest. Before: 1 of 5 bundles in its cache; after: 5 of 5.
+- **Links.** `#/name/readme` on the disk already showing opens it, and dropping `/readme` closes it. The wish no longer carries over to open the next disk.
+- **Reduced motion.** Animations run once, so the reading caret no longer flashes at the frame rate.
+- **Smaller fixes:**
+  - a dropped connection is not cached as "no README";
+  - the live read discards a list cut off at ten pages;
+  - the flat view's drawings are capped at 24 and retried after a failure;
+  - a stray worker message cannot drop a job;
+  - the stage's `dispose` removes its listeners and textures;
+  - the review servers stay inside `dist/` and on loopback;
+  - the boot scene shoots from first paint;
+  - the open spring is checked at 55 in and 150 out, the stiffness the code actually uses (`contracts/spring-case-open*.json`, both PASS).
+
 **Not run:** real-GPU playback and frame timing, real phones (including vibration), assistive-technology sessions, a listening check of the sounds on real speakers, and a photosensitivity review by a person.

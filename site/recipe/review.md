@@ -103,7 +103,7 @@ The site was stripped to a plain black-and-white baseline before v3. The review,
 |---|---|---|
 | `check_direction.py` | `contracts/art-direction-record-v2.json` | PASS, no warnings |
 | `direction_matrix.py` | `contracts/direction-matrix-v2.json` | Heat Sheet first; bookkeeping, not a decision |
-| `spring_response.py` | `contracts/spring-case-{pull,turn,open,lift}.json` | PASS, no overshoot. 0.50, 0.58, 0.83 and 0.54 s to one percent |
+| `spring_response.py` | `contracts/spring-case-{pull,turn,open,open-back,lift}.json` | PASS, no overshoot. 0.50, 0.58, 0.92, 0.58 and 0.54 s to one percent. Open is checked at 55 in and 150 out, as `STIFFNESS.open` sets |
 | `reduced_motion_state_map.py` | `contracts/reduced-motion-map-v2.json` | PASS |
 | Gate simulation | `scripts/simulate-gates.ts` | PASS on three interruption scenarios. Clearance stays positive. A second case never turns past 0.0007 while another is turned. No case opens unturned. No case pulls out while another is forward |
 | WCAG contrast | direction-v2 tokens and shells | every text pair at or above 4.5 |

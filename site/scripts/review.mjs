@@ -17,7 +17,7 @@ const require = createRequire(import.meta.url);
 const { chromium } = require("playwright");
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const dist = path.join(here, "..", "dist");
+const dist = path.resolve(here, "..", "dist");
 const args = process.argv.slice(2);
 const outDir = path.resolve(args.includes("--out") ? args[args.indexOf("--out") + 1] : path.join(here, "..", "recipe", "evidence", "review"));
 const only = args.includes("--only") ? args[args.indexOf("--only") + 1] : null;
@@ -26,9 +26,11 @@ await mkdir(outDir, { recursive: true });
 const types = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".woff2": "font/woff2", ".svg": "image/svg+xml", ".png": "image/png", ".txt": "text/plain" };
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, "http://localhost");
-  let file = path.join(dist, decodeURIComponent(url.pathname));
+  let file = path.resolve(dist, "." + decodeURIComponent(url.pathname));
   if (url.pathname.endsWith("/")) file = path.join(file, "index.html");
   try {
+    // Only files inside dist/ are served.
+    if (path.relative(dist, file).startsWith("..")) throw new Error("outside dist");
     const data = await readFile(file);
     res.writeHead(200, { "content-type": types[path.extname(file)] ?? "application/octet-stream" });
     res.end(data);
@@ -37,9 +39,9 @@ const server = http.createServer(async (req, res) => {
     res.end("not found");
   }
 });
-await new Promise((r) => server.listen(0, r));
+await new Promise((r) => server.listen(0, "127.0.0.1", r));
 const port = server.address().port;
-const base = `http://localhost:${port}/`;
+const base = `http://127.0.0.1:${port}/`;
 
 // Headless Chromium cannot use this environment's agent proxy, so external reads (READMEs,
 // the GitHub API) are fetched with curl, which can, and handed back to the page.
@@ -70,17 +72,19 @@ async function scene(name, { viewport, query = "", reducedMotion = "no-preferenc
   const errors = [];
   page.on("console", (m) => { if (m.type() === "error" || m.type() === "warning") errors.push(`${m.type()}: ${m.text()}`); });
   page.on("pageerror", (e) => errors.push(`pageerror: ${e.message}`));
-  await page.goto(base + query, { waitUntil: "load" });
-  try {
-    await page.waitForFunction(() => document.body.dataset.state && document.body.dataset.state !== "loading", null, { timeout: 20000 });
-  } catch (e) {
-    log.push({ scene: name, fatal: `never left loading: ${errors.join(" | ")}` });
-    console.error(name, "never left loading", errors);
-    await context.close();
-    return;
-  }
-  await page.evaluate(() => document.fonts.ready);
+  // The boot screen is in the HTML, so its scene starts at first paint, before any readiness
+  // wait; its own steps time the shots. Other scenes start once the page is ready.
+  await page.goto(base + query, { waitUntil: keepBoot ? "domcontentloaded" : "load" });
   if (!keepBoot) {
+    try {
+      await page.waitForFunction(() => document.body.dataset.state && document.body.dataset.state !== "loading", null, { timeout: 20000 });
+    } catch (e) {
+      log.push({ scene: name, fatal: `never left loading: ${errors.join(" | ")}` });
+      console.error(name, "never left loading", errors);
+      await context.close();
+      return;
+    }
+    await page.evaluate(() => document.fonts.ready);
     // The boot screen draws the first view; the scenes start once it has gone.
     try { await page.waitForFunction(() => !document.body.dataset.boot, null, { timeout: 30000 }); }
     catch { log.push({ scene: name, warning: "boot screen did not finish" }); }

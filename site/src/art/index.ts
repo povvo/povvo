@@ -44,14 +44,13 @@ function startPool(): Slot[] {
     const slot: Slot = { worker, busy: null };
     worker.onmessage = (e: MessageEvent<{ id: number; bitmap?: ImageBitmap; cached?: boolean; error?: string }>) => {
       const job = slot.busy;
+      if (!job || job.id !== e.data.id) return;
       slot.busy = null;
-      if (job && job.id === e.data.id) {
-        if (e.data.bitmap) {
-          if (e.data.cached) stats.cached++;
-          else stats.drawn++;
-          job.resolve(e.data.bitmap);
-        } else runHere(job);
-      }
+      if (e.data.bitmap) {
+        if (e.data.cached) stats.cached++;
+        else stats.drawn++;
+        job.resolve(e.data.bitmap);
+      } else runHere(job);
       pump();
     };
     worker.onerror = () => {

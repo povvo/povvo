@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import type { Entry } from "./catalogue";
 import { DISK, SHUTTER_SLIDE, applyEnvironment, buildBox, buildDisk, type Disk, setWriteProtect } from "./floppy";
-import { FRONT_CLEAR, TURN_BLOCK, gateCase } from "./gates";
+import { FRONT_CLEAR, STIFFNESS, TURN_BLOCK, gateCase } from "./gates";
 import { labelCanvas } from "./labels";
 import { Spring, clamp, easeOutCubic, smoothstep } from "./motion";
 import { sound } from "./sound";
@@ -211,7 +211,7 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
       alive: true,
       pull: new Spring(0, { stiffness: 200, ratio: 1 }),
       turn: new Spring(0, { stiffness: 150, ratio: 1 }),
-      open: new Spring(0, { stiffness: 60, ratio: 1 }),
+      open: new Spring(0, { stiffness: STIFFNESS.open.out, ratio: 1 }),
       lift: new Spring(0, { stiffness: 170, ratio: 1 }),
       lean: new Spring(-LEAN_B, { stiffness: 320, ratio: 0.55 }),
       peek: new Spring(0, { stiffness: 260, ratio: 0.7 }),
@@ -758,11 +758,12 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
   canvas.addEventListener("pointermove", onPointerMove);
   canvas.addEventListener("pointerup", onPointerUp);
   canvas.addEventListener("pointercancel", onPointerUp);
-  canvas.addEventListener("pointerleave", () => {
+  function onPointerLeave(): void {
     if (!dragging) setHover(null, null, 0, 0);
     lookYaw.target = 0;
     lookPitch.target = 0;
-  });
+  }
+  canvas.addEventListener("pointerleave", onPointerLeave);
   window.addEventListener("keydown", onKey);
   canvas.dataset.hover = "";
 
@@ -1081,8 +1082,17 @@ export function createStage(canvas: HTMLCanvasElement, field: HTMLElement, store
       cancelAnimationFrame(frame);
       unsubscribe();
       ro.disconnect();
+      canvas.removeEventListener("wheel", onWheel);
+      canvas.removeEventListener("pointerdown", onPointerDown);
+      canvas.removeEventListener("pointermove", onPointerMove);
+      canvas.removeEventListener("pointerup", onPointerUp);
+      canvas.removeEventListener("pointercancel", onPointerUp);
+      canvas.removeEventListener("pointerleave", onPointerLeave);
       window.removeEventListener("keydown", onKey);
       document.removeEventListener("visibilitychange", onVisibility);
+      for (const t of heroCache.values()) t.dispose();
+      heroCache.clear();
+      for (const n of nodes.values()) n.rackTex?.dispose();
       renderer.dispose();
     },
   };

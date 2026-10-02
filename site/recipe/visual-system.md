@@ -10,8 +10,8 @@ Skills that own each part:
 - `look-development-for-motion` and `visual-development-for-motion`.
 
 Evidence:
-- `studies/type-specimen-v2.png`, rendered with the installed Fontsource files. Big Shoulders, Sofia Sans Extra Condensed, Instrument Serif and Newsreader were removed from the build after the specimen, so the HTML now renders only the kept families. The PNG is the record of the comparison.
-- `studies/cover-sheet.html`, which draws every cover from the snapshot through `src/covers.ts`. Serve it with `pnpm dev` at `/recipe/studies/cover-sheet.html`, and add `?inside` to see the inside faces.
+- `studies/type-specimen-v2.png`, rendered with the Fontsource files installed at the time. The HTML still has a row for every candidate, rejected families included, but the Fontsource packages have since left the build (v3 uses no webfonts), so the page no longer renders as it did. The PNG is the record of the comparison.
+- `studies/cover-sheet.html` drew the v2 covers through `src/covers.ts`. That module is gone, and the page now draws the v4 disks and labels through `src/labels.ts`, with no `?inside` option.
 - The contrast figures in `direction-v2.md`, measured with the WCAG 2.x formula.
 
 ## Typography

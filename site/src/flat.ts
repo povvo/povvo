@@ -36,15 +36,21 @@ export function mountFlat(root: HTMLElement, store: Store): void {
   `;
   root.appendChild(style);
 
+  // Recently drawn disks, oldest first: enough for the view and a little history, since a
+  // full-size disk is close to 2 MB of canvas. A drawing that fails is dropped to be retried.
+  const KEEP = 24;
   const drawn = new Map<string, Promise<HTMLCanvasElement>>();
   function disk(state: State, i: number, w: number): Promise<HTMLCanvasElement> {
     const e = state.visible[i];
     const key = `${e.name}@${w}`;
     let c = drawn.get(key);
-    if (!c) {
+    if (c) drawn.delete(key);
+    else {
       c = diskCanvas(e, w, Math.abs(i - state.current));
-      drawn.set(key, c);
+      c.catch(() => drawn.delete(key));
     }
+    drawn.set(key, c);
+    while (drawn.size > KEEP) drawn.delete(drawn.keys().next().value as string);
     return c;
   }
 
@@ -59,7 +65,12 @@ export function mountFlat(root: HTMLElement, store: Store): void {
       const d = Math.abs(i - cur);
       items.push({ i, cls: d === 0 ? "" : d === 1 ? "flat__disk--side" : "flat__disk--far", w: d === 0 ? 640 : 280 });
     }
-    const canvases = await Promise.all(items.map((it) => disk(state, it.i, it.w)));
+    let canvases: HTMLCanvasElement[];
+    try {
+      canvases = await Promise.all(items.map((it) => disk(state, it.i, it.w)));
+    } catch {
+      return; // the failed drawing was dropped; the next selection draws it again
+    }
     if (mine !== token) return;
     const frag = document.createDocumentFragment();
     items.forEach((it, k) => {
