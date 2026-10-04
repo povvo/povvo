@@ -179,7 +179,7 @@
     {
       "name": "GIF bounded motion: contribution-scan.gif",
       "passed": true,
-      "detail": "median 0.37%, maximum 0.80% pixels changed"
+      "detail": "median 0.37%, maximum 0.82% pixels changed"
     },
     {
       "name": "GIF static-field stability: contribution-scan.gif",
@@ -204,7 +204,7 @@
     {
       "name": "GIF size: focus-board.gif",
       "passed": true,
-      "detail": "150.2 KiB"
+      "detail": "150.1 KiB"
     },
     {
       "name": "GIF loop seam: focus-board.gif",
@@ -214,7 +214,7 @@
     {
       "name": "GIF bounded motion: focus-board.gif",
       "passed": true,
-      "detail": "median 1.20%, maximum 2.67% pixels changed"
+      "detail": "median 1.19%, maximum 2.67% pixels changed"
     },
     {
       "name": "GIF static-field stability: focus-board.gif",
@@ -274,7 +274,7 @@
     {
       "name": "GIF size: event-rail.gif",
       "passed": true,
-      "detail": "98.6 KiB"
+      "detail": "97.9 KiB"
     },
     {
       "name": "GIF loop seam: event-rail.gif",
@@ -364,7 +364,7 @@
     {
       "name": "aggregate GIF budget",
       "passed": true,
-      "detail": "634.7 KiB across 6 animations"
+      "detail": "633.9 KiB across 6 animations"
     },
     {
       "name": "telemetry reel dimensions",
@@ -384,12 +384,12 @@
     {
       "name": "telemetry reel size",
       "passed": true,
-      "detail": "327.7 KiB"
+      "detail": "329.4 KiB"
     },
     {
       "name": "telemetry reel loop seam",
       "passed": true,
-      "detail": "maximum channel RMS 0.365"
+      "detail": "maximum channel RMS 0.348"
     },
     {
       "name": "preview dimensions: contribution-scan.png",
@@ -399,7 +399,7 @@
     {
       "name": "black/off-white dominance: contribution-scan.png",
       "passed": true,
-      "detail": "88.28%"
+      "detail": "88.27%"
     },
     {
       "name": "cyan subordination: contribution-scan.png",
@@ -444,7 +444,7 @@
     {
       "name": "black/off-white dominance: event-rail.png",
       "passed": true,
-      "detail": "95.66%"
+      "detail": "95.71%"
     },
     {
       "name": "cyan subordination: event-rail.png",
@@ -509,5 +509,5 @@
   ],
   "logo_sha256": "4a519d9bb147ed834ecc7724118337e417c3de60e29e923477e725167f4b6458",
   "identity_sha256": "3dcc64f3a29109f6c5a87b305f12e3f0ac792363f175ef2fe18e1af9c980c857",
-  "validated_at": "2026-10-03T09:54:58.162766+00:00"
+  "validated_at": "2026-10-04T10:37:38.090999+00:00"
 }
