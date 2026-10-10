@@ -37,9 +37,9 @@ Overall: **PASS**
 | GIF dimensions: contribution-scan.gif | PASS | 900 x 220 |
 | GIF cadence: contribution-scan.gif | PASS | 50 encoded frames, 7200ms loop, delays [40, 480, 1640, 3200] |
 | GIF disposal: contribution-scan.gif | PASS | disposal methods [1] |
-| GIF size: contribution-scan.gif | PASS | 93.9 KiB |
+| GIF size: contribution-scan.gif | PASS | 93.2 KiB |
 | GIF loop seam: contribution-scan.gif | PASS | maximum channel RMS 0.000 |
-| GIF bounded motion: contribution-scan.gif | PASS | median 0.36%, maximum 0.87% pixels changed |
+| GIF bounded motion: contribution-scan.gif | PASS | median 0.37%, maximum 0.91% pixels changed |
 | GIF static-field stability: contribution-scan.gif | PASS | unchanged calibration field |
 | GIF dimensions: focus-board.gif | PASS | 900 x 220 |
 | GIF cadence: focus-board.gif | PASS | 49 encoded frames, 7200ms loop, delays [40, 680, 1570, 3110] |
@@ -76,7 +76,7 @@ Overall: **PASS**
 | GIF loop seam: repository-signal.gif | PASS | maximum channel RMS 0.000 |
 | GIF bounded motion: repository-signal.gif | PASS | median 0.76%, maximum 2.18% pixels changed |
 | GIF static-field stability: repository-signal.gif | PASS | unchanged calibration field |
-| aggregate GIF budget | PASS | 634.4 KiB across 6 animations |
+| aggregate GIF budget | PASS | 633.8 KiB across 6 animations |
 | telemetry reel dimensions | PASS | 900 x 220 |
 | telemetry reel cadence | PASS | 44 frames, 13680ms, loop=0 |
 | telemetry reel disposal | PASS | disposal methods [1] |

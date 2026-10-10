@@ -169,7 +169,7 @@
     {
       "name": "GIF size: contribution-scan.gif",
       "passed": true,
-      "detail": "93.9 KiB"
+      "detail": "93.2 KiB"
     },
     {
       "name": "GIF loop seam: contribution-scan.gif",
@@ -179,7 +179,7 @@
     {
       "name": "GIF bounded motion: contribution-scan.gif",
       "passed": true,
-      "detail": "median 0.36%, maximum 0.87% pixels changed"
+      "detail": "median 0.37%, maximum 0.91% pixels changed"
     },
     {
       "name": "GIF static-field stability: contribution-scan.gif",
@@ -364,7 +364,7 @@
     {
       "name": "aggregate GIF budget",
       "passed": true,
-      "detail": "634.4 KiB across 6 animations"
+      "detail": "633.8 KiB across 6 animations"
     },
     {
       "name": "telemetry reel dimensions",
@@ -509,5 +509,5 @@
   ],
   "logo_sha256": "4a519d9bb147ed834ecc7724118337e417c3de60e29e923477e725167f4b6458",
   "identity_sha256": "3dcc64f3a29109f6c5a87b305f12e3f0ac792363f175ef2fe18e1af9c980c857",
-  "validated_at": "2026-10-09T11:22:47.939615+00:00"
+  "validated_at": "2026-10-10T10:39:52.318069+00:00"
 }
