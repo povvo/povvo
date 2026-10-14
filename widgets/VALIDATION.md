@@ -37,7 +37,7 @@ Overall: **PASS**
 | GIF dimensions: contribution-scan.gif | PASS | 900 x 220 |
 | GIF cadence: contribution-scan.gif | PASS | 50 encoded frames, 7200ms loop, delays [40, 480, 1640, 3200] |
 | GIF disposal: contribution-scan.gif | PASS | disposal methods [1] |
-| GIF size: contribution-scan.gif | PASS | 93.4 KiB |
+| GIF size: contribution-scan.gif | PASS | 93.3 KiB |
 | GIF loop seam: contribution-scan.gif | PASS | maximum channel RMS 0.000 |
 | GIF bounded motion: contribution-scan.gif | PASS | median 0.37%, maximum 0.91% pixels changed |
 | GIF static-field stability: contribution-scan.gif | PASS | unchanged calibration field |
@@ -83,7 +83,7 @@ Overall: **PASS**
 | telemetry reel size | PASS | 329.2 KiB |
 | telemetry reel loop seam | PASS | maximum channel RMS 0.348 |
 | preview dimensions: contribution-scan.png | PASS | 900 x 220 |
-| black/off-white dominance: contribution-scan.png | PASS | 88.28% |
+| black/off-white dominance: contribution-scan.png | PASS | 88.29% |
 | cyan subordination: contribution-scan.png | PASS | 0.018% |
 | preview dimensions: focus-board.png | PASS | 900 x 220 |
 | black/off-white dominance: focus-board.png | PASS | 85.80% |
