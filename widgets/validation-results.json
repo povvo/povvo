@@ -179,7 +179,7 @@
     {
       "name": "GIF bounded motion: contribution-scan.gif",
       "passed": true,
-      "detail": "median 0.35%, maximum 0.87% pixels changed"
+      "detail": "median 0.35%, maximum 0.82% pixels changed"
     },
     {
       "name": "GIF static-field stability: contribution-scan.gif",
@@ -384,7 +384,7 @@
     {
       "name": "telemetry reel size",
       "passed": true,
-      "detail": "329.4 KiB"
+      "detail": "329.3 KiB"
     },
     {
       "name": "telemetry reel loop seam",
@@ -399,7 +399,7 @@
     {
       "name": "black/off-white dominance: contribution-scan.png",
       "passed": true,
-      "detail": "88.27%"
+      "detail": "88.28%"
     },
     {
       "name": "cyan subordination: contribution-scan.png",
@@ -509,5 +509,5 @@
   ],
   "logo_sha256": "4a519d9bb147ed834ecc7724118337e417c3de60e29e923477e725167f4b6458",
   "identity_sha256": "3dcc64f3a29109f6c5a87b305f12e3f0ac792363f175ef2fe18e1af9c980c857",
-  "validated_at": "2026-10-20T09:29:01.118337+00:00"
+  "validated_at": "2026-10-21T09:24:57.198353+00:00"
 }
