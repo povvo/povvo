@@ -39,7 +39,7 @@ Overall: **PASS**
 | GIF disposal: contribution-scan.gif | PASS | disposal methods [1] |
 | GIF size: contribution-scan.gif | PASS | 93.8 KiB |
 | GIF loop seam: contribution-scan.gif | PASS | maximum channel RMS 0.000 |
-| GIF bounded motion: contribution-scan.gif | PASS | median 0.36%, maximum 1.06% pixels changed |
+| GIF bounded motion: contribution-scan.gif | PASS | median 0.34%, maximum 1.07% pixels changed |
 | GIF static-field stability: contribution-scan.gif | PASS | unchanged calibration field |
 | GIF dimensions: focus-board.gif | PASS | 900 x 220 |
 | GIF cadence: focus-board.gif | PASS | 49 encoded frames, 7200ms loop, delays [40, 680, 1570, 3110] |
