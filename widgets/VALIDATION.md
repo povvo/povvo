@@ -80,10 +80,10 @@ Overall: **PASS**
 | telemetry reel dimensions | PASS | 900 x 220 |
 | telemetry reel cadence | PASS | 44 frames, 13680ms, loop=0 |
 | telemetry reel disposal | PASS | disposal methods [1] |
-| telemetry reel size | PASS | 320.2 KiB |
+| telemetry reel size | PASS | 320.3 KiB |
 | telemetry reel loop seam | PASS | maximum channel RMS 0.334 |
 | preview dimensions: contribution-scan.png | PASS | 900 x 220 |
-| black/off-white dominance: contribution-scan.png | PASS | 88.23% |
+| black/off-white dominance: contribution-scan.png | PASS | 88.22% |
 | cyan subordination: contribution-scan.png | PASS | 0.018% |
 | preview dimensions: focus-board.png | PASS | 900 x 220 |
 | black/off-white dominance: focus-board.png | PASS | 85.80% |
